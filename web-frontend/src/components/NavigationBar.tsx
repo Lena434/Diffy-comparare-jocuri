@@ -9,7 +9,7 @@ function NavigationBar() {
               <span className="text-2xl">🎮</span>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-neon-purple to-neon-cyan bg-clip-text text-transparent">
-              GameLens
+              DIFFY
             </span>
           </div>
 
