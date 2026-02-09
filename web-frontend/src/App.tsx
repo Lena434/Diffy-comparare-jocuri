@@ -1,17 +1,15 @@
-import { Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import NavigationBar from './components/NavigationBar'
+import { Routes, Route } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
-    <>
-      <NavigationBar />
-
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-      </Routes>
-    </>
-  )
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route index element={<HomePage />} />
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;
