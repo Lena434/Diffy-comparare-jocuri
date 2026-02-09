@@ -1,4 +1,4 @@
-function Navbar() {
+function NavigationBar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-neon-purple/20">
       <div className="container mx-auto px-6 py-4">
@@ -44,4 +44,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default NavigationBar;
