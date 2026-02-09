@@ -1,10 +1,12 @@
 interface CompactSearchBarProps {
   onSearch: (query: string) => void;
+  value?: string;
   placeholder?: string;
 }
 
 function CompactSearchBar({ 
-  onSearch, 
+  onSearch,
+  value = '', 
   placeholder = "Search games..." 
 }: CompactSearchBarProps) {
   return (
@@ -15,6 +17,7 @@ function CompactSearchBar({
       <input
         type="text"
         placeholder={placeholder}
+        value={value}
         onChange={(e) => onSearch(e.target.value)}
         className="w-full px-4 py-2 bg-black/30 border border-neon-purple/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-cyan transition-colors"
       />

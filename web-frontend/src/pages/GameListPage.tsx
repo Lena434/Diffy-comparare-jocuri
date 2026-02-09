@@ -6,9 +6,13 @@ import { useGameFilters } from '../hooks/useGameFilters';
 
 function GameListPage() {
   const {
+    searchQuery,
     setSearchQuery,
+    genreFilter,      
     setGenreFilter,
+    platformFilter,   
     setPlatformFilter,
+    sortBy,          
     setSortBy,
     filteredGames,
     clearFilters,
@@ -21,6 +25,10 @@ function GameListPage() {
         <GamesHeader totalGames={mockGames.length} />
 
         <FilterBar
+          searchValue={searchQuery}
+          genreValue={genreFilter}        // ← ADAUGĂ
+          platformValue={platformFilter}  // ← ADAUGĂ
+          sortValue={sortBy}              // ← ADAUGĂ
           onSearch={setSearchQuery}
           onGenreFilter={setGenreFilter}
           onPlatformFilter={setPlatformFilter}
