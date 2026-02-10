@@ -15,7 +15,7 @@ export function useGameFilters(games: Game[]) {
       setSearchQuery(urlSearchQuery);
     }
     }, [urlSearchQuery]);
-    
+
   const filteredGames = useMemo(() => {
     let filtered = [...games];
 
@@ -55,6 +55,7 @@ export function useGameFilters(games: Game[]) {
     setSearchQuery('');
     setGenreFilter('All');
     setPlatformFilter('All');
+    setSortBy('title');
   };
 
   return {
