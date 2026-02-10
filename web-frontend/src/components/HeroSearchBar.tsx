@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../routes/routes';
 
 interface HeroSearchBarProps {
   placeholder?: string;
@@ -14,7 +15,7 @@ function HeroSearchBar({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/games?search=${searchQuery}`);
+      navigate(`${ROUTES.GAMES}?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 

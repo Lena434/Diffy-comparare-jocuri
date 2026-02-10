@@ -26,9 +26,9 @@ function GameListPage() {
 
         <FilterBar
           searchValue={searchQuery}
-          genreValue={genreFilter}        // ← ADAUGĂ
-          platformValue={platformFilter}  // ← ADAUGĂ
-          sortValue={sortBy}              // ← ADAUGĂ
+          genreValue={genreFilter}        
+          platformValue={platformFilter}  
+          sortValue={sortBy}              
           onSearch={setSearchQuery}
           onGenreFilter={setGenreFilter}
           onPlatformFilter={setPlatformFilter}
