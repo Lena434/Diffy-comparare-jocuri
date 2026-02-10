@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from './NavigationBar';
+import NavigationBar from '../components/NavigationBar';
 
 function Header() {
   const navigate = useNavigate();
