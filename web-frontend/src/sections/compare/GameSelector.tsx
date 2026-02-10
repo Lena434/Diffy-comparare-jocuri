@@ -20,6 +20,11 @@ function GameSelector({ games, onSelectGame1, onSelectGame2, onSelectGame3 }: Ga
     label: game.title
   }));
 
+  const game3Options = [
+    { value: '', label: 'None' },
+    ...gameOptions
+  ];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       <Dropdown
@@ -46,12 +51,17 @@ function GameSelector({ games, onSelectGame1, onSelectGame2, onSelectGame3 }: Ga
 
       <Dropdown
         label="Game 3 (Optional)"
-        value={game3 ?? ''}
+        value={game3 === null ? 'none' : game3}
         placeholder="Select a game (optional)"
-        options={gameOptions}
+        options={game3Options}
         onSelect={(value) => {
-          setGame3(value || null);
-          onSelectGame3(value ? Number(value) : null);
+            if (value === 'none') {
+                setGame3(null);
+                onSelectGame3(null)
+            } else {
+                setGame3(value);
+                onSelectGame3(Number(value));
+            }
         }}
       />
     </div>
