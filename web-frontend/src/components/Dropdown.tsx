@@ -2,11 +2,11 @@ interface DropdownProps {
   label: string;
   options: string[] | { value: string; label: string }[];
   onSelect: (value: string) => void;
-  value?: string;  
+  value: string;  
   placeholder?: string;
 }
 
-function Dropdown({ label, options, onSelect, value = '', placeholder }: DropdownProps) {
+function Dropdown({ label, options, onSelect, value, placeholder }: DropdownProps) {
   return (
     <div>
       <label className="block text-sm font-semibold text-gray-300 mb-2">{label}</label>

@@ -5,11 +5,23 @@ import GameSelector from '../sections/compare/GameSelector';
 import SelectedGamesPreview from '../sections/compare/SelectedGamesPreview';
 import ComparisonTable from '../sections/compare/ComparisonTable';
 
-
 function ComparePage() {
   const [selectedGame1, setSelectedGame1] = useState<number | null>(null);
   const [selectedGame2, setSelectedGame2] = useState<number | null>(null);
   const [selectedGame3, setSelectedGame3] = useState<number | null>(null);
+
+  //handler functions
+  const handleSelectGame1 = (id: number | null) => {
+    setSelectedGame1(id);
+  };
+
+  const handleSelectGame2 = (id: number | null) => {
+    setSelectedGame2(id);
+  };
+
+  const handleSelectGame3 = (id: number | null) => {
+    setSelectedGame3(id);
+  };
 
   const game1 = selectedGame1 ? mockGames.find(game => game.id === selectedGame1) : undefined;
   const game2 = selectedGame2 ? mockGames.find(game => game.id === selectedGame2) : undefined;
@@ -18,6 +30,7 @@ function ComparePage() {
   const selectedGames = [game1, game2, game3].filter(
     (game): game is NonNullable<typeof game> => Boolean(game)
   );
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black py-20 px-6">
@@ -27,29 +40,31 @@ function ComparePage() {
 
         <GameSelector
           games={mockGames}
-          onSelectGame1={setSelectedGame1}
-          onSelectGame2={setSelectedGame2}
-          onSelectGame3={setSelectedGame3}
+          selectedGame1 = {selectedGame1}
+          selectedGame2 = {selectedGame2}
+          selectedGame3 = {selectedGame3}
+          onSelectGame1={handleSelectGame1}
+          onSelectGame2={handleSelectGame2}
+          onSelectGame3={handleSelectGame3}
         />
 
         {selectedGames.length >= 2 ? (
           <>
             <SelectedGamesPreview
-            game1={game1}
-            game2={game2}
-            game3={game3}
+              game1={game1}
+              game2={game2}
+              game3={game3}
+              
+
             />
 
-            {/* TODO: ComparisonTable will be here */}
             <ComparisonTable games={selectedGames} />
-        </>
+          </>
         ) : (
-        <p className="text-center text-gray-400 mt-12">
+          <p className="text-center text-gray-400 mt-12">
             Select at least 2 games to compare
-        </p>
+          </p>
         )}
-
-
       </div>
     </div>
   );
