@@ -1,22 +1,28 @@
 import { mockGames } from '../_mock/games';
-import FilterBar from '../components/FilterBar';
+import FilterSidebar from '../components/FilterSideBar';
 import GamesHeader from '../sections/games/GamesHeader';
-import GamesGrid from '../sections/games/GamesGrid';
+import GamesContent from '../sections/games/GamesContent';
 import { useGameFilters } from '../hooks/useGameFilters';
 
 function GameListPage() {
   const {
     searchQuery,
     setSearchQuery,
-    genreFilter,      
+    genreFilter,
     setGenreFilter,
-    platformFilter,   
+    platformFilter,
     setPlatformFilter,
-    sortBy,          
+    sortBy,
     setSortBy,
     filteredGames,
+    totalFilteredGames,
+    currentPage,
+    totalPages,
+    goToNextPage,
+    goToPreviousPage,
+    goToPage,
     clearFilters,
-  } = useGameFilters(mockGames);
+  } = useGameFilters(mockGames, 8);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black py-20 px-6">
@@ -24,24 +30,34 @@ function GameListPage() {
         
         <GamesHeader totalGames={mockGames.length} />
 
-        <FilterBar
-          searchValue={searchQuery}
-          genreValue={genreFilter}        
-          platformValue={platformFilter}  
-          sortValue={sortBy}              
-          onSearch={setSearchQuery}
-          onGenreFilter={setGenreFilter}
-          onPlatformFilter={setPlatformFilter}
-          onSort={setSortBy}
-        />
+        {/* Layout: Sidebar + Content */}
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <div className="w-80 flex-shrink-0">
+            <FilterSidebar
+              searchValue={searchQuery}
+              genreValue={genreFilter}
+              platformValue={platformFilter}
+              sortValue={sortBy}
+              onSearch={setSearchQuery}
+              onGenreFilter={setGenreFilter}
+              onPlatformFilter={setPlatformFilter}
+              onSort={setSortBy}
+            />
+          </div>
 
-        <div className="mb-6">
-          <p className="text-gray-400">
-            Showing {filteredGames.length} {filteredGames.length === 1 ? 'game' : 'games'}
-          </p>
+          {/* Content */}
+          <GamesContent
+            games={filteredGames}
+            totalFilteredGames={totalFilteredGames}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onNextPage={goToNextPage}
+            onPreviousPage={goToPreviousPage}
+            onGoToPage={goToPage}
+            onClearFilters={clearFilters}
+          />
         </div>
-
-        <GamesGrid games={filteredGames} onClearFilters={clearFilters} />
       </div>
     </div>
   );
