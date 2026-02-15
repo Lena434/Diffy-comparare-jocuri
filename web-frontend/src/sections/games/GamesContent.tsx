@@ -1,5 +1,5 @@
 import GamesGrid from './GamesGrid';
-import Pagination from '../../components/Pagination';  // ← Import din components
+import Pagination from '../../components/Pagination';  
 import type { Game } from '../../_mock/games';
 
 interface GamesContentProps {
