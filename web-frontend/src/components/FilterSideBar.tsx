@@ -12,7 +12,7 @@ interface FilterSidebarProps {
   onSort: (sortBy: string) => void;
 }
 
-function FilterSidebar({ 
+function FilterSideBar({ 
   searchValue = '', 
   genreValue = 'All',
   platformValue = 'All',
@@ -31,7 +31,7 @@ function FilterSidebar({
   ];
 
   return (
-    <aside className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 backdrop-blur-sm border border-neon-purple/20 rounded-xl p-6 h-fit sticky top-24">
+    <aside className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 backdrop-blur-sm border border-neon-purple/20 rounded-xl p-6 h-fit lg:sticky lg:top-24">
       {/* Header */}
       <h3 className="text-2xl font-bold text-white mb-6 pb-3 border-b border-neon-purple/30">
         Filters
@@ -79,4 +79,4 @@ function FilterSidebar({
   );
 }
 
-export default FilterSidebar;
+export default FilterSideBar;

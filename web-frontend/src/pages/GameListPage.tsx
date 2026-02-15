@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { mockGames } from '../_mock/games';
-import FilterSidebar from '../components/FilterSideBar';
+import FilterSideBar from '../components/FilterSideBar';
 import GamesHeader from '../sections/games/GamesHeader';
 import GamesContent from '../sections/games/GamesContent';
 import { useGameFilters } from '../hooks/useGameFilters';
 
 function GameListPage() {
+  const [showFilters, setShowFilters] = useState(false);
+
   const {
     searchQuery,
     setSearchQuery,
@@ -30,11 +33,20 @@ function GameListPage() {
         
         <GamesHeader totalGames={mockGames.length} />
 
+        {/* Mobile Filter Toggle Button */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="lg:hidden w-full mb-6 px-6 py-3 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold text-lg flex items-center justify-between"
+        >
+          <span>Filters</span>
+          <span>{showFilters ? '▲' : '▼'}</span>
+        </button>
+
         {/* Layout: Sidebar + Content */}
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-80 flex-shrink-0">
-            <FilterSidebar
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar - Hidden on mobile unless toggled */}
+          <div className={`w-full lg:w-80 lg:flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <FilterSideBar
               searchValue={searchQuery}
               genreValue={genreFilter}
               platformValue={platformFilter}
