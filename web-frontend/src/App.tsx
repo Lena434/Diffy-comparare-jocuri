@@ -6,9 +6,11 @@ import ComparePage from "./pages/ComparePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import { ROUTES } from "./routes/routes";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   return (
+    <ThemeProvider>
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
@@ -18,6 +20,7 @@ function App() {
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
     </Routes>
+    </ThemeProvider>
   );
 }
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Game } from '../_mock/games';
 
 interface GameCardProps {
@@ -5,40 +6,143 @@ interface GameCardProps {
 }
 
 function GameCard({ game }: GameCardProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-xl overflow-hidden border border-neon-purple/20 hover:border-neon-cyan/50 transition-all hover:scale-105 transform duration-300 shadow-lg hover:shadow-neon-cyan/20">
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "var(--arcade-panel)",
+        border: `3px solid ${hovered ? "var(--arcade-accent)" : "var(--arcade-border)"}`,
+        boxShadow: hovered
+          ? "6px 6px 0px var(--arcade-accent-dark), 10px 10px 0px #000"
+          : "5px 5px 0px var(--arcade-shadow), 8px 8px 0px #000",
+        transform: hovered ? "translate(-2px,-2px)" : "translate(0,0)",
+        transition: "border-color 0.1s, box-shadow 0.1s, transform 0.1s",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
       {/* Image */}
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={game.image} 
+      <div style={{ position: "relative", height: "160px", overflow: "hidden" }}>
+        <img
+          src={game.image}
           alt={game.title}
-          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: hovered ? "scale(1.06)" : "scale(1)",
+            transition: "transform 0.2s",
+            filter: "brightness(0.85) saturate(0.8)",
+          }}
+        />
+        {/* Pixel overlay on image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(0,0,0,0.08) 2px,
+              rgba(0,0,0,0.08) 4px
+            )`,
+            pointerEvents: "none",
+          }}
         />
         {/* Rating Badge */}
-        <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
-          <span className="text-yellow-400">⭐</span>
-          <span className="text-white font-semibold">{game.rating}</span>
+        <div
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+            background: "var(--arcade-input-bg)",
+            border: "2px solid var(--arcade-h)",
+            boxShadow: "2px 2px 0px var(--arcade-h-shadow)",
+            padding: "4px 8px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.45rem",
+            color: "var(--arcade-h)",
+          }}
+        >
+          ★ {game.rating}
+        </div>
+        {/* Year badge */}
+        <div
+          style={{
+            position: "absolute",
+            top: "8px",
+            left: "8px",
+            background: "var(--arcade-input-bg)",
+            border: "2px solid var(--arcade-shadow)",
+            padding: "4px 7px",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.38rem",
+            color: "var(--arcade-muted)",
+          }}
+        >
+          {game.releaseYear}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
         {/* Title */}
-        <h3 className="text-xl font-bold text-white mb-2 hover:text-neon-cyan transition-colors">
+        <h3
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.55rem",
+            color: hovered ? "var(--arcade-accent)" : "var(--arcade-h)",
+            textShadow: hovered ? "1px 1px 0px var(--arcade-accent-dark)" : "1px 1px 0px var(--arcade-h-shadow)",
+            letterSpacing: "0.04em",
+            margin: 0,
+            lineHeight: 1.6,
+            transition: "color 0.1s",
+          }}
+        >
           {game.title}
         </h3>
 
         {/* Description */}
-        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+        <p
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.38rem",
+            color: "var(--arcade-muted)",
+            letterSpacing: "0.03em",
+            margin: 0,
+            lineHeight: 1.8,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
           {game.description}
         </p>
 
         {/* Genres */}
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
           {game.genre.map((genre) => (
-            <span 
+            <span
               key={genre}
-              className="px-2 py-1 bg-neon-purple/20 border border-neon-purple/30 rounded-full text-xs text-neon-purple font-medium"
+              style={{
+                background: "rgba(139,92,246,0.15)",
+                border: "2px solid var(--arcade-shadow)",
+                padding: "3px 7px",
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "0.35rem",
+                color: "var(--arcade-text)",
+                letterSpacing: "0.03em",
+              }}
             >
               {genre}
             </span>
@@ -46,9 +150,27 @@ function GameCard({ game }: GameCardProps) {
         </div>
 
         {/* Platforms */}
-        <div className="flex items-center gap-2 text-gray-400 text-sm">
-          <span className="text-neon-cyan">🎮</span>
-          <span>{game.platform.join(', ')}</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            borderTop: "1px dashed var(--arcade-shadow)",
+            paddingTop: "8px",
+            marginTop: "auto",
+          }}
+        >
+          <span style={{ fontSize: "0.7rem" }}>🖥️</span>
+          <span
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.35rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.03em",
+            }}
+          >
+            {game.platform.join(' · ')}
+          </span>
         </div>
       </div>
     </div>

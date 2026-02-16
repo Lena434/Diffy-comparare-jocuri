@@ -25,7 +25,7 @@ function SignUpPage() {
     <div
       className="min-h-screen flex items-center justify-center px-4 py-10"
       style={{
-        background: "#0a0a0a",
+        background: "var(--arcade-bg)",
         backgroundImage: `
           linear-gradient(rgba(139,92,246,0.07) 1px, transparent 1px),
           linear-gradient(90deg, rgba(139,92,246,0.07) 1px, transparent 1px)
@@ -46,8 +46,8 @@ function SignUpPage() {
             className="text-3xl"
             style={{
               fontFamily: "'Press Start 2P', monospace",
-              color: "#f97316",
-              textShadow: "3px 3px 0px #7c2d12, 6px 6px 0px #000",
+              color: "var(--arcade-accent)",
+              textShadow: "3px 3px 0px var(--arcade-accent-dark), 6px 6px 0px #000",
             }}
           >
             DIFFY
@@ -57,9 +57,9 @@ function SignUpPage() {
         {/* Arcade Panel */}
         <div
           style={{
-            background: "#1e1a2e",
-            border: "4px solid #8b5cf6",
-            boxShadow: "6px 6px 0px #4c1d95, 12px 12px 0px #000",
+            background: "var(--arcade-panel)",
+            border: "4px solid var(--arcade-border)",
+            boxShadow: "6px 6px 0px var(--arcade-shadow), 12px 12px 0px #000",
             padding: "2rem",
             position: "relative",
           }}
@@ -76,8 +76,8 @@ function SignUpPage() {
             style={{
               fontFamily: "'Press Start 2P', monospace",
               fontSize: "0.9rem",
-              color: "#facc15",
-              textShadow: "2px 2px 0px #92400e",
+              color: "var(--arcade-h)",
+              textShadow: "2px 2px 0px var(--arcade-h-shadow)",
               letterSpacing: "0.08em",
             }}
           >
@@ -134,21 +134,21 @@ function SignUpPage() {
           </form>
 
           {/* Divider */}
-          <div className="my-6" style={{ borderTop: "2px dashed #4c1d95" }} />
+          <div className="my-6" style={{ borderTop: "2px dashed var(--arcade-shadow)" }} />
 
           <p
             className="text-center"
             style={{
               fontFamily: "'Press Start 2P', monospace",
               fontSize: "0.5rem",
-              color: "#a78bfa",
+              color: "var(--arcade-text)",
               lineHeight: "1.8",
             }}
           >
             HAVE AN ACCOUNT?{" "}
             <Link
               to={ROUTES.LOGIN}
-              style={{ color: "#f97316", textDecoration: "none" }}
+              style={{ color: "var(--arcade-accent)", textDecoration: "none" }}
             >
               LOG IN
             </Link>
@@ -161,7 +161,7 @@ function SignUpPage() {
           style={{
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.45rem",
-            color: "#6b7280",
+            color: "var(--arcade-muted)",
           }}
         >
           PRESS ENTER TO CONTINUE
@@ -183,8 +183,8 @@ function Bolt({ top, bottom, left, right }: {
         top, bottom, left, right,
         width: "12px",
         height: "12px",
-        background: "#8b5cf6",
-        border: "2px solid #4c1d95",
+        background: "var(--arcade-border)",
+        border: "2px solid var(--arcade-shadow)",
         borderRadius: "50%",
         boxShadow: "1px 1px 0 #000",
       }}
@@ -208,7 +208,7 @@ function PixelField({
           display: "block",
           fontFamily: "'Press Start 2P', monospace",
           fontSize: "0.5rem",
-          color: "#a78bfa",
+          color: "var(--arcade-text)",
           marginBottom: "6px",
           letterSpacing: "0.05em",
         }}
@@ -223,18 +223,18 @@ function PixelField({
         placeholder={placeholder}
         style={{
           width: "100%",
-          background: "#0f0f1a",
-          border: "3px solid #8b5cf6",
-          boxShadow: "3px 3px 0px #4c1d95",
-          color: "#facc15",
+          background: "var(--arcade-input-bg)",
+          border: "3px solid var(--arcade-border)",
+          boxShadow: "3px 3px 0px var(--arcade-shadow)",
+          color: "var(--arcade-h)",
           fontFamily: "'Press Start 2P', monospace",
           fontSize: "0.55rem",
           padding: "10px 12px",
           outline: "none",
           boxSizing: "border-box",
         }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = "#f97316")}
-        onBlur={(e) => (e.currentTarget.style.borderColor = "#8b5cf6")}
+        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--arcade-accent)")}
+        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--arcade-border)")}
       />
     </div>
   );
@@ -246,9 +246,9 @@ function PixelButton({ type, label }: { type?: "submit" | "button"; label: strin
       type={type ?? "button"}
       style={{
         width: "100%",
-        background: "#7c3aed",
-        border: "3px solid #a78bfa",
-        boxShadow: "4px 4px 0px #4c1d95",
+        background: "var(--arcade-cta)",
+        border: "3px solid var(--arcade-text)",
+        boxShadow: "4px 4px 0px var(--arcade-shadow)",
         color: "#fff",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.65rem",
@@ -258,20 +258,20 @@ function PixelButton({ type, label }: { type?: "submit" | "button"; label: strin
         transition: "transform 0.08s, box-shadow 0.08s",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = "#f97316";
-        e.currentTarget.style.borderColor = "#facc15";
+        e.currentTarget.style.background = "var(--arcade-accent)";
+        e.currentTarget.style.borderColor = "var(--arcade-h)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = "#7c3aed";
-        e.currentTarget.style.borderColor = "#a78bfa";
+        e.currentTarget.style.background = "var(--arcade-cta)";
+        e.currentTarget.style.borderColor = "var(--arcade-text)";
       }}
       onMouseDown={(e) => {
         e.currentTarget.style.transform = "translate(4px, 4px)";
-        e.currentTarget.style.boxShadow = "0px 0px 0px #4c1d95";
+        e.currentTarget.style.boxShadow = "0px 0px 0px var(--arcade-shadow)";
       }}
       onMouseUp={(e) => {
         e.currentTarget.style.transform = "translate(0,0)";
-        e.currentTarget.style.boxShadow = "4px 4px 0px #4c1d95";
+        e.currentTarget.style.boxShadow = "4px 4px 0px var(--arcade-shadow)";
       }}
     >
       {label}

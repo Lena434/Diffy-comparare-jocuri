@@ -3,7 +3,7 @@ import FeaturedGamesSection from '../sections/home/FeaturedGamesSection';
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black">
+    <div style={{ minHeight: "100vh" }}>
       <HeroSection />
       <FeaturedGamesSection />
     </div>
