@@ -26,6 +26,17 @@ function NavigationBar() {
         Compare
       </NavLink>
 
+      <NavLink
+        to={ROUTES.ABOUT}
+        className={({ isActive }) =>
+          isActive
+            ? "text-neon-cyan font-semibold"
+            : "text-white hover:text-neon-cyan transition-colors"
+        }
+      >
+        About
+      </NavLink>
+
     </nav>
   );
 }

@@ -3,7 +3,8 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import GameListPage from "./pages/GameListPage";
 import ComparePage from "./pages/ComparePage";
-import GameDetailsPage from "./pages/GameDetailsPage";  
+import GameDetailsPage from "./pages/GameDetailsPage";
+import AboutPage from "./pages/AboutPage";  
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="/games" element={<GameListPage />} />
-        <Route path="/games/:id" element={<GameDetailsPage />} />  
+        <Route path="/games/:id" element={<GameDetailsPage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/about" element={<AboutPage />} />
       </Route>
     </Routes>
   );
