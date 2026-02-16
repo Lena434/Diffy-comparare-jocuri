@@ -1,25 +1,53 @@
+import { useState } from 'react';
+
 interface CompactSearchBarProps {
   onSearch: (query: string) => void;
   value?: string;
   placeholder?: string;
 }
 
-function CompactSearchBar({ 
+function CompactSearchBar({
   onSearch,
-  value = '', 
-  placeholder = "Search games..." 
+  value = '',
+  placeholder = "SEARCH GAMES...",
 }: CompactSearchBarProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-300 mb-2">
-        Search
+      <label
+        style={{
+          display: "block",
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "0.38rem",
+          color: "var(--arcade-text)",
+          marginBottom: "8px",
+          letterSpacing: "0.05em",
+        }}
+      >
+        🔍 SEARCH
       </label>
       <input
         type="text"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onSearch(e.target.value)}
-        className="w-full px-4 py-2 bg-black/30 border border-neon-purple/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-cyan transition-colors"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          width: "100%",
+          background: "var(--arcade-input-bg)",
+          border: `2px solid ${focused ? "var(--arcade-accent)" : "var(--arcade-border)"}`,
+          boxShadow: "2px 2px 0px var(--arcade-shadow)",
+          color: "var(--arcade-h)",
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "0.42rem",
+          padding: "9px 12px",
+          outline: "none",
+          boxSizing: "border-box",
+          letterSpacing: "0.04em",
+          transition: "border-color 0.1s",
+        }}
       />
     </div>
   );

@@ -1,75 +1,57 @@
-import { useState } from 'react';
 import { mockGames } from '../_mock/games';
-import FilterSideBar from '../components/FilterSideBar';
+import FilterBar from '../components/FilterBar';
 import GamesHeader from '../sections/games/GamesHeader';
-import GamesContent from '../sections/games/GamesContent';
+import GamesGrid from '../sections/games/GamesGrid';
 import { useGameFilters } from '../hooks/useGameFilters';
 
 function GameListPage() {
-  const [showFilters, setShowFilters] = useState(false);
-
   const {
     searchQuery,
     setSearchQuery,
-    genreFilter,
+    genreFilter,      
     setGenreFilter,
-    platformFilter,
+    platformFilter,   
     setPlatformFilter,
-    sortBy,
+    sortBy,          
     setSortBy,
     filteredGames,
-    totalFilteredGames,
-    currentPage,
-    totalPages,
-    goToNextPage,
-    goToPreviousPage,
-    goToPage,
     clearFilters,
-  } = useGameFilters(mockGames, 8);
+  } = useGameFilters(mockGames);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black py-20 px-6">
-      <div className="container mx-auto max-w-7xl">
-        
+    <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+
         <GamesHeader totalGames={mockGames.length} />
 
-        {/* Mobile Filter Toggle Button */}
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="lg:hidden w-full mb-6 px-6 py-3 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold text-lg flex items-center justify-between"
-        >
-          <span>Filters</span>
-          <span>{showFilters ? '▲' : '▼'}</span>
-        </button>
+        <FilterBar
+          searchValue={searchQuery}
+          genreValue={genreFilter}
+          platformValue={platformFilter}
+          sortValue={sortBy}
+          onSearch={setSearchQuery}
+          onGenreFilter={setGenreFilter}
+          onPlatformFilter={setPlatformFilter}
+          onSort={setSortBy}
+        />
 
-        {/* Layout: Sidebar + Content */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Hidden on mobile unless toggled */}
-          <div className={`w-full lg:w-80 lg:flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <FilterSideBar
-              searchValue={searchQuery}
-              genreValue={genreFilter}
-              platformValue={platformFilter}
-              sortValue={sortBy}
-              onSearch={setSearchQuery}
-              onGenreFilter={setGenreFilter}
-              onPlatformFilter={setPlatformFilter}
-              onSort={setSortBy}
-            />
-          </div>
-
-          {/* Content */}
-          <GamesContent
-            games={filteredGames}
-            totalFilteredGames={totalFilteredGames}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onNextPage={goToNextPage}
-            onPreviousPage={goToPreviousPage}
-            onGoToPage={goToPage}
-            onClearFilters={clearFilters}
-          />
+        <div style={{ marginBottom: "20px" }}>
+          <p
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.4rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.05em",
+              margin: 0,
+            }}
+          >
+            SHOWING{" "}
+            <span style={{ color: "var(--arcade-accent)" }}>{filteredGames.length}</span>
+            {" "}{filteredGames.length === 1 ? 'GAME' : 'GAMES'}
+          </p>
         </div>
+
+        <GamesGrid games={filteredGames} onClearFilters={clearFilters} />
       </div>
     </div>
   );

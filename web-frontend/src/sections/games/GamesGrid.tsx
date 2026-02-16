@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import GameCard from '../../components/GameCard';
 import type { Game } from '../../_mock/games';
 
@@ -7,22 +8,78 @@ interface GamesGridProps {
 }
 
 function GamesGrid({ games, onClearFilters }: GamesGridProps) {
+  const [btnHovered, setBtnHovered] = useState(false);
+  const [btnPressed, setBtnPressed] = useState(false);
+
   if (games.length === 0) {
     return (
-      <div className="text-center py-20">
-        <p className="text-gray-400 text-xl">No games found matching your filters</p>
+      <div
+        style={{
+          textAlign: "center",
+          padding: "60px 20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "20px",
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "2rem",
+            color: "var(--arcade-shadow)",
+          }}
+        >
+          ✖
+        </div>
+        <p
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.55rem",
+            color: "var(--arcade-muted)",
+            letterSpacing: "0.06em",
+            lineHeight: 1.8,
+            margin: 0,
+          }}
+        >
+          NO GAMES FOUND
+          <br />
+          MATCHING YOUR FILTERS
+        </p>
         <button
           onClick={onClearFilters}
-          className="mt-4 px-6 py-3 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold"
+          onMouseEnter={() => setBtnHovered(true)}
+          onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
+          onMouseDown={() => setBtnPressed(true)}
+          onMouseUp={() => setBtnPressed(false)}
+          style={{
+            background: btnHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
+            border: `3px solid ${btnHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
+            boxShadow: btnPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
+            transform: btnPressed ? "translate(4px,4px)" : "translate(0,0)",
+            color: "#fff",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.5rem",
+            padding: "12px 20px",
+            cursor: "pointer",
+            letterSpacing: "0.06em",
+            transition: "background 0.08s, border-color 0.08s",
+          }}
         >
-          Clear Filters
+          ↺ CLEAR FILTERS
         </button>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+        gap: "20px",
+      }}
+    >
       {games.map((game) => (
         <GameCard key={game.id} game={game} />
       ))}

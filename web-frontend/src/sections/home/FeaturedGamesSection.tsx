@@ -1,39 +1,102 @@
+import { useState } from 'react';
 import { mockGames } from '../../_mock/games';
 import GameCard from '../../components/GameCard';
-import { useNavigate } from 'react-router-dom';
 
 function FeaturedGamesSection() {
-  const navigate = useNavigate();
-  const featuredGames = mockGames
-  .sort((a,b) => b.rating - a.rating) 
-  .slice(0, 4); 
+  const [btnHovered, setBtnHovered] = useState(false);
+  const [btnPressed, setBtnPressed] = useState(false);
+
   return (
-    <section className="py-20 px-6">
-      <div className="container mx-auto max-w-7xl">
+    <section style={{ padding: "60px 24px" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-neon-purple to-neon-cyan bg-clip-text text-transparent mb-4">
-            Featured Games
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          {/* pixel bracket decoration */}
+          <div
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.4rem",
+              color: "var(--arcade-shadow)",
+              letterSpacing: "0.1em",
+              marginBottom: "10px",
+            }}
+          >
+            ★ ─────────────────────── ★
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "clamp(0.8rem, 2vw, 1.2rem)",
+              color: "var(--arcade-h)",
+              textShadow: "3px 3px 0px var(--arcade-h-shadow)",
+              letterSpacing: "0.1em",
+              margin: "0 0 12px",
+            }}
+          >
+            ▸ FEATURED GAMES
           </h2>
-          <p className="text-gray-300 text-xl">
-            Discover the most popular games in our collection
+          <p
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.4rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.06em",
+              margin: 0,
+            }}
+          >
+            DISCOVER THE MOST POPULAR GAMES IN OUR COLLECTION
           </p>
+          <div
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.4rem",
+              color: "var(--arcade-shadow)",
+              letterSpacing: "0.1em",
+              marginTop: "10px",
+            }}
+          >
+            ★ ─────────────────────── ★
+          </div>
         </div>
 
         {/* Games Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {featuredGames.map((game) => (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: "20px",
+            marginBottom: "36px",
+          }}
+        >
+          {mockGames.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
         </div>
 
         {/* View All Button */}
-        <div className="text-center">
-          <button 
-            onClick={() => navigate('/games')}
-            className="px-8 py-3 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold text-lg shadow-lg shadow-neon-purple/50 hover:shadow-neon-pink/50 hover:scale-105 transform duration-200"
+        <div style={{ textAlign: "center" }}>
+          <button
+            onClick={() => (window.location.href = '/games')}
+            onMouseEnter={() => setBtnHovered(true)}
+            onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
+            onMouseDown={() => setBtnPressed(true)}
+            onMouseUp={() => setBtnPressed(false)}
+            style={{
+              background: btnHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
+              border: `3px solid ${btnHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
+              boxShadow: btnPressed ? "0 0 0 var(--arcade-shadow)" : "5px 5px 0px var(--arcade-shadow)",
+              transform: btnPressed ? "translate(5px,5px)" : "translate(0,0)",
+              color: "#fff",
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.55rem",
+              padding: "14px 28px",
+              cursor: "pointer",
+              letterSpacing: "0.08em",
+              transition: "background 0.08s, border-color 0.08s",
+            }}
           >
-            View All Games
+            ▶ VIEW ALL GAMES
           </button>
         </div>
       </div>

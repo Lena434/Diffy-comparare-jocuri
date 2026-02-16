@@ -1,41 +1,189 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSearchBar from '../../components/HeroSearchBar';
+
+function PixelBtn({
+  children,
+  onClick,
+  primary = false,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  primary?: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false); }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      style={{
+        background: primary ? (hovered ? "var(--arcade-accent)" : "var(--arcade-cta)") : "transparent",
+        border: primary
+          ? `3px solid ${hovered ? "var(--arcade-h)" : "var(--arcade-text)"}`
+          : `3px solid ${hovered ? "#06b6d4" : "var(--arcade-border)"}`,
+        boxShadow: pressed ? "0 0 0 var(--arcade-shadow)" : primary ? "5px 5px 0px var(--arcade-shadow)" : "5px 5px 0px #0e4a5e",
+        transform: pressed ? "translate(5px,5px)" : "translate(0,0)",
+        color: primary ? "#fff" : hovered ? "#06b6d4" : "var(--arcade-border)",
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "0.6rem",
+        padding: "14px 24px",
+        cursor: "pointer",
+        letterSpacing: "0.08em",
+        transition: "background 0.08s, border-color 0.08s, color 0.08s",
+        minWidth: "180px",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="min-h-screen pt-24 px-4">
-      {/* Quick Search */}
-      <div className="max-w-4xl mx-auto mb-16">
+    <section
+      style={{
+        minHeight: "100vh",
+        paddingTop: "80px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      {/* INSERT COIN */}
+      <div
+        style={{
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "0.45rem",
+          color: "var(--arcade-muted)",
+          letterSpacing: "0.1em",
+          marginBottom: "28px",
+          marginTop: "16px",
+          animation: "pixel-blink 1.2s steps(1) infinite",
+        }}
+      >
+        ★ INSERT COIN TO CONTINUE ★
+      </div>
+
+      {/* Search Bar */}
+      <div style={{ width: "100%", maxWidth: "640px", marginBottom: "56px" }}>
         <HeroSearchBar />
       </div>
 
-      {/* Content centrat */}
-      <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
-        <div className="text-center space-y-6 max-w-4xl">
-          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-neon-purple via-neon-pink to-neon-cyan bg-clip-text text-transparent animate-pulse">
-            DIFFY
-          </h1>
-          <p className="text-2xl text-neon-cyan font-light tracking-wide">
-            Compare. Discover. Play.
-          </p>
-                    
-          {/* Buttons */}
-          <div className="flex gap-4 justify-center mt-8">
-            <button 
-              onClick={() => navigate('/games')}
-              className="px-8 py-3 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold text-lg shadow-lg shadow-neon-purple/50 hover:shadow-neon-pink/50 hover:scale-105 transform duration-200"
+      {/* Main content */}
+      <div
+        style={{
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "20px",
+          flex: 1,
+          justifyContent: "center",
+          paddingBottom: "60px",
+        }}
+      >
+        {/* DIFFY title */}
+        <h1
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "clamp(2.5rem, 8vw, 5rem)",
+            color: "var(--arcade-accent)",
+            textShadow: "4px 4px 0px var(--arcade-accent-dark), 8px 8px 0px #000",
+            letterSpacing: "0.12em",
+            margin: 0,
+            lineHeight: 1.1,
+            animation: "pixel-glow 2.5s ease-in-out infinite",
+          }}
+        >
+          DIFFY
+        </h1>
+
+        {/* Subtitle */}
+        <p
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "clamp(0.5rem, 1.5vw, 0.75rem)",
+            color: "var(--arcade-h)",
+            textShadow: "2px 2px 0px var(--arcade-h-shadow)",
+            letterSpacing: "0.1em",
+            margin: 0,
+            lineHeight: 2,
+          }}
+        >
+          COMPARE . DISCOVER . PLAY
+        </p>
+
+        {/* Pixel divider */}
+        <div
+          style={{
+            color: "var(--arcade-shadow)",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.7rem",
+            letterSpacing: "0.05em",
+          }}
+        >
+          ══════════════
+        </div>
+
+        {/* Stat chips */}
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+          {[
+            { icon: "🎮", label: "4 GAMES" },
+            { icon: "⚔", label: "COMPARE UP TO 3" },
+            { icon: "🏆", label: "FREE TO USE" },
+          ].map((chip) => (
+            <div
+              key={chip.label}
+              style={{
+                background: "var(--arcade-panel)",
+                border: "2px solid var(--arcade-shadow)",
+                boxShadow: "3px 3px 0px #000",
+                padding: "8px 14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "0.38rem",
+                color: "var(--arcade-text)",
+                letterSpacing: "0.05em",
+              }}
             >
-              Explore Games
-            </button>
-            <button 
-              onClick={() => navigate('/compare')}
-              className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan hover:text-black transition-all rounded-lg font-semibold text-lg hover:scale-105 transform duration-200"
-            >
-              Start Comparing
-            </button>
-          </div>
+              <span>{chip.icon}</span>
+              <span>{chip.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Buttons */}
+        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center", marginTop: "12px" }}>
+          <PixelBtn onClick={() => navigate('/games')} primary>
+            ▶ EXPLORE GAMES
+          </PixelBtn>
+          <PixelBtn onClick={() => navigate('/compare')}>
+            ⚔ START COMPARING
+          </PixelBtn>
+        </div>
+
+        {/* PRESS START */}
+        <div
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.4rem",
+            color: "var(--arcade-muted)",
+            letterSpacing: "0.08em",
+            marginTop: "8px",
+            animation: "pixel-blink 1.4s steps(1) infinite",
+          }}
+        >
+          — PRESS START —
         </div>
       </div>
     </section>
