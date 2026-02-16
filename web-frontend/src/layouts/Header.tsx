@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/NavigationBar';
+import { ROUTES } from '../routes/routes';
 
 function Header() {
   const navigate = useNavigate();
@@ -33,10 +34,16 @@ function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
-            <button className="text-white hover:text-neon-cyan transition-colors">
+            <button
+              onClick={() => navigate(ROUTES.LOGIN)}
+              className="text-white hover:text-neon-cyan transition-colors"
+            >
               Login
             </button>
-            <button className="px-6 py-2 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold">
+            <button
+              onClick={() => navigate(ROUTES.SIGNUP)}
+              className="px-6 py-2 bg-neon-purple hover:bg-neon-pink transition-all rounded-lg font-semibold"
+            >
               Sign Up
             </button>
           </div>
