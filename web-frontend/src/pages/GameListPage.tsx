@@ -19,25 +19,35 @@ function GameListPage() {
   } = useGameFilters(mockGames);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black py-20 px-6">
-      <div className="container mx-auto max-w-7xl">
-        
+    <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+
         <GamesHeader totalGames={mockGames.length} />
 
         <FilterBar
           searchValue={searchQuery}
-          genreValue={genreFilter}        
-          platformValue={platformFilter}  
-          sortValue={sortBy}              
+          genreValue={genreFilter}
+          platformValue={platformFilter}
+          sortValue={sortBy}
           onSearch={setSearchQuery}
           onGenreFilter={setGenreFilter}
           onPlatformFilter={setPlatformFilter}
           onSort={setSortBy}
         />
 
-        <div className="mb-6">
-          <p className="text-gray-400">
-            Showing {filteredGames.length} {filteredGames.length === 1 ? 'game' : 'games'}
+        <div style={{ marginBottom: "20px" }}>
+          <p
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.4rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.05em",
+              margin: 0,
+            }}
+          >
+            SHOWING{" "}
+            <span style={{ color: "var(--arcade-accent)" }}>{filteredGames.length}</span>
+            {" "}{filteredGames.length === 1 ? 'GAME' : 'GAMES'}
           </p>
         </div>
 

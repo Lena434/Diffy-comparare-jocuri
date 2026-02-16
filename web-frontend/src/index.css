@@ -2,3 +2,97 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Theme Variables ────────────────────────────────────────────────── */
+:root {
+  /* DARK MODE — pixel arcade night scene */
+  --arcade-bg:           #0D0820;   /* deep indigo-black */
+  --arcade-panel:        #1A1040;   /* dark purple panel */
+  --arcade-panel-dark:   #0A0618;   /* near-black for header */
+  --arcade-input-bg:     #130D35;
+  --arcade-border:       #7C4DFF;   /* vibrant arcade purple */
+  --arcade-shadow:       #3A00CC;   /* deep violet pixel shadow */
+  --arcade-shadow-mid:   #5B2DC4;
+  --arcade-h:            #FFE566;   /* yellow star — pixel headings */
+  --arcade-h-shadow:     #7B5400;   /* dark amber shadow for yellow text */
+  --arcade-text:         #C4B0FF;   /* soft lavender text */
+  --arcade-muted:        #8870CC;   /* muted purple */
+  --arcade-dim:          #4A3080;
+  --arcade-accent:       #FF7A00;   /* pixel orange — brand */
+  --arcade-accent-dark:  #7C2D00;
+  --arcade-cta:          #7C4DFF;
+  --arcade-grid-pattern:
+    linear-gradient(rgba(124,77,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,77,255,0.08) 1px, transparent 1px);
+}
+
+[data-theme="light"] {
+  /* LIGHT MODE — soft lavender arcade (from screenshot) */
+  --arcade-bg:           #E8DAFF;   /* pale lilac — from screenshot */
+  --arcade-panel:        #F5F2FF;   /* lighter lavender — cards */
+  --arcade-panel-dark:   #D4CCF0;   /* deeper lavender — header */
+  --arcade-input-bg:     #F0ECFF;
+  --arcade-border:       #9B79E8;   /* medium purple */
+  --arcade-shadow:       #3D1A8C;   /* deep purple pixel shadow */
+  --arcade-shadow-mid:   #6B4DC4;
+  --arcade-h:            #7C4DFF;   /* vibrant purple — headings */
+  --arcade-h-shadow:     #3D1A8C;   /* deep purple heading shadow */
+  --arcade-text:         #4527A0;   /* dark indigo — body text */
+  --arcade-muted:        #7B5EA7;   /* muted purple — secondary text */
+  --arcade-dim:          #C8B8F0;   /* pale purple — dim elements */
+  --arcade-accent:       #FF7A00;   /* pixel orange — brand */
+  --arcade-accent-dark:  #7C2D00;
+  --arcade-cta:          #7C4DFF;   /* vibrant purple CTA */
+  --arcade-grid-pattern:
+    linear-gradient(rgba(124,77,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,77,255,0.08) 1px, transparent 1px);
+}
+
+/* ── Light mode: remove all text shadows ─────────────────────────── */
+[data-theme="light"] * {
+  text-shadow: none !important;
+}
+
+/* ── Global Arcade Background ─────────────────────────────────────── */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--arcade-bg);
+  background-image: var(--arcade-grid-pattern);
+  background-size: 32px 32px;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--arcade-text);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ── Pixel Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track {
+  background: var(--arcade-panel-dark);
+  border-left: 2px solid var(--arcade-shadow);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--arcade-border);
+  border: 2px solid var(--arcade-shadow);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--arcade-accent); }
+
+/* ── Remove default select arrow ─────────────────────────────────── */
+select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+
+/* ── Animations ──────────────────────────────────────────────────── */
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes pixel-glow {
+  0%, 100% { text-shadow: 2px 2px 0px var(--arcade-accent-dark), 0 0 8px rgba(249,115,22,0.4); }
+  50%       { text-shadow: 2px 2px 0px var(--arcade-accent-dark), 0 0 20px rgba(249,115,22,0.8); }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}

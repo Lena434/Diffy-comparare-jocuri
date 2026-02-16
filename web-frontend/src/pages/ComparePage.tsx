@@ -33,8 +33,8 @@ function ComparePage() {
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black py-20 px-6">
-      <div className="container mx-auto max-w-7xl">
+    <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
         
         <CompareHeader />
 
@@ -61,8 +61,19 @@ function ComparePage() {
             <ComparisonTable games={selectedGames} />
           </>
         ) : (
-          <p className="text-center text-gray-400 mt-12">
-            Select at least 2 games to compare
+          <p
+            style={{
+              textAlign: "center",
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.5rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.06em",
+              marginTop: "48px",
+              lineHeight: 1.8,
+              animation: "pixel-blink 1.4s steps(1) infinite",
+            }}
+          >
+            ▸ SELECT AT LEAST 2 GAMES TO COMPARE
           </p>
         )}
       </div>

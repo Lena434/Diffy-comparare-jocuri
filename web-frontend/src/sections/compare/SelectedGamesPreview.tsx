@@ -8,18 +8,32 @@ interface SelectedGamesPreviewProps {
 }
 
 function SelectedGamesPreview({ game1, game2, game3 }: SelectedGamesPreviewProps) {
-  // Calculează câte jocuri sunt selectate
   const gamesCount = [game1, game2, game3].filter(Boolean).length;
-
-  // Grid class dinamic bazat pe numărul de jocuri
-  const gridClass = gamesCount === 2 
-    ? 'grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto'  // 2 jocuri - centrate
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';     // 3 jocuri - full width
+  const maxWidth = gamesCount === 2 ? "860px" : "100%";
 
   return (
-    <div className="mb-12">
-      <h2 className="text-2xl font-bold text-white mb-6">Selected Games</h2>
-      <div className={gridClass}>
+    <div style={{ marginBottom: "40px" }}>
+      <h2
+        style={{
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "0.7rem",
+          color: "var(--arcade-h)",
+          textShadow: "2px 2px 0px var(--arcade-h-shadow)",
+          letterSpacing: "0.08em",
+          marginBottom: "20px",
+        }}
+      >
+        ▸ SELECTED GAMES
+      </h2>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${gamesCount}, 1fr)`,
+          gap: "20px",
+          maxWidth,
+          margin: gamesCount === 2 ? "0 auto" : "0",
+        }}
+      >
         {game1 && <GameCard game={game1} />}
         {game2 && <GameCard game={game2} />}
         {game3 && <GameCard game={game3} />}
