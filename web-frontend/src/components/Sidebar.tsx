@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { useAuth } from "../contexts/AuthContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface SidebarSection {
@@ -254,8 +255,7 @@ function Sidebar() {
   const [toggleHovered, setToggleHovered] = useState(false);
   const navigate = useNavigate();
 
-  // Mock auth state — swap with real auth context when ready
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
 
   const SIDEBAR_WIDTH = 220;
 
