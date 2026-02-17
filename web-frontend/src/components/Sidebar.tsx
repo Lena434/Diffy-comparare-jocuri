@@ -169,11 +169,17 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 // ─── Search Input ─────────────────────────────────────────────────────────────
-function PixelSearchInput() {
+function PixelSearchInput({ onSearch }: { onSearch?: (query: string) => void }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   return (
-    <div style={{ padding: "4px 0" }}>
+    <form
+      style={{ padding: "4px 0" }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (value.trim() && onSearch) onSearch(value.trim());
+      }}
+    >
       <input
         type="text"
         placeholder="SEARCH..."
@@ -195,12 +201,12 @@ function PixelSearchInput() {
           letterSpacing: "0.05em",
         }}
       />
-    </div>
+    </form>
   );
 }
 
 // ─── Price Slider ─────────────────────────────────────────────────────────────
-function PixelSlider({ label }: { label: string }) {
+function PixelSlider({ label, onApply }: { label: string; onApply?: (value: number) => void }) {
   const [value, setValue] = useState(50);
   return (
     <div style={{ padding: "4px 8px" }}>
@@ -220,7 +226,11 @@ function PixelSlider({ label }: { label: string }) {
         min={0}
         max={100}
         value={value}
-        onChange={(e) => setValue(Number(e.target.value))}
+        onChange={(e) => {
+          const v = Number(e.target.value);
+          setValue(v);
+          if (v < 100 && onApply) onApply(v);
+        }}
         style={{
           width: "100%",
           accentColor: "var(--arcade-border)",
@@ -228,29 +238,6 @@ function PixelSlider({ label }: { label: string }) {
         }}
       />
     </div>
-  );
-}
-
-// ─── Rating Chip ──────────────────────────────────────────────────────────────
-function RatingChip({ label }: { label: string }) {
-  const [active, setActive] = useState(false);
-  return (
-    <button
-      onClick={() => setActive((v) => !v)}
-      style={{
-        background: active ? "var(--arcade-cta)" : "transparent",
-        border: `2px solid ${active ? "var(--arcade-text)" : "var(--arcade-shadow)"}`,
-        boxShadow: active ? "2px 2px 0px var(--arcade-shadow)" : "none",
-        color: active ? "var(--arcade-h)" : "var(--arcade-muted)",
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.38rem",
-        padding: "4px 6px",
-        cursor: "pointer",
-        transition: "all 0.1s",
-      }}
-    >
-      {label}
-    </button>
   );
 }
 
@@ -405,7 +392,7 @@ function Sidebar() {
 
           <SectionLabel label="▸ QUICK ACTIONS" />
           <div style={{ padding: "4px 8px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            <PixelSearchInput />
+            <PixelSearchInput onSearch={(q) => handleNav(`${ROUTES.GAMES}?search=${encodeURIComponent(q)}`)} />
             <PixelCTA onClick={() => handleNav(ROUTES.COMPARE)}>
               ⚔ START COMPARING
             </PixelCTA>
@@ -423,59 +410,41 @@ function Sidebar() {
 
           <SectionLabel label="▸ BROWSE" />
           <NavItem icon="🎲" label="ALL GAMES" onClick={() => handleNav(ROUTES.GAMES)} />
-          <NavItem icon="🔥" label="TRENDING NOW" />
-          <NavItem icon="🆕" label="NEW RELEASES" />
-          <NavItem icon="🏆" label="TOP RATED" />
-          <NavItem icon="💰" label="FREE TO PLAY" />
+          <NavItem icon="🔥" label="TRENDING NOW" onClick={() => handleNav(`${ROUTES.GAMES}?sort=rating`)} />
+          <NavItem icon="🆕" label="NEW RELEASES" onClick={() => handleNav(`${ROUTES.GAMES}?sort=year`)} />
+          <NavItem icon="🏆" label="TOP RATED" onClick={() => handleNav(`${ROUTES.GAMES}?sort=rating`)} />
+          <NavItem icon="💰" label="FREE TO PLAY" onClick={() => handleNav(`${ROUTES.GAMES}?maxPrice=0`)} />
           <NavItem icon="🎯" label="MOST COMPARED" onClick={() => handleNav(ROUTES.COMPARE)} />
 
           <SectionLabel label="▸ CATEGORIES" />
           <CollapsibleSection icon="🎭" label="BY GENRE">
-            <NavItem icon="🔫" label="FPS / SHOOTER" />
-            <NavItem icon="⚔️" label="RPG" />
-            <NavItem icon="🏃" label="ACTION / ADV." />
-            <NavItem icon="♟️" label="STRATEGY" />
-            <NavItem icon="🚜" label="SIMULATION" />
-            <NavItem icon="🍄" label="PLATFORMER" />
-            <NavItem icon="👁️" label="HORROR" />
+            <NavItem icon="🔫" label="FPS / SHOOTER" onClick={() => handleNav(`${ROUTES.GAMES}?genre=FPS`)} />
+            <NavItem icon="⚔️" label="RPG" onClick={() => handleNav(`${ROUTES.GAMES}?genre=RPG`)} />
+            <NavItem icon="🏃" label="ACTION / ADV." onClick={() => handleNav(`${ROUTES.GAMES}?genre=Action`)} />
+            <NavItem icon="♟️" label="STRATEGY" onClick={() => handleNav(`${ROUTES.GAMES}?genre=Strategy`)} />
+            <NavItem icon="🚜" label="SIMULATION" onClick={() => handleNav(`${ROUTES.GAMES}?genre=Simulation`)} />
+            <NavItem icon="🍄" label="PLATFORMER" onClick={() => handleNav(`${ROUTES.GAMES}?genre=Platformer`)} />
+            <NavItem icon="👁️" label="HORROR" onClick={() => handleNav(`${ROUTES.GAMES}?genre=Horror`)} />
           </CollapsibleSection>
           <CollapsibleSection icon="🖥️" label="BY PLATFORM">
-            <NavItem icon="💻" label="PC" />
-            <NavItem icon="🎮" label="PLAYSTATION" />
-            <NavItem icon="🟩" label="XBOX" />
-            <NavItem icon="🔴" label="NINTENDO SWITCH" />
-            <NavItem icon="📱" label="MOBILE" />
-            <NavItem icon="🌐" label="CROSS-PLATFORM" />
+            <NavItem icon="💻" label="PC" onClick={() => handleNav(`${ROUTES.GAMES}?platform=PC`)} />
+            <NavItem icon="🎮" label="PLAYSTATION" onClick={() => handleNav(`${ROUTES.GAMES}?platform=PlayStation`)} />
+            <NavItem icon="🟩" label="XBOX" onClick={() => handleNav(`${ROUTES.GAMES}?platform=Xbox`)} />
+            <NavItem icon="🔴" label="NINTENDO SWITCH" onClick={() => handleNav(`${ROUTES.GAMES}?platform=Switch`)} />
+            <NavItem icon="📱" label="MOBILE" onClick={() => handleNav(`${ROUTES.GAMES}?platform=Mobile`)} />
+            <NavItem icon="🌐" label="CROSS-PLATFORM" onClick={() => handleNav(ROUTES.GAMES)} />
           </CollapsibleSection>
 
           <SectionLabel label="▸ FILTERS" />
-          <PixelSlider label="PRICE MAX" />
-          <div style={{ padding: "4px 8px" }}>
-            <div
-              style={{
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: "0.38rem",
-                color: "var(--arcade-text)",
-                marginBottom: "6px",
-                letterSpacing: "0.04em",
-              }}
-            >
-              MIN RATING
-            </div>
-            <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-              {["4+★", "3+★", "ANY"].map((r) => (
-                <RatingChip key={r} label={r} />
-              ))}
-            </div>
-          </div>
-          <NavItem icon="👥" label="MULTIPLAYER" />
-          <NavItem icon="🧍" label="SINGLE-PLAYER" />
+          <PixelSlider label="PRICE MAX" onApply={(val) => handleNav(`${ROUTES.GAMES}?maxPrice=${val}`)} />
+          <NavItem icon="👥" label="MULTIPLAYER" onClick={() => handleNav(`${ROUTES.GAMES}?mode=multiplayer`)} />
+          <NavItem icon="🧍" label="SINGLE-PLAYER" onClick={() => handleNav(`${ROUTES.GAMES}?mode=single`)} />
 
           <SectionLabel label="▸ RESOURCES" />
-          <NavItem icon="📖" label="HOW TO COMPARE" />
-          <NavItem icon="📝" label="BLOG & NEWS" />
-          <NavItem icon="💬" label="COMMUNITY" />
-          <NavItem icon="❓" label="HELP & FAQ" />
+          <NavItem icon="📖" label="HOW TO COMPARE" onClick={() => handleNav(ROUTES.COMPARE)} />
+          <NavItem icon="📝" label="BLOG & NEWS" onClick={() => handleNav(ROUTES.ABOUT)} />
+          <NavItem icon="💬" label="COMMUNITY" onClick={() => handleNav(ROUTES.ABOUT)} />
+          <NavItem icon="❓" label="HELP & FAQ" onClick={() => handleNav(ROUTES.ABOUT)} />
 
           {!isAuthenticated && (
             <>

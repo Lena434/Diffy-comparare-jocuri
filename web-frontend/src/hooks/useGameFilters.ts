@@ -5,21 +5,36 @@ import type { Game } from '../_mock/games';
 export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
   const [searchParams] = useSearchParams();
   const urlSearchQuery = searchParams.get('search') || '';
+  const urlGenre = searchParams.get('genre') || '';
+  const urlPlatform = searchParams.get('platform') || '';
+  const urlSort = searchParams.get('sort') || '';
+  const urlMode = searchParams.get('mode') || '';
+  const urlMaxPrice = searchParams.get('maxPrice') || '';
 
   const [searchQuery, setSearchQuery] = useState(urlSearchQuery);
-  const [genreFilter, setGenreFilter] = useState('All');
-  const [platformFilter, setPlatformFilter] = useState('All');
-  const [sortBy, setSortBy] = useState('title');
+  const [genreFilter, setGenreFilter] = useState(urlGenre || 'All');
+  const [platformFilter, setPlatformFilter] = useState(urlPlatform || 'All');
+  const [sortBy, setSortBy] = useState(urlSort || 'title');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Update search when URL changes
+  // Sync state from URL params when they change
   useEffect(() => {
-    if (urlSearchQuery) {
-      setSearchQuery(urlSearchQuery);
-    }
+    if (urlSearchQuery) setSearchQuery(urlSearchQuery);
   }, [urlSearchQuery]);
 
-  // Filter and sort games (TOATE jocurile filtrate, înainte de paginare)
+  useEffect(() => {
+    if (urlGenre) setGenreFilter(urlGenre);
+  }, [urlGenre]);
+
+  useEffect(() => {
+    if (urlPlatform) setPlatformFilter(urlPlatform);
+  }, [urlPlatform]);
+
+  useEffect(() => {
+    if (urlSort) setSortBy(urlSort);
+  }, [urlSort]);
+
+  // Filter and sort games
   const allFilteredGames = useMemo(() => {
     let filtered = [...games];
 
@@ -40,6 +55,23 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
       filtered = filtered.filter((game) => game.platform.includes(platformFilter));
     }
 
+    // Game mode filter (from URL)
+    if (urlMode) {
+      filtered = filtered.filter((game) =>
+        game.gameMode.some((m) => m.toLowerCase().includes(urlMode.toLowerCase()))
+      );
+    }
+
+    // Max price filter (from URL)
+    if (urlMaxPrice) {
+      const max = Number(urlMaxPrice);
+      if (!isNaN(max)) {
+        filtered = filtered.filter((game) =>
+          game.price !== undefined && game.price <= max
+        );
+      }
+    }
+
     // Sort
     filtered.sort((a, b) => {
       if (sortBy === 'title') {
@@ -53,22 +85,22 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
     });
 
     return filtered;
-  }, [games, searchQuery, genreFilter, platformFilter, sortBy]);
+  }, [games, searchQuery, genreFilter, platformFilter, sortBy, urlMode, urlMaxPrice]);
 
-  // Calculează numărul total de pagini
+  // Total pages
   const totalPages = Math.ceil(allFilteredGames.length / gamesPerPage);
 
-  // Jocurile pentru pagina curentă
+  // Current page games
   const paginatedGames = useMemo(() => {
     const startIndex = (currentPage - 1) * gamesPerPage;
     const endIndex = startIndex + gamesPerPage;
     return allFilteredGames.slice(startIndex, endIndex);
   }, [allFilteredGames, currentPage, gamesPerPage]);
 
-  // Reset la pagina 1 când se schimbă filtrele
+  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, genreFilter, platformFilter, sortBy]);
+  }, [searchQuery, genreFilter, platformFilter, sortBy, urlMode, urlMaxPrice]);
 
   const clearFilters = () => {
     setSearchQuery('');
