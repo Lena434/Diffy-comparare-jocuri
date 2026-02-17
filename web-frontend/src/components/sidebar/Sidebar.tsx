@@ -1,252 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ROUTES } from "../routes/routes";
-import { useIsMobile } from "../hooks/useIsMobile";
+import { ROUTES } from "../../routes/routes";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { useSidebar } from "../../contexts/SidebarContext";
+import PixelCTA from "./PixelCTA";
+import NavItem from "./NavItem";
+import CollapsibleSection from "./CollapsibleSection";
+import SectionLabel from "./SectionLabel";
+import PixelSearchInput from "./PixelSearchInput";
+import PixelSlider from "./PixelSlider";
 
-
-// ─── Pixel Button ─────────────────────────────────────────────────────────────
-function PixelCTA({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
-  const [pressed, setPressed] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
-      style={{
-        width: "100%",
-        background: hovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-        border: `2px solid ${hovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-        boxShadow: pressed ? "0px 0px 0px var(--arcade-shadow)" : "3px 3px 0px var(--arcade-shadow)",
-        transform: pressed ? "translate(3px,3px)" : "translate(0,0)",
-        color: "#fff",
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.5rem",
-        padding: "10px 8px",
-        cursor: "pointer",
-        letterSpacing: "0.06em",
-        transition: "background 0.1s, border-color 0.1s",
-        textAlign: "center",
-        display: "block",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-// ─── Pixel Nav Item ───────────────────────────────────────────────────────────
-function NavItem({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: string;
-  label: string;
-  onClick?: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        background: hovered ? "rgba(139,92,246,0.15)" : "transparent",
-        border: hovered ? "2px solid var(--arcade-border)" : "2px solid transparent",
-        boxShadow: hovered ? "2px 2px 0px var(--arcade-shadow)" : "none",
-        color: hovered ? "var(--arcade-h)" : "var(--arcade-text)",
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.45rem",
-        padding: "7px 8px",
-        cursor: "pointer",
-        letterSpacing: "0.04em",
-        transition: "all 0.1s",
-        textAlign: "left",
-        lineHeight: 1.6,
-      }}
-    >
-      <span style={{ fontSize: "0.75rem", minWidth: "16px" }}>{icon}</span>
-      <span>{label}</span>
-    </button>
-  );
-}
-
-// ─── Collapsible Section ──────────────────────────────────────────────────────
-function CollapsibleSection({
-  icon,
-  label,
-  children,
-}: {
-  icon: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: hovered ? "rgba(139,92,246,0.1)" : "transparent",
-          border: "none",
-          color: "var(--arcade-border)",
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.42rem",
-          padding: "6px 8px",
-          cursor: "pointer",
-          letterSpacing: "0.05em",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ fontSize: "0.7rem" }}>{icon}</span>
-          <span>{label}</span>
-        </span>
-        <span
-          style={{
-            fontSize: "0.55rem",
-            color: "var(--arcade-shadow-mid)",
-            transform: open ? "rotate(90deg)" : "rotate(0deg)",
-            transition: "transform 0.15s",
-            display: "inline-block",
-          }}
-        >
-          ▶
-        </span>
-      </button>
-      {open && (
-        <div
-          style={{
-            paddingLeft: "12px",
-            borderLeft: "2px solid var(--arcade-shadow)",
-            marginLeft: "8px",
-            marginBottom: "4px",
-          }}
-        >
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Section Divider ──────────────────────────────────────────────────────────
-function SectionLabel({ label }: { label: string }) {
-  return (
-    <div
-      style={{
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.38rem",
-        color: "var(--arcade-shadow-mid)",
-        letterSpacing: "0.1em",
-        padding: "10px 8px 4px",
-        borderBottom: "1px dashed var(--arcade-shadow)",
-        marginBottom: "4px",
-      }}
-    >
-      {label}
-    </div>
-  );
-}
-
-// ─── Search Input ─────────────────────────────────────────────────────────────
-function PixelSearchInput({ onSearch }: { onSearch?: (query: string) => void }) {
-  const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState("");
-  return (
-    <form
-      style={{ padding: "4px 0" }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (value.trim() && onSearch) onSearch(value.trim());
-      }}
-    >
-      <input
-        type="text"
-        placeholder="SEARCH..."
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          width: "100%",
-          background: "var(--arcade-input-bg)",
-          border: `2px solid ${focused ? "var(--arcade-accent)" : "var(--arcade-border)"}`,
-          boxShadow: `2px 2px 0px var(--arcade-shadow)`,
-          color: "var(--arcade-h)",
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.45rem",
-          padding: "8px 10px",
-          outline: "none",
-          boxSizing: "border-box",
-          letterSpacing: "0.05em",
-        }}
-      />
-    </form>
-  );
-}
-
-// ─── Price Slider ─────────────────────────────────────────────────────────────
-function PixelSlider({ label, onApply }: { label: string; onApply?: (value: number) => void }) {
-  const [value, setValue] = useState(50);
-  return (
-    <div style={{ padding: "4px 8px" }}>
-      <div
-        style={{
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.38rem",
-          color: "var(--arcade-text)",
-          marginBottom: "6px",
-          letterSpacing: "0.04em",
-        }}
-      >
-        {label}: {value === 100 ? "ANY" : `$${value}`}
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={value}
-        onChange={(e) => {
-          const v = Number(e.target.value);
-          setValue(v);
-          if (v < 100 && onApply) onApply(v);
-        }}
-        style={{
-          width: "100%",
-          accentColor: "var(--arcade-border)",
-          cursor: "pointer",
-        }}
-      />
-    </div>
-  );
-}
-
-// ─── Main Sidebar ─────────────────────────────────────────────────────────────
 export const SIDEBAR_WIDTH = 220;
 
 function Sidebar() {
   const isMobile = useIsMobile();
-  const [open, setOpen] = useState(!isMobile);
+  const { open, setOpen } = useSidebar();
   const [toggleHovered, setToggleHovered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -485,7 +253,7 @@ function Sidebar() {
               letterSpacing: "0.05em",
             }}
           >
-            © DIFFY 2025
+            © DIFFY 2026
           </span>
         </div>
       </aside>

@@ -9,10 +9,12 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import { ROUTES } from "./routes/routes";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
 
 function App() {
   return (
     <ThemeProvider>
+    <SidebarProvider>
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
@@ -24,6 +26,7 @@ function App() {
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
     </Routes>
+    </SidebarProvider>
     </ThemeProvider>
   );
 }
