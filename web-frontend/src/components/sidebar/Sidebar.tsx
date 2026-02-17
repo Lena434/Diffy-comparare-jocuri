@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../routes/routes";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useSidebar } from "../../contexts/SidebarContext";
+import { useAuth } from "../../contexts/AuthContext";
 import PixelCTA from "./PixelCTA";
 import NavItem from "./NavItem";
 import CollapsibleSection from "./CollapsibleSection";
@@ -29,7 +30,7 @@ function Sidebar() {
     setOpen(!isMobile);
   }, [isMobile]);
 
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAuth();
 
   const handleNav = (route: string) => {
     navigate(route);
@@ -169,9 +170,9 @@ function Sidebar() {
           {isAuthenticated && (
             <>
               <SectionLabel label="▸ DASHBOARD" />
-              <NavItem icon="🏠" label="MY DASHBOARD" />
-              <NavItem icon="⭐" label="SAVED GAMES" />
-              <NavItem icon="📈" label="RECENT COMPARISONS" />
+              <NavItem icon="🏠" label="MY DASHBOARD" onClick={() => handleNav(ROUTES.FAVORITES)} />
+              <NavItem icon="⭐" label="SAVED GAMES" onClick={() => handleNav(ROUTES.FAVORITES)} />
+              <NavItem icon="📈" label="RECENT COMPARISONS" onClick={() => handleNav(ROUTES.FAVORITES)} />
               <NavItem icon="🔔" label="NOTIFICATIONS" />
             </>
           )}

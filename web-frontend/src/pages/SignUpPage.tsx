@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { useAuth } from "../contexts/AuthContext";
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const { signup } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +19,11 @@ function SignUpPage() {
       return;
     }
     setError("");
-    // TODO: integrate with backend auth
+    const err = signup(username, email, password);
+    if (err) {
+      setError(err);
+      return;
+    }
     navigate(ROUTES.HOME);
   };
 
@@ -154,6 +160,33 @@ function SignUpPage() {
             </Link>
           </p>
         </div>
+
+        {/* Back button */}
+        <button
+          onClick={() => navigate(ROUTES.HOME)}
+          style={{
+            display: "block",
+            margin: "16px auto 0",
+            background: "transparent",
+            border: "2px solid var(--arcade-shadow)",
+            color: "var(--arcade-muted)",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.45rem",
+            padding: "8px 16px",
+            cursor: "pointer",
+            letterSpacing: "0.06em",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--arcade-border)";
+            e.currentTarget.style.color = "var(--arcade-h)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--arcade-shadow)";
+            e.currentTarget.style.color = "var(--arcade-muted)";
+          }}
+        >
+          ◀ BACK
+        </button>
 
         {/* Flashing hint */}
         <p

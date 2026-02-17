@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/NavigationBar';
 import { ROUTES } from '../routes/routes';
 import { useTheme, type Theme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 
 // ── Pixel button (auth) ───────────────────────────────────────────────────────
@@ -96,6 +97,7 @@ function ThemeChip({
 function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { currentUser, isAuthenticated, logout } = useAuth();
   const isMobile = useIsMobile();
 
   return (
@@ -210,13 +212,34 @@ function Header() {
 
           {/* Auth Buttons - hidden on mobile (available in sidebar) */}
           {!isMobile && (
-            <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-              <PixelHeaderBtn onClick={() => navigate(ROUTES.LOGIN)}>
-                ▶ LOGIN
-              </PixelHeaderBtn>
-              <PixelHeaderBtn onClick={() => navigate(ROUTES.SIGNUP)} primary>
-                + SIGN UP
-              </PixelHeaderBtn>
+            <div style={{ display: "flex", gap: "8px", flexShrink: 0, alignItems: "center" }}>
+              {isAuthenticated ? (
+                <>
+                  <span
+                    style={{
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: "0.4rem",
+                      color: "var(--arcade-h)",
+                      letterSpacing: "0.05em",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    🎮 {currentUser?.username.toUpperCase()}
+                  </span>
+                  <PixelHeaderBtn onClick={logout}>
+                    ✕ LOGOUT
+                  </PixelHeaderBtn>
+                </>
+              ) : (
+                <>
+                  <PixelHeaderBtn onClick={() => navigate(ROUTES.LOGIN)}>
+                    ▶ LOGIN
+                  </PixelHeaderBtn>
+                  <PixelHeaderBtn onClick={() => navigate(ROUTES.SIGNUP)} primary>
+                    + SIGN UP
+                  </PixelHeaderBtn>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mockGames } from '../_mock/games';
 import GameCard from '../components/GameCard';
+import { useAuth } from '../contexts/AuthContext';
+import { useFavorites } from '../contexts/FavoritesContext';
+import { ROUTES } from '../routes/routes';
 
 function GameDetailsPage() {
   const { id } = useParams();
@@ -11,6 +14,8 @@ function GameDetailsPage() {
   const [favHovered, setFavHovered] = useState(false);
   const [favPressed, setFavPressed] = useState(false);
   const [backHovered, setBackHovered] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
 
   const game = mockGames.find(g => g.id === Number(id));
 
@@ -434,14 +439,24 @@ function GameDetailsPage() {
               </button>
 
               <button
-                onClick={() => alert('Added to Favorites! (Mock)')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate(ROUTES.LOGIN);
+                    return;
+                  }
+                  toggleFavoriteGame(game.id);
+                }}
                 onMouseEnter={() => setFavHovered(true)}
                 onMouseLeave={() => { setFavHovered(false); setFavPressed(false); }}
                 onMouseDown={() => setFavPressed(true)}
                 onMouseUp={() => setFavPressed(false)}
                 style={{
                   flex: "1 1 200px",
-                  background: favHovered ? "var(--arcade-accent)" : "rgba(236, 72, 153, 0.8)",
+                  background: favHovered
+                    ? "var(--arcade-accent)"
+                    : (isAuthenticated && isFavoriteGame(game.id))
+                      ? "rgba(239,68,68,0.8)"
+                      : "rgba(236, 72, 153, 0.8)",
                   border: `3px solid ${favHovered ? "var(--arcade-h)" : "rgba(219, 39, 119, 0.9)"}`,
                   boxShadow: favPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
                   transform: favPressed ? "translate(4px,4px)" : "translate(0,0)",
@@ -458,8 +473,8 @@ function GameDetailsPage() {
                   gap: "8px",
                 }}
               >
-                <span>❤️</span>
-                <span>FAVORITE</span>
+                <span>{isAuthenticated && isFavoriteGame(game.id) ? "❤" : "🤍"}</span>
+                <span>{isAuthenticated && isFavoriteGame(game.id) ? "UNFAVORITE" : "FAVORITE"}</span>
               </button>
             </div>
           </div>

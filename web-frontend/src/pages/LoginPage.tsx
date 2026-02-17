@@ -1,15 +1,23 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { useAuth } from "../contexts/AuthContext";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: integrate with backend auth
+    setError("");
+    const err = login(email, password);
+    if (err) {
+      setError(err);
+      return;
+    }
     navigate(ROUTES.HOME);
   };
 
@@ -92,6 +100,20 @@ function LoginPage() {
               placeholder="••••••••"
             />
 
+            {error && (
+              <p
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "0.45rem",
+                  color: "#f87171",
+                  textShadow: "1px 1px 0 #7f1d1d",
+                  lineHeight: 1.8,
+                }}
+              >
+                &#9888; {error}
+              </p>
+            )}
+
             <div className="pt-2">
               <PixelButton type="submit" label="START GAME" />
             </div>
@@ -118,6 +140,33 @@ function LoginPage() {
             </Link>
           </p>
         </div>
+
+        {/* Back button */}
+        <button
+          onClick={() => navigate(ROUTES.HOME)}
+          style={{
+            display: "block",
+            margin: "16px auto 0",
+            background: "transparent",
+            border: "2px solid var(--arcade-shadow)",
+            color: "var(--arcade-muted)",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.45rem",
+            padding: "8px 16px",
+            cursor: "pointer",
+            letterSpacing: "0.06em",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--arcade-border)";
+            e.currentTarget.style.color = "var(--arcade-h)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--arcade-shadow)";
+            e.currentTarget.style.color = "var(--arcade-muted)";
+          }}
+        >
+          ◀ BACK
+        </button>
 
         {/* Flashing hint */}
         <p

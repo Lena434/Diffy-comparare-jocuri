@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Game } from '../_mock/games';
+import { useAuth } from '../contexts/AuthContext';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 interface GameCardProps {
   game: Game;
@@ -8,6 +10,10 @@ interface GameCardProps {
 
 function GameCard({ game }: GameCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [favHovered, setFavHovered] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
+  const isFav = isAuthenticated && isFavoriteGame(game.id);
 
   return (
     <Link
@@ -95,6 +101,39 @@ function GameCard({ game }: GameCardProps) {
         >
           {game.releaseYear}
         </div>
+        {/* Favorite heart */}
+        {isAuthenticated && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavoriteGame(game.id);
+            }}
+            onMouseEnter={() => setFavHovered(true)}
+            onMouseLeave={() => setFavHovered(false)}
+            style={{
+              position: "absolute",
+              bottom: "8px",
+              right: "8px",
+              background: isFav || favHovered ? "rgba(239,68,68,0.9)" : "var(--arcade-input-bg)",
+              border: `2px solid ${isFav ? "#f87171" : "var(--arcade-shadow)"}`,
+              boxShadow: "2px 2px 0px var(--arcade-shadow)",
+              width: "28px",
+              height: "28px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: "0.7rem",
+              padding: 0,
+              transition: "background 0.1s, border-color 0.1s",
+              zIndex: 2,
+            }}
+            title={isFav ? "Remove from favorites" : "Add to favorites"}
+          >
+            {isFav ? "❤" : "🤍"}
+          </button>
+        )}
       </div>
 
       {/* Content */}
