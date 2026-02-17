@@ -29,7 +29,7 @@ function GameSelector({
     }));
 
   const game1Options = [
-    { value: '', label: 'Select a game' },  // ← ADAUGĂ
+    { value: '', label: 'Select a game' },  
     ...game1AvailableGames
   ];
 
@@ -41,7 +41,7 @@ function GameSelector({
     }));
 
   const game2Options = [
-    { value: '', label: 'Select a game' },  // ← ADAUGĂ
+    { value: '', label: 'Select a game' },  
     ...game2AvailableGames
   ];
 

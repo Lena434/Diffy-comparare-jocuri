@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Game } from '../_mock/games';
 
 interface GameCardProps {
@@ -9,7 +10,8 @@ function GameCard({ game }: GameCardProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <Link
+      to={`/games/${game.id}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -24,6 +26,8 @@ function GameCard({ game }: GameCardProps) {
         display: "flex",
         flexDirection: "column",
         position: "relative",
+        textDecoration: "none",
+        cursor: "pointer",
       }}
     >
       {/* Image */}
@@ -173,7 +177,7 @@ function GameCard({ game }: GameCardProps) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

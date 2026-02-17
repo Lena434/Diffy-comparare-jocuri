@@ -96,3 +96,10 @@ select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
 }
+
+/* ── Mobile Responsive ───────────────────────────────────────────── */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+  }
+}

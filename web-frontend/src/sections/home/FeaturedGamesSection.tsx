@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { mockGames } from '../../_mock/games';
 import GameCard from '../../components/GameCard';
+import { ROUTES } from '../../routes/routes';
 
 function FeaturedGamesSection() {
   const [btnHovered, setBtnHovered] = useState(false);
@@ -64,20 +66,23 @@ function FeaturedGamesSection() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))",
             gap: "20px",
             marginBottom: "36px",
           }}
         >
-          {mockGames.map((game) => (
-            <GameCard key={game.id} game={game} />
-          ))}
+          {[...mockGames]
+            .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+            .slice(0, 4)
+            .map((game) => (
+              <GameCard key={game.id} game={game} />
+            ))}
         </div>
 
         {/* View All Button */}
         <div style={{ textAlign: "center" }}>
-          <button
-            onClick={() => (window.location.href = '/games')}
+          <Link
+            to={ROUTES.GAMES}
             onMouseEnter={() => setBtnHovered(true)}
             onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
             onMouseDown={() => setBtnPressed(true)}
@@ -94,10 +99,12 @@ function FeaturedGamesSection() {
               cursor: "pointer",
               letterSpacing: "0.08em",
               transition: "background 0.08s, border-color 0.08s",
+              textDecoration: "none",
+              display: "inline-block",
             }}
           >
             ▶ VIEW ALL GAMES
-          </button>
+          </Link>
         </div>
       </div>
     </section>

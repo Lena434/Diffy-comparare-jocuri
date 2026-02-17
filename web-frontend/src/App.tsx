@@ -3,25 +3,32 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import GameListPage from "./pages/GameListPage";
 import ComparePage from "./pages/ComparePage";
+import GameDetailsPage from "./pages/GameDetailsPage";
+import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import { ROUTES } from "./routes/routes";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
 
 function App() {
   return (
     <ThemeProvider>
     <AuthProvider>
+    <SidebarProvider>
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route path={ROUTES.GAMES} element={<GameListPage />} />
-        <Route path={ROUTES.COMPARE} element={<ComparePage />} />
+        <Route path="/games" element={<GameListPage />} />
+        <Route path="/games/:id" element={<GameDetailsPage />} />
+        <Route path="/compare" element={<ComparePage />} />
+        <Route path="/about" element={<AboutPage />} />
       </Route>
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
     </Routes>
+    </SidebarProvider>
     </AuthProvider>
     </ThemeProvider>
   );

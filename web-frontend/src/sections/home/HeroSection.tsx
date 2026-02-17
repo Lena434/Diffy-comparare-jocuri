@@ -34,7 +34,7 @@ function PixelBtn({
         cursor: "pointer",
         letterSpacing: "0.08em",
         transition: "background 0.08s, border-color 0.08s, color 0.08s",
-        minWidth: "180px",
+        minWidth: "140px",
       }}
     >
       {children}

@@ -8,6 +8,9 @@ export interface Game {
   gameMode: string[];
   image: string;
   description: string;
+  developer?: string;
+  publisher?: string;
+  price?: number;
 }
 
 export const mockGames: Game[] = [
@@ -20,7 +23,10 @@ export const mockGames: Game[] = [
     releaseYear: 2020,
     gameMode: ["Single-player", "Online"],
     image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop",
-    description: "Open-world action RPG set in Night City"
+    description: "Open-world action RPG set in Night City",
+    developer: "CD Projekt Red",
+    publisher: "CD Projekt",
+    price: 59.99
   },
   {
     id: 2,
@@ -31,7 +37,10 @@ export const mockGames: Game[] = [
     releaseYear: 2016,
     gameMode: ["Single-player", "Co-op"],
     image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop",
-    description: "Farming simulation with RPG elements"
+    description: "Farming simulation with RPG elements",
+    developer: "ConcernedApe",
+    publisher: "ConcernedApe",
+    price: 14.99
   },
   {
     id: 3,
@@ -42,7 +51,10 @@ export const mockGames: Game[] = [
     releaseYear: 2023,
     gameMode: ["Multiplayer"],
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop",
-    description: "Tactical first-person shooter"
+    description: "Tactical first-person shooter",
+    developer: "Valve",
+    publisher: "Valve",
+    price: 0
   },
   {
     id: 4,
@@ -53,6 +65,233 @@ export const mockGames: Game[] = [
     releaseYear: 2017,
     gameMode: ["Single-player"],
     image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop",
-    description: "Hand-drawn action-adventure"
+    description: "Hand-drawn action-adventure",
+    developer: "Team Cherry",
+    publisher: "Team Cherry",
+    price: 14.99
+  },
+  {
+    id: 5,
+    title: "The Witcher 3: Wild Hunt",
+    genre: ["RPG", "Action"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch"],
+    rating: 4.9,
+    releaseYear: 2015,
+    gameMode: ["Single-player"],
+    image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&h=600&fit=crop",
+    description: "Epic fantasy RPG with rich storytelling",
+    developer: "CD Projekt Red",
+    publisher: "CD Projekt",
+    price: 39.99
+  },
+  {
+    id: 6,
+    title: "Minecraft",
+    genre: ["Sandbox", "Survival"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch", "Mobile"],
+    rating: 4.7,
+    releaseYear: 2011,
+    gameMode: ["Single-player", "Multiplayer"],
+    image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800&h=600&fit=crop",
+    description: "Creative sandbox building game",
+    developer: "Mojang Studios",
+    publisher: "Microsoft",
+    price: 26.95
+  },
+  {
+    id: 7,
+    title: "Elden Ring",
+    genre: ["RPG", "Action"],
+    platform: ["PC", "PlayStation", "Xbox"],
+    rating: 4.6,
+    releaseYear: 2022,
+    gameMode: ["Single-player", "Online"],
+    image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop",
+    description: "Souls-like action RPG in open world",
+    developer: "FromSoftware",
+    publisher: "Bandai Namco",
+    price: 59.99
+  },
+  {
+    id: 8,
+    title: "League of Legends",
+    genre: ["MOBA", "Competitive"],
+    platform: ["PC"],
+    rating: 4.3,
+    releaseYear: 2009,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&h=600&fit=crop",
+    description: "Multiplayer online battle arena",
+    developer: "Riot Games",
+    publisher: "Riot Games",
+    price: 0
+  },
+  {
+    id: 9,
+    title: "Red Dead Redemption 2",
+    genre: ["Action", "Adventure"],
+    platform: ["PC", "PlayStation", "Xbox"],
+    rating: 4.8,
+    releaseYear: 2018,
+    gameMode: ["Single-player", "Online"],
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop",
+    description: "Epic tale of life in America's unforgiving heartland",
+    developer: "Rockstar Games",
+    publisher: "Rockstar Games",
+    price: 59.99
+  },
+  {
+    id: 10,
+    title: "Valorant",
+    genre: ["FPS", "Competitive"],
+    platform: ["PC"],
+    rating: 4.4,
+    releaseYear: 2020,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&h=600&fit=crop",
+    description: "Character-based tactical shooter",
+    developer: "Riot Games",
+    publisher: "Riot Games",
+    price: 0
+  },
+  {
+    id: 11,
+    title: "Animal Crossing: New Horizons",
+    genre: ["Simulation", "Social"],
+    platform: ["Switch"],
+    rating: 4.7,
+    releaseYear: 2020,
+    gameMode: ["Single-player", "Online"],
+    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=600&fit=crop",
+    description: "Life simulation game on a deserted island",
+    developer: "Nintendo",
+    publisher: "Nintendo",
+    price: 59.99
+  },
+  {
+    id: 12,
+    title: "Dark Souls III",
+    genre: ["RPG", "Action"],
+    platform: ["PC", "PlayStation", "Xbox"],
+    rating: 4.6,
+    releaseYear: 2016,
+    gameMode: ["Single-player", "Online"],
+    image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop",
+    description: "Challenging action RPG with dark fantasy setting",
+    developer: "FromSoftware",
+    publisher: "Bandai Namco",
+    price: 39.99
+  },
+  {
+    id: 13,
+    title: "Overwatch 2",
+    genre: ["FPS", "Hero Shooter"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch"],
+    rating: 4.2,
+    releaseYear: 2022,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&h=600&fit=crop",
+    description: "Team-based hero shooter",
+    developer: "Blizzard",
+    publisher: "Blizzard",
+    price: 0
+  },
+  {
+    id: 14,
+    title: "Terraria",
+    genre: ["Sandbox", "Adventure"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch", "Mobile"],
+    rating: 4.8,
+    releaseYear: 2011,
+    gameMode: ["Single-player", "Multiplayer"],
+    image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800&h=600&fit=crop",
+    description: "2D sandbox adventure game",
+    developer: "Re-Logic",
+    publisher: "Re-Logic",
+    price: 9.99
+  },
+  {
+    id: 15,
+    title: "Celeste",
+    genre: ["Platformer", "Indie"],
+    platform: ["PC", "Switch", "PlayStation", "Xbox"],
+    rating: 4.9,
+    releaseYear: 2018,
+    gameMode: ["Single-player"],
+    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop",
+    description: "Challenging platformer about climbing a mountain",
+    developer: "Maddy Makes Games",
+    publisher: "Maddy Makes Games",
+    price: 19.99
+  },
+  {
+    id: 16,
+    title: "Among Us",
+    genre: ["Social", "Party"],
+    platform: ["PC", "Mobile", "Switch", "PlayStation", "Xbox"],
+    rating: 4.1,
+    releaseYear: 2018,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=600&fit=crop",
+    description: "Social deduction multiplayer game",
+    developer: "InnerSloth",
+    publisher: "InnerSloth",
+    price: 5.00
+  },
+  {
+    id: 17,
+    title: "Hades",
+    genre: ["Roguelike", "Action"],
+    platform: ["PC", "Switch", "PlayStation", "Xbox"],
+    rating: 4.8,
+    releaseYear: 2020,
+    gameMode: ["Single-player"],
+    image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop",
+    description: "Rogue-like dungeon crawler from Greek mythology",
+    developer: "Supergiant Games",
+    publisher: "Supergiant Games",
+    price: 24.99
+  },
+  {
+    id: 18,
+    title: "Apex Legends",
+    genre: ["Battle Royale", "FPS"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch"],
+    rating: 4.3,
+    releaseYear: 2019,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&h=600&fit=crop",
+    description: "Free-to-play battle royale shooter",
+    developer: "Respawn",
+    publisher: "EA",
+    price: 0
+  },
+  {
+    id: 19,
+    title: "Portal 2",
+    genre: ["Puzzle", "Platformer"],
+    platform: ["PC", "PlayStation", "Xbox"],
+    rating: 4.9,
+    releaseYear: 2011,
+    gameMode: ["Single-player", "Co-op"],
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop",
+    description: "Mind-bending puzzle platformer",
+    developer: "Valve",
+    publisher: "Valve",
+    price: 9.99
+  },
+  {
+    id: 20,
+    title: "Fall Guys",
+    genre: ["Party", "Platformer"],
+    platform: ["PC", "PlayStation", "Xbox", "Switch"],
+    rating: 4.0,
+    releaseYear: 2020,
+    gameMode: ["Multiplayer"],
+    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=600&fit=crop",
+    description: "Chaotic multiplayer party game",
+    developer: "Mediatonic",
+    publisher: "Epic Games",
+    price: 0
   }
 ];
