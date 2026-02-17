@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/NavigationBar';
 import { ROUTES } from '../routes/routes';
 import { useTheme, type Theme } from '../contexts/ThemeContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 // ── Pixel button (auth) ───────────────────────────────────────────────────────
 function PixelHeaderBtn({
@@ -95,6 +96,7 @@ function ThemeChip({
 function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const isMobile = useIsMobile();
 
   return (
     <header
@@ -127,7 +129,7 @@ function Header() {
       <div
         style={{
           position: "relative",
-          padding: "10px 24px",
+          padding: isMobile ? "10px 12px" : "10px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -143,7 +145,7 @@ function Header() {
           <span
             style={{
               fontFamily: "'Press Start 2P', monospace",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.8rem" : "1rem",
               color: "var(--arcade-accent)",
               textShadow: "3px 3px 0px var(--arcade-accent-dark), 5px 5px 0px #000",
               letterSpacing: "0.05em",
@@ -153,44 +155,70 @@ function Header() {
           </span>
         </div>
 
-        {/* Navigation */}
-        <NavigationBar />
+        {/* Navigation - hidden on mobile */}
+        {!isMobile && <NavigationBar />}
 
-        {/* Theme Toggle */}
-        <div
-          style={{
-            display: "flex",
-            gap: "4px",
-            background: "var(--arcade-panel)",
-            border: "2px solid var(--arcade-shadow)",
-            padding: "3px",
-            flexShrink: 0,
-          }}
-        >
-          <ThemeChip
-            label="DARK"
-            icon="🌙"
-            targetTheme="dark"
-            active={theme === "dark"}
-            onClick={() => toggleTheme("dark")}
-          />
-          <ThemeChip
-            label="LIGHT"
-            icon="☀"
-            targetTheme="light"
-            active={theme === "light"}
-            onClick={() => toggleTheme("light")}
-          />
-        </div>
+        {/* Right side controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "6px" : "12px", flexShrink: 0 }}>
+          {/* Theme Toggle - compact on mobile */}
+          <div
+            style={{
+              display: "flex",
+              gap: "4px",
+              background: "var(--arcade-panel)",
+              border: "2px solid var(--arcade-shadow)",
+              padding: "3px",
+              flexShrink: 0,
+            }}
+          >
+            {isMobile ? (
+              /* Single toggle button on mobile */
+              <button
+                onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--arcade-h)",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  padding: "4px 8px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {theme === "dark" ? "🌙" : "☀"}
+              </button>
+            ) : (
+              <>
+                <ThemeChip
+                  label="DARK"
+                  icon="🌙"
+                  targetTheme="dark"
+                  active={theme === "dark"}
+                  onClick={() => toggleTheme("dark")}
+                />
+                <ThemeChip
+                  label="LIGHT"
+                  icon="☀"
+                  targetTheme="light"
+                  active={theme === "light"}
+                  onClick={() => toggleTheme("light")}
+                />
+              </>
+            )}
+          </div>
 
-        {/* Auth Buttons */}
-        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-          <PixelHeaderBtn onClick={() => navigate(ROUTES.LOGIN)}>
-            ▶ LOGIN
-          </PixelHeaderBtn>
-          <PixelHeaderBtn onClick={() => navigate(ROUTES.SIGNUP)} primary>
-            + SIGN UP
-          </PixelHeaderBtn>
+          {/* Auth Buttons - hidden on mobile (available in sidebar) */}
+          {!isMobile && (
+            <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+              <PixelHeaderBtn onClick={() => navigate(ROUTES.LOGIN)}>
+                ▶ LOGIN
+              </PixelHeaderBtn>
+              <PixelHeaderBtn onClick={() => navigate(ROUTES.SIGNUP)} primary>
+                + SIGN UP
+              </PixelHeaderBtn>
+            </div>
+          )}
         </div>
       </div>
     </header>

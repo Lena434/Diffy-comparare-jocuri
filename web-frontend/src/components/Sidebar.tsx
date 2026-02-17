@@ -1,25 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { useIsMobile } from "../hooks/useIsMobile";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface SidebarSection {
-  id: string;
-  label: string;
-  icon: string;
-  collapsible?: boolean;
-  children?: SidebarItem[];
-  action?: () => void;
-}
-
-interface SidebarItem {
-  label: string;
-  icon: string;
-  action?: () => void;
-  isInput?: boolean;
-  isCTA?: boolean;
-  isSlider?: boolean;
-}
 
 // ─── Pixel Button ─────────────────────────────────────────────────────────────
 function PixelCTA({
@@ -248,19 +231,71 @@ function PixelSlider({ label }: { label: string }) {
   );
 }
 
+// ─── Rating Chip ──────────────────────────────────────────────────────────────
+function RatingChip({ label }: { label: string }) {
+  const [active, setActive] = useState(false);
+  return (
+    <button
+      onClick={() => setActive((v) => !v)}
+      style={{
+        background: active ? "var(--arcade-cta)" : "transparent",
+        border: `2px solid ${active ? "var(--arcade-text)" : "var(--arcade-shadow)"}`,
+        boxShadow: active ? "2px 2px 0px var(--arcade-shadow)" : "none",
+        color: active ? "var(--arcade-h)" : "var(--arcade-muted)",
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "0.38rem",
+        padding: "4px 6px",
+        cursor: "pointer",
+        transition: "all 0.1s",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 // ─── Main Sidebar ─────────────────────────────────────────────────────────────
+export const SIDEBAR_WIDTH = 220;
+
 function Sidebar() {
-  const [open, setOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [open, setOpen] = useState(!isMobile);
   const [toggleHovered, setToggleHovered] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Mock auth state — swap with real auth context when ready
+  // Close sidebar on mobile when route changes
+  useEffect(() => {
+    if (isMobile) setOpen(false);
+  }, [location.pathname, isMobile]);
+
+  // Close sidebar when switching to mobile, open when switching to desktop
+  useEffect(() => {
+    setOpen(!isMobile);
+  }, [isMobile]);
+
   const isAuthenticated = false;
 
-  const SIDEBAR_WIDTH = 220;
+  const handleNav = (route: string) => {
+    navigate(route);
+  };
 
   return (
     <>
+      {/* Backdrop overlay on mobile */}
+      {isMobile && open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            top: "64px",
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 99,
+          }}
+        />
+      )}
+
       {/* Toggle Button */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -333,7 +368,6 @@ function Sidebar() {
             position: "relative",
           }}
         >
-          {/* Corner bolts */}
           {[
             { top: 6, left: 6 },
             { top: 6, right: 6 },
@@ -369,16 +403,14 @@ function Sidebar() {
         {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: "auto", padding: "4px 0 16px" }}>
 
-          {/* ── QUICK ACTIONS ── */}
           <SectionLabel label="▸ QUICK ACTIONS" />
           <div style={{ padding: "4px 8px", display: "flex", flexDirection: "column", gap: "6px" }}>
             <PixelSearchInput />
-            <PixelCTA onClick={() => navigate(ROUTES.COMPARE)}>
+            <PixelCTA onClick={() => handleNav(ROUTES.COMPARE)}>
               ⚔ START COMPARING
             </PixelCTA>
           </div>
 
-          {/* ── DASHBOARD (auth only) ── */}
           {isAuthenticated && (
             <>
               <SectionLabel label="▸ DASHBOARD" />
@@ -389,16 +421,14 @@ function Sidebar() {
             </>
           )}
 
-          {/* ── BROWSE ── */}
           <SectionLabel label="▸ BROWSE" />
-          <NavItem icon="🎲" label="ALL GAMES" onClick={() => navigate(ROUTES.GAMES)} />
+          <NavItem icon="🎲" label="ALL GAMES" onClick={() => handleNav(ROUTES.GAMES)} />
           <NavItem icon="🔥" label="TRENDING NOW" />
           <NavItem icon="🆕" label="NEW RELEASES" />
           <NavItem icon="🏆" label="TOP RATED" />
           <NavItem icon="💰" label="FREE TO PLAY" />
-          <NavItem icon="🎯" label="MOST COMPARED" onClick={() => navigate(ROUTES.COMPARE)} />
+          <NavItem icon="🎯" label="MOST COMPARED" onClick={() => handleNav(ROUTES.COMPARE)} />
 
-          {/* ── CATEGORIES ── */}
           <SectionLabel label="▸ CATEGORIES" />
           <CollapsibleSection icon="🎭" label="BY GENRE">
             <NavItem icon="🔫" label="FPS / SHOOTER" />
@@ -418,7 +448,6 @@ function Sidebar() {
             <NavItem icon="🌐" label="CROSS-PLATFORM" />
           </CollapsibleSection>
 
-          {/* ── FILTERS ── */}
           <SectionLabel label="▸ FILTERS" />
           <PixelSlider label="PRICE MAX" />
           <div style={{ padding: "4px 8px" }}>
@@ -442,14 +471,12 @@ function Sidebar() {
           <NavItem icon="👥" label="MULTIPLAYER" />
           <NavItem icon="🧍" label="SINGLE-PLAYER" />
 
-          {/* ── RESOURCES ── */}
           <SectionLabel label="▸ RESOURCES" />
           <NavItem icon="📖" label="HOW TO COMPARE" />
           <NavItem icon="📝" label="BLOG & NEWS" />
           <NavItem icon="💬" label="COMMUNITY" />
           <NavItem icon="❓" label="HELP & FAQ" />
 
-          {/* ── AUTH (when not logged in) ── */}
           {!isAuthenticated && (
             <>
               <SectionLabel label="▸ ACCOUNT" />
@@ -461,10 +488,10 @@ function Sidebar() {
                   gap: "6px",
                 }}
               >
-                <PixelCTA onClick={() => navigate(ROUTES.LOGIN)}>
+                <PixelCTA onClick={() => handleNav(ROUTES.LOGIN)}>
                   ▶ LOGIN
                 </PixelCTA>
-                <PixelCTA onClick={() => navigate(ROUTES.SIGNUP)}>
+                <PixelCTA onClick={() => handleNav(ROUTES.SIGNUP)}>
                   + NEW PLAYER
                 </PixelCTA>
               </div>
@@ -494,29 +521,6 @@ function Sidebar() {
         </div>
       </aside>
     </>
-  );
-}
-
-// ─── Rating Chip ──────────────────────────────────────────────────────────────
-function RatingChip({ label }: { label: string }) {
-  const [active, setActive] = useState(false);
-  return (
-    <button
-      onClick={() => setActive((v) => !v)}
-      style={{
-        background: active ? "var(--arcade-cta)" : "transparent",
-        border: `2px solid ${active ? "var(--arcade-text)" : "var(--arcade-shadow)"}`,
-        boxShadow: active ? "2px 2px 0px var(--arcade-shadow)" : "none",
-        color: active ? "var(--arcade-h)" : "var(--arcade-muted)",
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.38rem",
-        padding: "4px 6px",
-        cursor: "pointer",
-        transition: "all 0.1s",
-      }}
-    >
-      {label}
-    </button>
   );
 }
 
