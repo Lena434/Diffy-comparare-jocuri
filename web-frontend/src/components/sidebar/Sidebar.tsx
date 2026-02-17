@@ -170,9 +170,9 @@ function Sidebar() {
           {isAuthenticated && (
             <>
               <SectionLabel label="▸ DASHBOARD" />
-              <NavItem icon="🏠" label="MY DASHBOARD" />
-              <NavItem icon="⭐" label="SAVED GAMES" />
-              <NavItem icon="📈" label="RECENT COMPARISONS" />
+              <NavItem icon="🏠" label="MY DASHBOARD" onClick={() => handleNav(ROUTES.FAVORITES)} />
+              <NavItem icon="⭐" label="SAVED GAMES" onClick={() => handleNav(ROUTES.FAVORITES)} />
+              <NavItem icon="📈" label="RECENT COMPARISONS" onClick={() => handleNav(ROUTES.FAVORITES)} />
               <NavItem icon="🔔" label="NOTIFICATIONS" />
             </>
           )}
