@@ -28,7 +28,7 @@ function SelectedGamesPreview({ game1, game2, game3 }: SelectedGamesPreviewProps
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${gamesCount}, 1fr)`,
+          gridTemplateColumns: `repeat(auto-fit, minmax(min(260px, 100%), 1fr))`,
           gap: "20px",
           maxWidth,
           margin: gamesCount === 2 ? "0 auto" : "0",

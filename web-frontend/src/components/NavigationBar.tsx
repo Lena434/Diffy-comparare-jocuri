@@ -52,6 +52,7 @@ function NavigationBar() {
     <nav style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <PixelNavLink to={ROUTES.GAMES}>🎲 GAMES</PixelNavLink>
       <PixelNavLink to={ROUTES.COMPARE}>⚔ COMPARE</PixelNavLink>
+      <PixelNavLink to={ROUTES.ABOUT}>ℹ️ ABOUT</PixelNavLink>
     </nav>
   );
 }
