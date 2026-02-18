@@ -138,7 +138,7 @@ function GameCard({ game }: GameCardProps) {
       </div>
 
       {/* Content */}
-      <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
+      <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "8px", flex: 1, minHeight: "170px" }}>
         {/* Title */}
         <h3
           style={{
@@ -164,14 +164,20 @@ function GameCard({ game }: GameCardProps) {
             letterSpacing: "0.03em",
             margin: 0,
             lineHeight: 1.8,
+
+            /* Limit to exactly 2 lines */
             display: "-webkit-box",
-            WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 2,
             overflow: "hidden",
+
+            /* Force consistent height (2 lines) */
+            maxHeight: "1.37rem", // 0.38rem * 1.8 * 2 ≈ 1.37rem
           }}
         >
           {game.description}
         </p>
+
 
         {/* Genres */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
