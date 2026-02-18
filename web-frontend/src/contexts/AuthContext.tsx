@@ -1,14 +1,18 @@
 import { createContext, useContext, useState } from "react";
 
+export type UserRole = 'user' | 'admin';
+
 export interface User {
   username: string;
   email: string;
   password: string;
+  role: UserRole;
 }
 
 interface AuthContextValue {
   currentUser: User | null;
   isAuthenticated: boolean;
+  role: UserRole | null;
   login: (email: string, password: string) => string | null;
   signup: (username: string, email: string, password: string) => string | null;
   logout: () => void;
@@ -17,6 +21,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
   isAuthenticated: false,
+  role: null,
   login: () => null,
   signup: () => null,
   logout: () => {},
@@ -53,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   const isAuthenticated = currentUser !== null;
+  const role: UserRole | null = currentUser?.role ?? null;
 
   function login(email: string, password: string): string | null {
     const users = getUsers();
@@ -72,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     if (exists) return "EMAIL ALREADY REGISTERED!";
 
-    const newUser: User = { username, email, password };
+    const newUser: User = { username, email, password, role: 'user' };
     users.push(newUser);
     saveUsers(users);
     setCurrentUser(newUser);
@@ -86,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, isAuthenticated, login, signup, logout }}>
+    <AuthContext.Provider value={{ currentUser, isAuthenticated, role, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

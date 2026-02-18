@@ -1,25 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { mockGames } from '../_mock/games';
-import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
-import { ROUTES } from '../routes/routes';
 import CompareHeader from '../sections/compare/CompareHeader';
 import GameSelector from '../sections/compare/GameSelector';
 import SelectedGamesPreview from '../sections/compare/SelectedGamesPreview';
 import ComparisonTable from '../sections/compare/ComparisonTable';
 
 function ComparePage() {
-  const { isAuthenticated } = useAuth();
   const { saveComparison } = useFavorites();
-  const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(ROUTES.LOGIN, { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
   const [selectedGame1, setSelectedGame1] = useState<number | null>(null);
   const [selectedGame2, setSelectedGame2] = useState<number | null>(null);
 
@@ -37,9 +26,6 @@ function ComparePage() {
   const selectedGames = [game1, game2].filter(
     (game): game is NonNullable<typeof game> => Boolean(game)
   );
-  
-
-  if (!isAuthenticated) return null;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>

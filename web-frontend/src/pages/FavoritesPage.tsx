@@ -1,23 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
 import { mockGames } from "../_mock/games";
 import GameCard from "../components/GameCard";
 
 function FavoritesPage() {
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(ROUTES.LOGIN, { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  if (!isAuthenticated) return null;
 
   const favoriteGames = mockGames.filter((g) => favoriteGameIds.includes(g.id));
 
