@@ -24,7 +24,7 @@ function CompareHeader() {
         }}
       >
         SELECT{" "}
-        <span style={{ color: "var(--arcade-accent)" }}>2–3 GAMES</span>
+        <span style={{ color: "var(--arcade-accent)" }}>2 GAMES</span>
         {" "}TO COMPARE SIDE-BY-SIDE
       </p>
     </div>

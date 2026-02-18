@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import CompactSearchBar from './CompactSearchBar';
 import Dropdown from './Dropdown';
 
@@ -10,6 +11,7 @@ interface FilterBarProps {
   onGenreFilter: (genre: string) => void;
   onPlatformFilter: (platform: string) => void;
   onSort: (sortBy: string) => void;
+  onClearFilters: () => void;
 }
 
 function FilterBar({
@@ -21,7 +23,10 @@ function FilterBar({
   onGenreFilter,
   onPlatformFilter,
   onSort,
+  onClearFilters,
 }: FilterBarProps) {
+  const [clearHovered, setClearHovered] = useState(false);
+  const [clearPressed, setClearPressed] = useState(false);
   const genres = ['All', 'RPG', 'Action', 'FPS', 'Simulation', 'Metroidvania', 'Platformer', 'Competitive'];
   const platforms = ['All', 'PC', 'PlayStation', 'Xbox', 'Switch', 'Mobile'];
   const sortOptions = [
@@ -105,6 +110,29 @@ function FilterBar({
           value={sortValue}
           onSelect={onSort}
         />
+        <button
+          onClick={onClearFilters}
+          onMouseEnter={() => setClearHovered(true)}
+          onMouseLeave={() => { setClearHovered(false); setClearPressed(false); }}
+          onMouseDown={() => setClearPressed(true)}
+          onMouseUp={() => setClearPressed(false)}
+          style={{
+            background: clearHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
+            border: `3px solid ${clearHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
+            boxShadow: clearPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
+            transform: clearPressed ? "translate(4px,4px)" : "translate(0,0)",
+            color: "#fff",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "0.45rem",
+            padding: "12px 16px",
+            cursor: "pointer",
+            letterSpacing: "0.06em",
+            transition: "background 0.08s, border-color 0.08s",
+            alignSelf: "end",
+          }}
+        >
+          ↺ CLEAR FILTERS
+        </button>
       </div>
     </div>
   );

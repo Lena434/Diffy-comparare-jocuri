@@ -1,30 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { mockGames } from '../_mock/games';
-import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
-import { ROUTES } from '../routes/routes';
 import CompareHeader from '../sections/compare/CompareHeader';
 import GameSelector from '../sections/compare/GameSelector';
 import SelectedGamesPreview from '../sections/compare/SelectedGamesPreview';
 import ComparisonTable from '../sections/compare/ComparisonTable';
 
 function ComparePage() {
-  const { isAuthenticated } = useAuth();
   const { saveComparison } = useFavorites();
-  const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(ROUTES.LOGIN, { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
   const [selectedGame1, setSelectedGame1] = useState<number | null>(null);
   const [selectedGame2, setSelectedGame2] = useState<number | null>(null);
-  const [selectedGame3, setSelectedGame3] = useState<number | null>(null);
 
-  //handler functions
   const handleSelectGame1 = (id: number | null) => {
     setSelectedGame1(id);
   };
@@ -33,20 +20,12 @@ function ComparePage() {
     setSelectedGame2(id);
   };
 
-  const handleSelectGame3 = (id: number | null) => {
-    setSelectedGame3(id);
-  };
-
   const game1 = selectedGame1 ? mockGames.find(game => game.id === selectedGame1) : undefined;
   const game2 = selectedGame2 ? mockGames.find(game => game.id === selectedGame2) : undefined;
-  const game3 = selectedGame3 ? mockGames.find(game => game.id === selectedGame3) : undefined;
-  
-  const selectedGames = [game1, game2, game3].filter(
+
+  const selectedGames = [game1, game2].filter(
     (game): game is NonNullable<typeof game> => Boolean(game)
   );
-  
-
-  if (!isAuthenticated) return null;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
@@ -56,12 +35,10 @@ function ComparePage() {
 
         <GameSelector
           games={mockGames}
-          selectedGame1 = {selectedGame1}
-          selectedGame2 = {selectedGame2}
-          selectedGame3 = {selectedGame3}
+          selectedGame1={selectedGame1}
+          selectedGame2={selectedGame2}
           onSelectGame1={handleSelectGame1}
           onSelectGame2={handleSelectGame2}
-          onSelectGame3={handleSelectGame3}
         />
 
         {selectedGames.length >= 2 ? (
@@ -69,7 +46,6 @@ function ComparePage() {
             <SelectedGamesPreview
               game1={game1}
               game2={game2}
-              game3={game3}
             />
             <ComparisonTable games={selectedGames} />
 

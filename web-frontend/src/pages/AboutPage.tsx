@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
+import FeatureCard from '../components/FeatureCard';
+import HowItWorksStep from '../components/HowItWorksStep';
 
 function PixelBtn({
   children,
@@ -201,38 +203,7 @@ function AboutPage() {
             }}
           >
             {features.map((f) => (
-              <div
-                key={f.title}
-                style={{
-                  background: "rgba(124, 77, 255, 0.08)",
-                  border: "2px solid var(--arcade-shadow)",
-                  boxShadow: "3px 3px 0px #000",
-                  padding: "18px",
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "'Press Start 2P', monospace",
-                    fontSize: "0.55rem",
-                    color: "var(--arcade-accent)",
-                    marginBottom: "10px",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  {f.icon} {f.title}
-                </div>
-                <p
-                  style={{
-                    fontFamily: "'Press Start 2P', monospace",
-                    fontSize: "0.38rem",
-                    color: "var(--arcade-muted)",
-                    lineHeight: 2.2,
-                    margin: 0,
-                  }}
-                >
-                  {f.desc}
-                </p>
-              </div>
+              <FeatureCard key={f.title} icon={f.icon} title={f.title} desc={f.desc} />
             ))}
           </div>
         </div>
@@ -261,52 +232,7 @@ function AboutPage() {
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {steps.map((s) => (
-              <div
-                key={s.num}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "16px",
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "'Press Start 2P', monospace",
-                    fontSize: "0.7rem",
-                    color: "var(--arcade-accent)",
-                    textShadow: "2px 2px 0px var(--arcade-accent-dark)",
-                    minWidth: "36px",
-                    lineHeight: 1,
-                    paddingTop: "2px",
-                  }}
-                >
-                  {s.num}
-                </div>
-                <div>
-                  <div
-                    style={{
-                      fontFamily: "'Press Start 2P', monospace",
-                      fontSize: "0.5rem",
-                      color: "var(--arcade-h)",
-                      marginBottom: "8px",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    {s.title}
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: "'Press Start 2P', monospace",
-                      fontSize: "0.38rem",
-                      color: "var(--arcade-muted)",
-                      lineHeight: 2.2,
-                      margin: 0,
-                    }}
-                  >
-                    {s.desc}
-                  </p>
-                </div>
-              </div>
+              <HowItWorksStep key={s.num} num={s.num} title={s.title} desc={s.desc} />
             ))}
           </div>
         </div>

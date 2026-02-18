@@ -19,70 +19,33 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
 
   // Sync state from URL params when they change
   useEffect(() => {
-    if (urlSearchQuery) setSearchQuery(urlSearchQuery);
-  }, [urlSearchQuery]);
+    setSearchQuery(urlSearchQuery);
+    setGenreFilter(urlGenre || 'All');
+    setPlatformFilter(urlPlatform || 'All');
+    setSortBy(urlSort || 'title');
+  }, [urlSearchQuery, urlGenre, urlPlatform, urlSort]);
 
-  useEffect(() => {
-    if (urlGenre) setGenreFilter(urlGenre);
-  }, [urlGenre]);
-
-  useEffect(() => {
-    if (urlPlatform) setPlatformFilter(urlPlatform);
-  }, [urlPlatform]);
-
-  useEffect(() => {
-    if (urlSort) setSortBy(urlSort);
-  }, [urlSort]);
+  const sorters: Record<string, (a: Game, b: Game) => number> = {
+    title: (a, b) => a.title.localeCompare(b.title),
+    rating: (a, b) => b.rating - a.rating,
+    year: (a, b) => b.releaseYear - a.releaseYear,
+  };
 
   // Filter and sort games
   const allFilteredGames = useMemo(() => {
-    let filtered = [...games];
+    const maxPrice = Number(urlMaxPrice);
 
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter((game) =>
-        game.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+    const filters: ((game: Game) => boolean)[] = [
+      (game) => !searchQuery || game.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      (game) => genreFilter === 'All' || game.genre.includes(genreFilter),
+      (game) => platformFilter === 'All' || game.platform.includes(platformFilter),
+      (game) => !urlMode || game.gameMode.some((m) => m.toLowerCase().includes(urlMode.toLowerCase())),
+      (game) => !urlMaxPrice || (!isNaN(maxPrice) && game.price !== undefined && game.price <= maxPrice),
+    ];
 
-    // Genre filter
-    if (genreFilter !== 'All') {
-      filtered = filtered.filter((game) => game.genre.includes(genreFilter));
-    }
+    const filtered = filters.reduce((acc, fn) => acc.filter(fn), [...games]);
 
-    // Platform filter
-    if (platformFilter !== 'All') {
-      filtered = filtered.filter((game) => game.platform.includes(platformFilter));
-    }
-
-    // Game mode filter (from URL)
-    if (urlMode) {
-      filtered = filtered.filter((game) =>
-        game.gameMode.some((m) => m.toLowerCase().includes(urlMode.toLowerCase()))
-      );
-    }
-
-    // Max price filter (from URL)
-    if (urlMaxPrice) {
-      const max = Number(urlMaxPrice);
-      if (!isNaN(max)) {
-        filtered = filtered.filter((game) =>
-          game.price !== undefined && game.price <= max
-        );
-      }
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      if (sortBy === 'title') {
-        return a.title.localeCompare(b.title);
-      } else if (sortBy === 'rating') {
-        return b.rating - a.rating;
-      } else if (sortBy === 'year') {
-        return b.releaseYear - a.releaseYear;
-      }
-      return 0;
-    });
+    filtered.sort(sorters[sortBy] ?? (() => 0));
 
     return filtered;
   }, [games, searchQuery, genreFilter, platformFilter, sortBy, urlMode, urlMaxPrice]);
@@ -112,14 +75,17 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
 
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    window.scrollTo(0, 0);
   };
 
   const goToPreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
+    window.scrollTo(0, 0);
   };
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    window.scrollTo(0, 0);
   };
 
   return {

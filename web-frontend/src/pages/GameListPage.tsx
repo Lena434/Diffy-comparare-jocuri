@@ -40,6 +40,7 @@ function GameListPage() {
           onGenreFilter={setGenreFilter}
           onPlatformFilter={setPlatformFilter}
           onSort={setSortBy}
+          onClearFilters={clearFilters}
         />
 
         <div style={{ marginBottom: "20px" }}>
@@ -61,7 +62,7 @@ function GameListPage() {
           </p>
         </div>
 
-        <GamesGrid games={filteredGames} onClearFilters={clearFilters} />
+        <GamesGrid games={filteredGames} />
 
         {totalPages > 1 && (
           <Pagination

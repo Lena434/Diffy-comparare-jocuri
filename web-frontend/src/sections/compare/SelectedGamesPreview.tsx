@@ -4,13 +4,9 @@ import type { Game } from '../../_mock/games';
 interface SelectedGamesPreviewProps {
   game1: Game | undefined;
   game2: Game | undefined;
-  game3: Game | null | undefined;
 }
 
-function SelectedGamesPreview({ game1, game2, game3 }: SelectedGamesPreviewProps) {
-  const gamesCount = [game1, game2, game3].filter(Boolean).length;
-  const maxWidth = gamesCount === 2 ? "860px" : "100%";
-
+function SelectedGamesPreview({ game1, game2 }: SelectedGamesPreviewProps) {
   return (
     <div style={{ marginBottom: "40px" }}>
       <h2
@@ -30,13 +26,12 @@ function SelectedGamesPreview({ game1, game2, game3 }: SelectedGamesPreviewProps
           display: "grid",
           gridTemplateColumns: `repeat(auto-fit, minmax(min(260px, 100%), 1fr))`,
           gap: "20px",
-          maxWidth,
-          margin: gamesCount === 2 ? "0 auto" : "0",
+          maxWidth: "860px",
+          margin: "0 auto",
         }}
       >
         {game1 && <GameCard game={game1} />}
         {game2 && <GameCard game={game2} />}
-        {game3 && <GameCard game={game3} />}
       </div>
     </div>
   );
