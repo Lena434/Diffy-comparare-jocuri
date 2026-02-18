@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeroSearchBar from '../../components/HeroSearchBar';
+import StatChip from '../../components/StatChip';
 
 function PixelBtn({
   children,
@@ -136,29 +137,11 @@ function HeroSection() {
         {/* Stat chips */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
           {[
-            { icon: "🎮", label: "4 GAMES" },
-            { icon: "⚔", label: "COMPARE UP TO 3" },
+            { icon: "🎮", label: "20 GAMES" },
+            { icon: "⚔", label: "SIDE-BY-SIDE COMPARISON" },
             { icon: "🏆", label: "FREE TO USE" },
           ].map((chip) => (
-            <div
-              key={chip.label}
-              style={{
-                background: "var(--arcade-panel)",
-                border: "2px solid var(--arcade-shadow)",
-                boxShadow: "3px 3px 0px #000",
-                padding: "8px 14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: "0.38rem",
-                color: "var(--arcade-text)",
-                letterSpacing: "0.05em",
-              }}
-            >
-              <span>{chip.icon}</span>
-              <span>{chip.label}</span>
-            </div>
+            <StatChip key={chip.label} icon={chip.icon} label={chip.label} />
           ))}
         </div>
 
