@@ -73,11 +73,6 @@ function HeroSection() {
         ★ INSERT COIN TO CONTINUE ★
       </div>
 
-      {/* Search Bar */}
-      <div style={{ width: "100%", maxWidth: "640px", marginBottom: "56px" }}>
-        <HeroSearchBar />
-      </div>
-
       {/* Main content */}
       <div
         style={{
@@ -121,6 +116,11 @@ function HeroSection() {
         >
           COMPARE . DISCOVER . PLAY
         </p>
+
+        {/* Search Bar */}
+        <div style={{ width: "100%", maxWidth: "640px", marginTop: "24px", marginBottom: "24px" }}>
+          <HeroSearchBar />
+        </div>
 
         {/* Pixel divider */}
         <div
