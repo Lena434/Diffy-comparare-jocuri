@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Game } from '../_mock/games';
 import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
+import GenreBadge from './GenreBadge';
 
 interface GameCardProps {
   game: Game;
@@ -175,20 +176,7 @@ function GameCard({ game }: GameCardProps) {
         {/* Genres */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
           {game.genre.map((genre) => (
-            <span
-              key={genre}
-              style={{
-                background: "rgba(139,92,246,0.15)",
-                border: "2px solid var(--arcade-shadow)",
-                padding: "3px 7px",
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: "0.35rem",
-                color: "var(--arcade-text)",
-                letterSpacing: "0.03em",
-              }}
-            >
-              {genre}
-            </span>
+            <GenreBadge key={genre} genre={genre} />
           ))}
         </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mockGames } from '../_mock/games';
 import GameCard from '../components/GameCard';
+import GenreBadge from '../components/GenreBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { ROUTES } from '../routes/routes';
@@ -238,20 +239,7 @@ function GameDetailsPage() {
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {game.genre.map((genre) => (
-                    <span
-                      key={genre}
-                      style={{
-                        background: "rgba(139,92,246,0.15)",
-                        border: "2px solid var(--arcade-shadow)",
-                        padding: "6px 10px",
-                        fontFamily: "'Press Start 2P', monospace",
-                        fontSize: "0.4rem",
-                        color: "var(--arcade-accent)",
-                        letterSpacing: "0.03em",
-                      }}
-                    >
-                      {genre}
-                    </span>
+                    <GenreBadge key={genre} genre={genre} size="md" />
                   ))}
                 </div>
               </div>
