@@ -1,4 +1,5 @@
 import type { Game } from '../../_mock/games';
+import ComparisonCell from './ComparisonCell';
 
 interface ComparisonRowProps {
   label: string;
@@ -27,21 +28,7 @@ function ComparisonRow({ label, games, renderValue }: ComparisonRowProps) {
         {label}
       </td>
       {games.map((game) => (
-        <td
-          key={game.id}
-          style={{
-            padding: "12px 14px",
-            textAlign: "center",
-            fontFamily: "'Press Start 2P', monospace",
-            fontSize: "0.38rem",
-            color: "var(--arcade-h)",
-            letterSpacing: "0.03em",
-            background: "var(--arcade-panel-dark)",
-            lineHeight: 1.8,
-          }}
-        >
-          {renderValue(game)}
-        </td>
+        <ComparisonCell key={game.id} game={game} renderValue={renderValue} />
       ))}
     </tr>
   );

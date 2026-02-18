@@ -1,4 +1,5 @@
 import type { Game } from '../../_mock/games';
+import ComparisonHeaderCell from './ComparisonHeaderCell';
 import ComparisonRow from './ComparisonRow';
 import { comparisonCriteria } from './comparisonCriteria';
 
@@ -62,21 +63,7 @@ function ComparisonTable({ games }: ComparisonTableProps) {
               ⚙ FEATURE
             </th>
             {games.map((game) => (
-              <th
-                key={game.id}
-                style={{
-                  padding: "14px 16px",
-                  textAlign: "center",
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: "0.45rem",
-                  color: "var(--arcade-accent)",
-                  textShadow: "1px 1px 0px var(--arcade-accent-dark)",
-                  letterSpacing: "0.05em",
-                  borderRight: "2px solid var(--arcade-shadow)",
-                }}
-              >
-                {game.title}
-              </th>
+              <ComparisonHeaderCell key={game.id} title={game.title} />
             ))}
           </tr>
         </thead>
