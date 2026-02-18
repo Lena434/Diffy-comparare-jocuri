@@ -112,14 +112,17 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
 
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    window.scrollTo(0, 0);
   };
 
   const goToPreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
+    window.scrollTo(0, 0);
   };
 
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    window.scrollTo(0, 0);
   };
 
   return {

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import GameListPage from "./pages/GameListPage";
@@ -20,6 +21,7 @@ function App() {
     <AuthProvider>
     <FavoritesProvider>
     <SidebarProvider>
+    <ScrollToTop />
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
