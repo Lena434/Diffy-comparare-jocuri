@@ -1,16 +1,11 @@
-import { useState } from 'react';
 import GameCard from '../../components/GameCard';
 import type { Game } from '../../_mock/games';
 
 interface GamesGridProps {
   games: Game[];
-  onClearFilters: () => void;
 }
 
-function GamesGrid({ games, onClearFilters }: GamesGridProps) {
-  const [btnHovered, setBtnHovered] = useState(false);
-  const [btnPressed, setBtnPressed] = useState(false);
-
+function GamesGrid({ games }: GamesGridProps) {
   if (games.length === 0) {
     return (
       <div
@@ -46,28 +41,6 @@ function GamesGrid({ games, onClearFilters }: GamesGridProps) {
           <br />
           MATCHING YOUR FILTERS
         </p>
-        <button
-          onClick={onClearFilters}
-          onMouseEnter={() => setBtnHovered(true)}
-          onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
-          onMouseDown={() => setBtnPressed(true)}
-          onMouseUp={() => setBtnPressed(false)}
-          style={{
-            background: btnHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-            border: `3px solid ${btnHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-            boxShadow: btnPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
-            transform: btnPressed ? "translate(4px,4px)" : "translate(0,0)",
-            color: "#fff",
-            fontFamily: "'Press Start 2P', monospace",
-            fontSize: "0.5rem",
-            padding: "12px 20px",
-            cursor: "pointer",
-            letterSpacing: "0.06em",
-            transition: "background 0.08s, border-color 0.08s",
-          }}
-        >
-          ↺ CLEAR FILTERS
-        </button>
       </div>
     );
   }

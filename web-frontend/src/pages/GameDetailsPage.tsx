@@ -96,17 +96,19 @@ function GameDetailsPage() {
           onMouseEnter={() => setBackHovered(true)}
           onMouseLeave={() => setBackHovered(false)}
           style={{
-            background: "transparent",
-            border: "none",
+            background: backHovered ? "var(--arcade-border)" : "transparent",
+            border: `2px solid ${backHovered ? "var(--arcade-accent)" : "var(--arcade-shadow)"}`,
             color: backHovered ? "var(--arcade-accent)" : "var(--arcade-muted)",
             fontFamily: "'Press Start 2P', monospace",
-            fontSize: "0.4rem",
+            fontSize: "0.45rem",
             cursor: "pointer",
             marginBottom: "30px",
-            display: "flex",
+            display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            transition: "color 0.1s",
+            padding: "9px 18px",
+            letterSpacing: "0.06em",
+            transition: "color 0.1s, border-color 0.1s, background 0.1s",
           }}
         >
           <span>◄</span>
