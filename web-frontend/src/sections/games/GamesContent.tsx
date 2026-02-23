@@ -1,6 +1,6 @@
 import GamesGrid from './GamesGrid';
 import Pagination from '../../components/Pagination';  
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 
 interface GamesContentProps {
   games: Game[];

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mockGames } from '../../_mock/games';
+import { getAllGames } from '../../services/gameService';
 import GameCard from '../../components/GameCard';
 import { ROUTES } from '../../routes/routes';
 
@@ -71,7 +71,7 @@ function FeaturedGamesSection() {
             marginBottom: "36px",
           }}
         >
-          {[...mockGames]
+          {[...getAllGames()]
             .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
             .slice(0, 4)
             .map((game) => (

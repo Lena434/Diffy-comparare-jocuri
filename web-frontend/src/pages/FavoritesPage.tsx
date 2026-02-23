@@ -2,14 +2,27 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
-import { mockGames } from "../_mock/games";
+import { getGamesByIds } from "../services/gameService";
 import GameCard from "../components/GameCard";
+import ConfirmDialog from "../components/ConfirmDialog";
+import PixelLoader from "../components/PixelLoader";
+import { useSimulatedLoading } from "../hooks/useSimulatedLoading";
 
 function FavoritesPage() {
   const navigate = useNavigate();
+  const loading = useSimulatedLoading(400);
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 
-  const favoriteGames = mockGames.filter((g) => favoriteGameIds.includes(g.id));
+  const favoriteGames = getGamesByIds(favoriteGameIds);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+        <PixelLoader message="LOADING FAVORITES..." />
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
@@ -71,9 +84,21 @@ function FavoritesPage() {
                 key={comp.id}
                 gameIds={comp.gameIds}
                 onView={() => navigate(ROUTES.COMPARE)}
-                onRemove={() => removeComparison(comp.id)}
+                onRemove={() => setConfirmRemoveId(comp.id)}
               />
             ))}
+            <ConfirmDialog
+              open={confirmRemoveId !== null}
+              title="REMOVE COMPARISON?"
+              message="THIS COMPARISON WILL BE PERMANENTLY DELETED FROM YOUR FAVORITES."
+              confirmLabel="DELETE"
+              cancelLabel="CANCEL"
+              onConfirm={() => {
+                if (confirmRemoveId) removeComparison(confirmRemoveId);
+                setConfirmRemoveId(null);
+              }}
+              onCancel={() => setConfirmRemoveId(null)}
+            />
           </div>
         ) : (
           <EmptyState message="NO SAVED COMPARISONS YET" hint="COMPARE GAMES AND SAVE THEM HERE" />
@@ -165,9 +190,7 @@ function ComparisonCard({
   const [viewHovered, setViewHovered] = useState(false);
   const [removeHovered, setRemoveHovered] = useState(false);
 
-  const games = gameIds
-    .map((id) => mockGames.find((g) => g.id === id))
-    .filter(Boolean);
+  const games = getGamesByIds(gameIds);
 
   return (
     <div
@@ -193,7 +216,7 @@ function ComparisonCard({
             marginBottom: "6px",
           }}
         >
-          ⚔ {games.map((g) => g!.title.toUpperCase()).join(" VS ")}
+          ⚔ {games.map((g) => g.title.toUpperCase()).join(" VS ")}
         </p>
         <p
           style={{

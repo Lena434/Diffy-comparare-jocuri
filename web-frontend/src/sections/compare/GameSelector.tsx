@@ -1,5 +1,5 @@
 import Dropdown from '../../components/Dropdown';
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 
 interface GameSelectorProps {
   games: Game[];
