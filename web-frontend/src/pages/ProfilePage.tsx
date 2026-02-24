@@ -5,6 +5,7 @@ import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
 import { getGamesByIds } from "../services/gameService";
 import GameCard from "../components/GameCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 import type { UserProfile, PcSpecs } from "../contexts/AuthContext";
 
 /* ── Shared pixel styles ── */
@@ -331,9 +332,13 @@ function ComparisonCard({
 /* ── Main ProfilePage ── */
 
 function ProfilePage() {
-  const { currentUser, updateProfile, changePassword } = useAuth();
+  const { currentUser, updateProfile, changePassword, logout } = useAuth();
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
   const navigate = useNavigate();
+
+  // Confirm dialogs
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showPwConfirm, setShowPwConfirm] = useState(false);
 
   // Player info
   const [username, setUsername] = useState(currentUser?.username ?? "");
@@ -454,7 +459,13 @@ function ProfilePage() {
           <PixelInput label="NEW PASSWORD" type="password" value={newPw} onChange={setNewPw} placeholder="••••••••" />
           <PixelInput label="CONFIRM NEW PASSWORD" type="password" value={confirmPw} onChange={setConfirmPw} placeholder="••••••••" />
           <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-            <PixelBtn onClick={handleChangePassword}>🔒 UPDATE PASSWORD</PixelBtn>
+            <PixelBtn onClick={() => {
+              if (!oldPw) { setPwMsg({ text: "ENTER OLD PASSWORD!", type: "error" }); return; }
+              if (!newPw) { setPwMsg({ text: "ENTER NEW PASSWORD!", type: "error" }); return; }
+              if (newPw !== confirmPw) { setPwMsg({ text: "PASSWORDS DO NOT MATCH!", type: "error" }); return; }
+              if (newPw.length < 4) { setPwMsg({ text: "PASSWORD TOO SHORT (MIN 4)!", type: "error" }); return; }
+              setShowPwConfirm(true);
+            }}>🔒 UPDATE PASSWORD</PixelBtn>
             <button
               onClick={() => setShowForgot(true)}
               style={{
@@ -597,6 +608,77 @@ function ProfilePage() {
             </p>
           )}
         </SectionPanel>
+
+        {/* ── LOGOUT ── */}
+        <div
+          style={{
+            marginTop: "8px",
+            marginBottom: "48px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            style={{
+              background: "transparent",
+              border: "3px solid #ef4444",
+              boxShadow: "4px 4px 0px var(--arcade-shadow)",
+              color: "#ef4444",
+              fontFamily: FONT,
+              fontSize: "0.45rem",
+              padding: "12px 28px",
+              cursor: "pointer",
+              letterSpacing: "0.08em",
+              transition: "all 0.1s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#ef4444";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.transform = "translate(-2px, -2px)";
+              e.currentTarget.style.boxShadow = "6px 6px 0px var(--arcade-shadow)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#ef4444";
+              e.currentTarget.style.transform = "translate(0,0)";
+              e.currentTarget.style.boxShadow = "4px 4px 0px var(--arcade-shadow)";
+            }}
+          >
+            ⏻ LOG OUT
+          </button>
+        </div>
+
+        {/* ── Confirm: Logout ── */}
+        <ConfirmDialog
+          open={showLogoutConfirm}
+          title="LOG OUT?"
+          message="ARE YOU SURE YOU WANT TO LOG OUT?"
+          confirmLabel="YES, LOG OUT"
+          cancelLabel="CANCEL"
+          confirmColor="yellow"
+          onConfirm={() => {
+            setShowLogoutConfirm(false);
+            logout();
+            navigate(ROUTES.HOME);
+          }}
+          onCancel={() => setShowLogoutConfirm(false)}
+        />
+
+        {/* ── Confirm: Change password ── */}
+        <ConfirmDialog
+          open={showPwConfirm}
+          title="CHANGE PASSWORD?"
+          message="ARE YOU SURE YOU WANT TO UPDATE YOUR PASSWORD?"
+          confirmLabel="YES, CHANGE"
+          cancelLabel="CANCEL"
+          confirmColor="yellow"
+          onConfirm={() => {
+            setShowPwConfirm(false);
+            handleChangePassword();
+          }}
+          onCancel={() => setShowPwConfirm(false)}
+        />
       </div>
     </div>
   );

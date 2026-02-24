@@ -6,6 +6,7 @@ interface ConfirmDialogProps {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  confirmColor?: 'red' | 'yellow';
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -16,11 +17,20 @@ function ConfirmDialog({
   message,
   confirmLabel = 'YES',
   cancelLabel = 'NO',
+  confirmColor = 'red',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
   const [confirmHovered, setConfirmHovered] = useState(false);
   const [cancelHovered, setCancelHovered] = useState(false);
+
+  const confirmBg   = confirmColor === 'yellow'
+    ? (confirmHovered ? '#b45309' : '#d97706')
+    : (confirmHovered ? '#dc2626' : '#ef4444');
+  const confirmBorder = confirmColor === 'yellow'
+    ? (confirmHovered ? '#fcd34d' : '#92400e')
+    : (confirmHovered ? '#f87171' : '#b91c1c');
+  const confirmText = confirmColor === 'yellow' ? '#000' : '#fff';
 
   if (!open) return null;
 
@@ -80,10 +90,10 @@ function ConfirmDialog({
             onMouseEnter={() => setConfirmHovered(true)}
             onMouseLeave={() => setConfirmHovered(false)}
             style={{
-              background: confirmHovered ? '#dc2626' : '#ef4444',
-              border: `2px solid ${confirmHovered ? '#f87171' : '#b91c1c'}`,
+              background: confirmBg,
+              border: `2px solid ${confirmBorder}`,
               boxShadow: '3px 3px 0px var(--arcade-shadow)',
-              color: '#fff',
+              color: confirmText,
               fontFamily: "'Press Start 2P', monospace",
               fontSize: '0.38rem',
               padding: '10px 20px',
@@ -98,9 +108,10 @@ function ConfirmDialog({
             onMouseEnter={() => setCancelHovered(true)}
             onMouseLeave={() => setCancelHovered(false)}
             style={{
-              background: cancelHovered ? 'var(--arcade-border)' : 'transparent',
-              border: `2px solid ${cancelHovered ? 'var(--arcade-accent)' : 'var(--arcade-shadow)'}`,
-              color: cancelHovered ? 'var(--arcade-accent)' : 'var(--arcade-muted)',
+              background: cancelHovered ? '#b91c1c' : '#dc2626',
+              border: `2px solid ${cancelHovered ? '#f87171' : '#991b1b'}`,
+              boxShadow: '3px 3px 0px var(--arcade-shadow)',
+              color: '#fff',
               fontFamily: "'Press Start 2P', monospace",
               fontSize: '0.38rem',
               padding: '10px 20px',
