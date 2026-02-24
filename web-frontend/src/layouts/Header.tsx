@@ -216,13 +216,17 @@ function Header() {
               {isAuthenticated ? (
                 <>
                   <span
+                    onClick={() => navigate(ROUTES.PROFILE)}
                     style={{
                       fontFamily: "'Press Start 2P', monospace",
                       fontSize: "0.4rem",
                       color: "var(--arcade-h)",
                       letterSpacing: "0.05em",
                       whiteSpace: "nowrap",
+                      cursor: "pointer",
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--arcade-accent)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--arcade-h)")}
                   >
                     🎮 {currentUser?.username.toUpperCase()}
                   </span>

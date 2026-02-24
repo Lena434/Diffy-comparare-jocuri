@@ -1,4 +1,4 @@
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 import ComparisonHeaderCell from './ComparisonHeaderCell';
 import ComparisonRow from './ComparisonRow';
 import { comparisonCriteria } from './comparisonCriteria';

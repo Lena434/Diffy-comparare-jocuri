@@ -1,31 +1,42 @@
-import { useState } from 'react';
-import { mockGames } from '../_mock/games';
+import { useState, useCallback } from 'react';
+import { getAllGames, getGameById } from '../services/gameService';
 import { useFavorites } from '../contexts/FavoritesContext';
 import CompareHeader from '../sections/compare/CompareHeader';
 import GameSelector from '../sections/compare/GameSelector';
 import SelectedGamesPreview from '../sections/compare/SelectedGamesPreview';
 import ComparisonTable from '../sections/compare/ComparisonTable';
+import PixelLoader from '../components/PixelLoader';
+import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
 
 function ComparePage() {
+  const loading = useSimulatedLoading(400);
   const { saveComparison } = useFavorites();
   const [saved, setSaved] = useState(false);
   const [selectedGame1, setSelectedGame1] = useState<number | null>(null);
   const [selectedGame2, setSelectedGame2] = useState<number | null>(null);
 
-  const handleSelectGame1 = (id: number | null) => {
+  const handleSelectGame1 = useCallback((id: number | null) => {
     setSelectedGame1(id);
-  };
+  }, []);
 
-  const handleSelectGame2 = (id: number | null) => {
+  const handleSelectGame2 = useCallback((id: number | null) => {
     setSelectedGame2(id);
-  };
+  }, []);
 
-  const game1 = selectedGame1 ? mockGames.find(game => game.id === selectedGame1) : undefined;
-  const game2 = selectedGame2 ? mockGames.find(game => game.id === selectedGame2) : undefined;
+  const game1 = selectedGame1 ? getGameById(selectedGame1) : undefined;
+  const game2 = selectedGame2 ? getGameById(selectedGame2) : undefined;
 
   const selectedGames = [game1, game2].filter(
     (game): game is NonNullable<typeof game> => Boolean(game)
   );
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+        <PixelLoader message="LOADING COMPARE..." />
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
@@ -34,7 +45,7 @@ function ComparePage() {
         <CompareHeader />
 
         <GameSelector
-          games={mockGames}
+          games={getAllGames()}
           selectedGame1={selectedGame1}
           selectedGame2={selectedGame2}
           onSelectGame1={handleSelectGame1}

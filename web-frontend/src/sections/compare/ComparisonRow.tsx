@@ -1,4 +1,4 @@
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 import ComparisonCell from './ComparisonCell';
 
 interface ComparisonRowProps {

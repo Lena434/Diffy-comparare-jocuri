@@ -1,10 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
-
-interface SavedComparison {
-  id: string;
-  gameIds: number[];
-}
+import type { SavedComparison } from "../types";
+import { loadFavorites, saveFavorites } from "../services/favoritesService";
 
 interface FavoritesContextValue {
   favoriteGameIds: number[];
@@ -23,33 +20,6 @@ const FavoritesContext = createContext<FavoritesContextValue>({
   saveComparison: () => {},
   removeComparison: () => {},
 });
-
-function getStorageKey(email: string) {
-  return `diffy-favs-${email.toLowerCase()}`;
-}
-
-interface StoredFavorites {
-  gameIds: number[];
-  comparisons: SavedComparison[];
-}
-
-function loadFavorites(email: string): StoredFavorites {
-  try {
-    const raw = localStorage.getItem(getStorageKey(email));
-    if (!raw) return { gameIds: [], comparisons: [] };
-    const parsed = JSON.parse(raw);
-    return {
-      gameIds: parsed.gameIds || [],
-      comparisons: parsed.comparisons || [],
-    };
-  } catch {
-    return { gameIds: [], comparisons: [] };
-  }
-}
-
-function saveFavorites(email: string, data: StoredFavorites) {
-  localStorage.setItem(getStorageKey(email), JSON.stringify(data));
-}
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuth();

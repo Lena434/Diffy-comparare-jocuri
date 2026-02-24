@@ -4,6 +4,7 @@ export const ROUTES = {
   COMPARE: "/compare",
   ABOUT: "/about",
   FAVORITES: "/favorites",
+  PROFILE: "/profile",
   LOGIN: "/login",
   SIGNUP: "/signup",
 };

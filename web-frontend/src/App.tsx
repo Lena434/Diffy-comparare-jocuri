@@ -15,6 +15,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import FavoritesPage from "./pages/FavoritesPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route element={<Guard requireAuth />}>
           <Route path="/compare" element={<ComparePage />} />
           <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 

@@ -1,5 +1,5 @@
 import GameCard from '../../components/GameCard';
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 
 interface SelectedGamesPreviewProps {
   game1: Game | undefined;

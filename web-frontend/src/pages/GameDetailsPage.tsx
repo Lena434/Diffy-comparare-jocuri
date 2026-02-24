@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockGames } from '../_mock/games';
+import { getGameById, getSimilarGames } from '../services/gameService';
 import GameCard from '../components/GameCard';
 import GenreBadge from '../components/GenreBadge';
+import PixelLoader from '../components/PixelLoader';
 import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
+import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
 import { ROUTES } from '../routes/routes';
 
 function GameDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const loading = useSimulatedLoading(400);
   const [compareHovered, setCompareHovered] = useState(false);
   const [comparePressed, setComparePressed] = useState(false);
   const [favHovered, setFavHovered] = useState(false);
@@ -18,7 +21,15 @@ function GameDetailsPage() {
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
 
-  const game = mockGames.find(g => g.id === Number(id));
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+        <PixelLoader message="LOADING GAME..." />
+      </div>
+    );
+  }
+
+  const game = getGameById(Number(id));
 
   if (!game) {
     return (
@@ -79,12 +90,7 @@ function GameDetailsPage() {
   }
 
   // Similar games
-  const similarGames = mockGames
-    .filter(g =>
-      g.id !== game.id &&
-      g.genre.some(genre => game.genre.includes(genre))
-    )
-    .slice(0, 4);
+  const similarGames = getSimilarGames(game);
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>

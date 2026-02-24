@@ -1,6 +1,6 @@
 import GamesGrid from './GamesGrid';
 import Pagination from '../../components/Pagination';  
-import type { Game } from '../../_mock/games';
+import type { Game } from '../../types';
 
 interface GamesContentProps {
   games: Game[];
@@ -10,7 +10,6 @@ interface GamesContentProps {
   onNextPage: () => void;
   onPreviousPage: () => void;
   onGoToPage: (page: number) => void;
-  onClearFilters: () => void;
 }
 
 function GamesContent({ 
@@ -21,7 +20,6 @@ function GamesContent({
   onNextPage,
   onPreviousPage,
   onGoToPage,
-  onClearFilters 
 }: GamesContentProps) {
   return (
     <div className="flex-1">
@@ -34,7 +32,7 @@ function GamesContent({
       </div>
 
       {/* Games Grid */}
-      <GamesGrid games={games} onClearFilters={onClearFilters} />
+      <GamesGrid games={games} />
 
       {/* Pagination */}
       <Pagination
