@@ -6,4 +6,7 @@ export const ROUTES = {
   FAVORITES: "/favorites",
   LOGIN: "/login",
   SIGNUP: "/signup",
+  PROFILE: "/profile",
+  ADMIN: "/admin",
+  ADMIN_USERS: "/admin/users",
 };

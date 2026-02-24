@@ -27,6 +27,13 @@ const AuthContext = createContext<AuthContextValue>({
   logout: () => {},
 });
 
+const SEED_ADMIN: User = {
+  username: "admin",
+  email: "admin@diffy.com",
+  password: "admin123",
+  role: "admin",
+};
+
 function getUsers(): User[] {
   try {
     return JSON.parse(localStorage.getItem("diffy-users") || "[]");
@@ -39,6 +46,15 @@ function saveUsers(users: User[]) {
   localStorage.setItem("diffy-users", JSON.stringify(users));
 }
 
+function seedAdmin() {
+  const users = getUsers();
+  const hasAdmin = users.some((u) => u.role === "admin");
+  if (!hasAdmin) {
+    users.push(SEED_ADMIN);
+    saveUsers(users);
+  }
+}
+
 function saveCurrentUser(user: User | null) {
   if (user) {
     localStorage.setItem("diffy-current-user", JSON.stringify(user));
@@ -48,6 +64,8 @@ function saveCurrentUser(user: User | null) {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  seedAdmin();
+
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       const stored = localStorage.getItem("diffy-current-user");
