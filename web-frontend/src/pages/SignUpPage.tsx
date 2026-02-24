@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { useAuth } from "../contexts/AuthContext";
+import { ArcadePanel } from "../components/arcade/ArcadePanel";
+import { PixelField } from "../components/arcade/PixelField";
+import { PixelButton } from "../components/arcade/PixelButton";
 
 function SignUpPage() {
   const navigate = useNavigate();
@@ -60,36 +63,7 @@ function SignUpPage() {
           </span>
         </div>
 
-        {/* Arcade Panel */}
-        <div
-          style={{
-            background: "var(--arcade-panel)",
-            border: "4px solid var(--arcade-border)",
-            boxShadow: "6px 6px 0px var(--arcade-shadow), 12px 12px 0px #000",
-            padding: "2rem",
-            position: "relative",
-          }}
-        >
-          {/* Corner bolts */}
-          <Bolt top="8px" left="8px" />
-          <Bolt top="8px" right="8px" />
-          <Bolt bottom="8px" left="8px" />
-          <Bolt bottom="8px" right="8px" />
-
-          {/* Title */}
-          <h1
-            className="text-center mb-8"
-            style={{
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: "0.9rem",
-              color: "var(--arcade-h)",
-              textShadow: "2px 2px 0px var(--arcade-h-shadow)",
-              letterSpacing: "0.08em",
-            }}
-          >
-            &gt; NEW PLAYER &lt;
-          </h1>
-
+        <ArcadePanel title="> NEW PLAYER <">
           <form onSubmit={handleSubmit} className="space-y-5">
             <PixelField
               label="USERNAME"
@@ -139,7 +113,6 @@ function SignUpPage() {
             </div>
           </form>
 
-          {/* Divider */}
           <div className="my-6" style={{ borderTop: "2px dashed var(--arcade-shadow)" }} />
 
           <p
@@ -159,7 +132,7 @@ function SignUpPage() {
               LOG IN
             </Link>
           </p>
-        </div>
+        </ArcadePanel>
 
         {/* Back button */}
         <button
@@ -201,114 +174,6 @@ function SignUpPage() {
         </p>
       </div>
     </div>
-  );
-}
-
-/* ── helpers ── */
-
-function Bolt({ top, bottom, left, right }: {
-  top?: string; bottom?: string; left?: string; right?: string;
-}) {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top, bottom, left, right,
-        width: "12px",
-        height: "12px",
-        background: "var(--arcade-border)",
-        border: "2px solid var(--arcade-shadow)",
-        borderRadius: "50%",
-        boxShadow: "1px 1px 0 #000",
-      }}
-    />
-  );
-}
-
-function PixelField({
-  label, type, value, onChange, placeholder,
-}: {
-  label: string;
-  type: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <div>
-      <label
-        style={{
-          display: "block",
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.5rem",
-          color: "var(--arcade-text)",
-          marginBottom: "6px",
-          letterSpacing: "0.05em",
-        }}
-      >
-        {label}
-      </label>
-      <input
-        type={type}
-        required
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        style={{
-          width: "100%",
-          background: "var(--arcade-input-bg)",
-          border: "3px solid var(--arcade-border)",
-          boxShadow: "3px 3px 0px var(--arcade-shadow)",
-          color: "var(--arcade-h)",
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.55rem",
-          padding: "10px 12px",
-          outline: "none",
-          boxSizing: "border-box",
-        }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--arcade-accent)")}
-        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--arcade-border)")}
-      />
-    </div>
-  );
-}
-
-function PixelButton({ type, label }: { type?: "submit" | "button"; label: string }) {
-  return (
-    <button
-      type={type ?? "button"}
-      style={{
-        width: "100%",
-        background: "var(--arcade-cta)",
-        border: "3px solid var(--arcade-text)",
-        boxShadow: "4px 4px 0px var(--arcade-shadow)",
-        color: "#fff",
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.65rem",
-        padding: "14px",
-        cursor: "pointer",
-        letterSpacing: "0.08em",
-        transition: "transform 0.08s, box-shadow 0.08s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "var(--arcade-accent)";
-        e.currentTarget.style.borderColor = "var(--arcade-h)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "var(--arcade-cta)";
-        e.currentTarget.style.borderColor = "var(--arcade-text)";
-      }}
-      onMouseDown={(e) => {
-        e.currentTarget.style.transform = "translate(4px, 4px)";
-        e.currentTarget.style.boxShadow = "0px 0px 0px var(--arcade-shadow)";
-      }}
-      onMouseUp={(e) => {
-        e.currentTarget.style.transform = "translate(0,0)";
-        e.currentTarget.style.boxShadow = "4px 4px 0px var(--arcade-shadow)";
-      }}
-    >
-      {label}
-    </button>
   );
 }
 
