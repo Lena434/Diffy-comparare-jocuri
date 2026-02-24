@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navigation/NavigationBar';
 import { ROUTES } from '../routes/routes';
 import { useTheme, type Theme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';

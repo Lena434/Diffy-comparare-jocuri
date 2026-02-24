@@ -1,4 +1,4 @@
-import GameCard from '../../components/GameCard';
+import GameCard from '../../components/game/GameCard';
 import type { Game } from '../../types';
 
 interface SelectedGamesPreviewProps {

@@ -1,9 +1,9 @@
 import { getAllGames } from '../services/gameService';
-import FilterBar from '../components/FilterBar';
+import FilterBar from '../components/filters/FilterBar';
 import GamesHeader from '../sections/games/GamesHeader';
 import GamesGrid from '../sections/games/GamesGrid';
-import Pagination from '../components/Pagination';
-import PixelLoader from '../components/PixelLoader';
+import Pagination from '../components/navigation/Pagination';
+import PixelLoader from '../components/ui/PixelLoader';
 import { useGameFilters } from '../hooks/useGameFilters';
 import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
 

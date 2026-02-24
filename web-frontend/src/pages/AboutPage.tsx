@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
-import FeatureCard from '../components/FeatureCard';
-import HowItWorksStep from '../components/HowItWorksStep';
+import FeatureCard from '../sections/about/FeatureCard';
+import HowItWorksStep from '../sections/about/HowItWorksStep';
 
 function PixelBtn({
   children,

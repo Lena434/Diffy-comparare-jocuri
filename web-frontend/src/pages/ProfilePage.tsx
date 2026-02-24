@@ -4,8 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
 import { getGamesByIds } from "../services/gameService";
-import GameCard from "../components/GameCard";
-import ConfirmDialog from "../components/ConfirmDialog";
+import GameCard from "../components/game/GameCard";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import type { UserProfile, PcSpecs } from "../contexts/AuthContext";
 
 /* ── Shared pixel styles ── */

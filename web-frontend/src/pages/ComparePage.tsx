@@ -5,7 +5,7 @@ import CompareHeader from '../sections/compare/CompareHeader';
 import GameSelector from '../sections/compare/GameSelector';
 import SelectedGamesPreview from '../sections/compare/SelectedGamesPreview';
 import ComparisonTable from '../sections/compare/ComparisonTable';
-import PixelLoader from '../components/PixelLoader';
+import PixelLoader from '../components/ui/PixelLoader';
 import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
 
 function ComparePage() {

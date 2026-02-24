@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
 import { getGamesByIds } from "../services/gameService";
-import GameCard from "../components/GameCard";
-import ConfirmDialog from "../components/ConfirmDialog";
-import PixelLoader from "../components/PixelLoader";
+import GameCard from "../components/game/GameCard";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import PixelLoader from "../components/ui/PixelLoader";
 import { useSimulatedLoading } from "../hooks/useSimulatedLoading";
 
 function FavoritesPage() {

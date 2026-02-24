@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../routes/routes';
+import { ROUTES } from '../../routes/routes';
 
 interface HeroSearchBarProps {
   placeholder?: string;

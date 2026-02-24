@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllGames } from '../../services/gameService';
-import GameCard from '../../components/GameCard';
+import GameCard from '../../components/game/GameCard';
 import { ROUTES } from '../../routes/routes';
 
 function FeaturedGamesSection() {

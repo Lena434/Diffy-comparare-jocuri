@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import HeroSearchBar from '../../components/HeroSearchBar';
-import StatChip from '../../components/StatChip';
+import HeroSearchBar from '../../components/navigation/HeroSearchBar';
+import StatChip from '../../components/game/StatChip';
 
 function PixelBtn({
   children,

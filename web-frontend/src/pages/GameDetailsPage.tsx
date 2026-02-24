@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getGameById, getSimilarGames } from '../services/gameService';
-import GameCard from '../components/GameCard';
-import GenreBadge from '../components/GenreBadge';
-import PixelLoader from '../components/PixelLoader';
+import GameCard from '../components/game/GameCard';
+import GenreBadge from '../components/game/GenreBadge';
+import PixelLoader from '../components/ui/PixelLoader';
 import { useAuth } from '../contexts/AuthContext';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
