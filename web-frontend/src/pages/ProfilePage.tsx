@@ -14,77 +14,78 @@ import { ComparisonsSection } from "../sections/profile/ComparisonsSection";
 
 const FONT = "'Press Start 2P', monospace";
 
+type Msg = { text: string; type: "success" | "error" } | null;
+type PlayerInfoForm = { username: string; email: string };
+type PasswordForm = { oldPw: string; newPw: string; confirmPw: string };
+type PlatformForm = { platform: "playstation" | "xbox" | "pc" | ""; platformVersion: string; pcSpecs: PcSpecs };
+type Dialogs = { logout: boolean; password: boolean };
+
 function ProfilePage() {
   const { currentUser, updateProfile, changePassword, logout } = useAuth();
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
   const navigate = useNavigate();
 
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [showPwConfirm, setShowPwConfirm] = useState(false);
+  const [dialogs, setDialogs] = useState<Dialogs>({ logout: false, password: false });
 
-  const [username, setUsername] = useState(currentUser?.username ?? "");
-  const [email, setEmail] = useState(currentUser?.email ?? "");
-  const [infoMsg, setInfoMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfoForm>({
+    username: currentUser?.username ?? "",
+    email: currentUser?.email ?? "",
+  });
+  const [infoMsg, setInfoMsg] = useState<Msg>(null);
 
-  const [oldPw, setOldPw] = useState("");
-  const [newPw, setNewPw] = useState("");
-  const [confirmPw, setConfirmPw] = useState("");
-  const [pwMsg, setPwMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [passwordForm, setPasswordForm] = useState<PasswordForm>({ oldPw: "", newPw: "", confirmPw: "" });
+  const [pwMsg, setPwMsg] = useState<Msg>(null);
 
-  const [platform, setPlatform] = useState<"playstation" | "xbox" | "pc" | "">(
-    currentUser?.profile?.platform ?? ""
-  );
-  const [platformVersion, setPlatformVersion] = useState(
-    currentUser?.profile?.platformVersion ?? ""
-  );
-  const [pcSpecs, setPcSpecs] = useState<PcSpecs>(
-    currentUser?.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" }
-  );
-  const [platMsg, setPlatMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [platformForm, setPlatformForm] = useState<PlatformForm>({
+    platform: currentUser?.profile?.platform ?? "",
+    platformVersion: currentUser?.profile?.platformVersion ?? "",
+    pcSpecs: currentUser?.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" },
+  });
+  const [platMsg, setPlatMsg] = useState<Msg>(null);
 
   useEffect(() => {
     if (currentUser) {
-      setUsername(currentUser.username);
-      setEmail(currentUser.email);
-      setPlatform(currentUser.profile?.platform ?? "");
-      setPlatformVersion(currentUser.profile?.platformVersion ?? "");
-      setPcSpecs(currentUser.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" });
+      setPlayerInfo({ username: currentUser.username, email: currentUser.email });
+      setPlatformForm({
+        platform: currentUser.profile?.platform ?? "",
+        platformVersion: currentUser.profile?.platformVersion ?? "",
+        pcSpecs: currentUser.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" },
+      });
     }
   }, [currentUser]);
 
   const favoriteGames = getGamesByIds(favoriteGameIds);
 
   function handleSaveInfo() {
-    const validationErr = !username.trim() ? "USERNAME REQUIRED!" : !email.trim() ? "EMAIL REQUIRED!" : null;
+    const validationErr = !playerInfo.username.trim() ? "USERNAME REQUIRED!" : !playerInfo.email.trim() ? "EMAIL REQUIRED!" : null;
     if (validationErr) { setInfoMsg({ text: validationErr, type: "error" }); return; }
-    const err = updateProfile({ username: username.trim(), email: email.trim() });
+    const err = updateProfile({ username: playerInfo.username.trim(), email: playerInfo.email.trim() });
     setInfoMsg(err ? { text: err, type: "error" } : { text: "PROFILE UPDATED!", type: "success" });
   }
 
   function handleChangePassword() {
-    const err = changePassword(oldPw, newPw);
+    const err = changePassword(passwordForm.oldPw, passwordForm.newPw);
     if (err) { setPwMsg({ text: err, type: "error" }); return; }
     setPwMsg({ text: "PASSWORD CHANGED!", type: "success" });
-    setOldPw(""); setNewPw(""); setConfirmPw("");
+    setPasswordForm({ oldPw: "", newPw: "", confirmPw: "" });
   }
 
   function handleSavePlatform() {
-    if (!platform) { setPlatMsg({ text: "SELECT A PLATFORM!", type: "error" }); return; }
-    if ((platform === "playstation" || platform === "xbox") && !platformVersion) {
+    if (!platformForm.platform) { setPlatMsg({ text: "SELECT A PLATFORM!", type: "error" }); return; }
+    if ((platformForm.platform === "playstation" || platformForm.platform === "xbox") && !platformForm.platformVersion) {
       setPlatMsg({ text: "SELECT VERSION!", type: "error" }); return;
     }
     const profile: UserProfile = {
-      platform,
-      ...(platformVersion ? { platformVersion } : {}),
-      ...(platform === "pc" ? { pcSpecs } : {}),
+      platform: platformForm.platform,
+      ...(platformForm.platformVersion ? { platformVersion: platformForm.platformVersion } : {}),
+      ...(platformForm.platform === "pc" ? { pcSpecs: platformForm.pcSpecs } : {}),
     };
     const err = updateProfile({ profile });
     setPlatMsg(err ? { text: err, type: "error" } : { text: "PLATFORM SAVED!", type: "success" });
   }
 
   function handlePlatformChange(p: "playstation" | "xbox" | "pc") {
-    setPlatform(p);
-    setPlatformVersion("");
+    setPlatformForm(prev => ({ ...prev, platform: p, platformVersion: "" }));
     setPlatMsg(null);
   }
 
@@ -118,34 +119,34 @@ function ProfilePage() {
         </div>
 
         <PlayerInfoSection
-          username={username}
-          email={email}
-          setUsername={setUsername}
-          setEmail={setEmail}
+          username={playerInfo.username}
+          email={playerInfo.email}
+          setUsername={v => setPlayerInfo(prev => ({ ...prev, username: v }))}
+          setEmail={v => setPlayerInfo(prev => ({ ...prev, email: v }))}
           onSave={handleSaveInfo}
           msg={infoMsg}
         />
 
         <PasswordSection
-          oldPw={oldPw}
-          newPw={newPw}
-          confirmPw={confirmPw}
-          setOldPw={setOldPw}
-          setNewPw={setNewPw}
-          setConfirmPw={setConfirmPw}
-          onRequestUpdate={() => setShowPwConfirm(true)}
+          oldPw={passwordForm.oldPw}
+          newPw={passwordForm.newPw}
+          confirmPw={passwordForm.confirmPw}
+          setOldPw={v => setPasswordForm(prev => ({ ...prev, oldPw: v }))}
+          setNewPw={v => setPasswordForm(prev => ({ ...prev, newPw: v }))}
+          setConfirmPw={v => setPasswordForm(prev => ({ ...prev, confirmPw: v }))}
+          onRequestUpdate={() => setDialogs(prev => ({ ...prev, password: true }))}
           msg={pwMsg}
           setMsg={setPwMsg}
           currentUserEmail={currentUser?.email}
         />
 
         <PlatformSection
-          platform={platform}
-          platformVersion={platformVersion}
-          pcSpecs={pcSpecs}
+          platform={platformForm.platform}
+          platformVersion={platformForm.platformVersion}
+          pcSpecs={platformForm.pcSpecs}
           onPlatformChange={handlePlatformChange}
-          setPlatformVersion={setPlatformVersion}
-          setPcSpecs={setPcSpecs}
+          setPlatformVersion={v => setPlatformForm(prev => ({ ...prev, platformVersion: v }))}
+          setPcSpecs={v => setPlatformForm(prev => ({ ...prev, pcSpecs: v }))}
           onSave={handleSavePlatform}
           msg={platMsg}
         />
@@ -159,7 +160,7 @@ function ProfilePage() {
 
         <div style={{ marginTop: "8px", marginBottom: "48px", display: "flex", justifyContent: "center" }}>
           <button
-            onClick={() => setShowLogoutConfirm(true)}
+            onClick={() => setDialogs(prev => ({ ...prev, logout: true }))}
             className="bg-transparent hover:bg-[#ef4444] text-[#ef4444] hover:text-white border-[3px] border-[#ef4444] [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[box-shadow:6px_6px_0px_var(--arcade-shadow)] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-all duration-100"
             style={{
               fontFamily: FONT,
@@ -174,25 +175,25 @@ function ProfilePage() {
         </div>
 
         <ConfirmDialog
-          open={showLogoutConfirm}
+          open={dialogs.logout}
           title="LOG OUT?"
           message="ARE YOU SURE YOU WANT TO LOG OUT?"
           confirmLabel="YES, LOG OUT"
           cancelLabel="CANCEL"
           confirmColor="yellow"
-          onConfirm={() => { setShowLogoutConfirm(false); logout(); navigate(ROUTES.HOME); }}
-          onCancel={() => setShowLogoutConfirm(false)}
+          onConfirm={() => { setDialogs(prev => ({ ...prev, logout: false })); logout(); navigate(ROUTES.HOME); }}
+          onCancel={() => setDialogs(prev => ({ ...prev, logout: false }))}
         />
 
         <ConfirmDialog
-          open={showPwConfirm}
+          open={dialogs.password}
           title="CHANGE PASSWORD?"
           message="ARE YOU SURE YOU WANT TO UPDATE YOUR PASSWORD?"
           confirmLabel="YES, CHANGE"
           cancelLabel="CANCEL"
           confirmColor="yellow"
-          onConfirm={() => { setShowPwConfirm(false); handleChangePassword(); }}
-          onCancel={() => setShowPwConfirm(false)}
+          onConfirm={() => { setDialogs(prev => ({ ...prev, password: false })); handleChangePassword(); }}
+          onCancel={() => setDialogs(prev => ({ ...prev, password: false }))}
         />
       </div>
     </div>

@@ -6,23 +6,27 @@ import { ArcadePanel } from "../components/arcade/ArcadePanel";
 import { PixelField } from "../components/arcade/PixelField";
 import { PixelButton } from "../components/arcade/PixelButton";
 
+type SignUpForm = {
+  username: string;
+  email: string;
+  password: string;
+  confirm: string;
+};
+
 function SignUpPage() {
   const navigate = useNavigate();
   const { signup } = useAuth();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [form, setForm] = useState<SignUpForm>({ username: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (password !== confirm) {
+    if (form.password !== form.confirm) {
       setError("PASSWORDS DO NOT MATCH!");
       return;
     }
     setError("");
-    const err = signup(username, email, password);
+    const err = signup(form.username, form.email, form.password);
     if (err) {
       setError(err);
       return;
@@ -68,29 +72,29 @@ function SignUpPage() {
             <PixelField
               label="USERNAME"
               type="text"
-              value={username}
-              onChange={setUsername}
+              value={form.username}
+              onChange={v => setForm(prev => ({ ...prev, username: v }))}
               placeholder="gamertag"
             />
             <PixelField
               label="EMAIL"
               type="email"
-              value={email}
-              onChange={setEmail}
+              value={form.email}
+              onChange={v => setForm(prev => ({ ...prev, email: v }))}
               placeholder="player@example.com"
             />
             <PixelField
               label="PASSWORD"
               type="password"
-              value={password}
-              onChange={setPassword}
+              value={form.password}
+              onChange={v => setForm(prev => ({ ...prev, password: v }))}
               placeholder="••••••••"
             />
             <PixelField
               label="CONFIRM PASSWORD"
               type="password"
-              value={confirm}
-              onChange={setConfirm}
+              value={form.confirm}
+              onChange={v => setForm(prev => ({ ...prev, confirm: v }))}
               placeholder="••••••••"
             />
 
