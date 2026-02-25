@@ -12,8 +12,6 @@ function HeroSearchBar({
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [focused, setFocused] = useState(false);
-  const [btnHovered, setBtnHovered] = useState(false);
-  const [btnPressed, setBtnPressed] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,15 +47,8 @@ function HeroSearchBar({
         />
         <button
           type="submit"
-          onMouseEnter={() => setBtnHovered(true)}
-          onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
-          onMouseDown={() => setBtnPressed(true)}
-          onMouseUp={() => setBtnPressed(false)}
+          className="bg-[var(--arcade-cta)] hover:bg-[var(--arcade-accent)] border-[3px] border-[var(--arcade-text)] hover:border-[var(--arcade-h)] [box-shadow:3px_3px_0px_var(--arcade-shadow)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:translate-x-[3px] active:translate-y-[3px] transition-[background,border-color] duration-75"
           style={{
-            background: btnHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-            border: `3px solid ${btnHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-            boxShadow: btnPressed ? "0 0 0 var(--arcade-shadow)" : "3px 3px 0px var(--arcade-shadow)",
-            transform: btnPressed ? "translate(3px,3px)" : "translate(0,0)",
             color: "#fff",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.5rem",
@@ -65,7 +56,6 @@ function HeroSearchBar({
             cursor: "pointer",
             letterSpacing: "0.05em",
             whiteSpace: "nowrap",
-            transition: "background 0.08s, border-color 0.08s",
           }}
         >
           🔍 SEARCH

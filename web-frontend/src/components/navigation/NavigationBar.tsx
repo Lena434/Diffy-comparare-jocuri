@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ROUTES } from "../../routes/routes";
 
@@ -9,38 +8,22 @@ function PixelNavLink({
   to: string;
   children: React.ReactNode;
 }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <NavLink
       to={to}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={({ isActive }) => ({
+      style={{
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.5rem",
-        color: isActive ? "var(--arcade-h)" : hovered ? "var(--arcade-accent)" : "var(--arcade-text)",
-        textDecoration: "none",
         letterSpacing: "0.06em",
-        padding: "6px 10px",
-        border: isActive
-          ? "2px solid var(--arcade-h)"
-          : hovered
-          ? "2px solid var(--arcade-border)"
-          : "2px solid transparent",
-        boxShadow: isActive
-          ? "2px 2px 0px var(--arcade-h-shadow)"
-          : hovered
-          ? "2px 2px 0px var(--arcade-shadow)"
-          : "none",
-        background: isActive
-          ? "rgba(250,204,21,0.08)"
-          : hovered
-          ? "rgba(139,92,246,0.1)"
-          : "transparent",
-        transition: "color 0.08s, border-color 0.08s, background 0.08s",
-        whiteSpace: "nowrap",
-      })}
+      }}
+      className={({ isActive }) =>
+        [
+          "no-underline px-[10px] py-[6px] border-2 whitespace-nowrap transition-[color,border-color,background,box-shadow] duration-75",
+          isActive
+            ? "text-[var(--arcade-h)] border-[var(--arcade-h)] [box-shadow:2px_2px_0px_var(--arcade-h-shadow)] bg-[rgba(250,204,21,0.08)]"
+            : "text-[var(--arcade-text)] border-transparent bg-transparent hover:text-[var(--arcade-accent)] hover:border-[var(--arcade-border)] hover:[box-shadow:2px_2px_0px_var(--arcade-shadow)] hover:bg-[rgba(139,92,246,0.1)]",
+        ].join(" ")
+      }
     >
       {children}
     </NavLink>

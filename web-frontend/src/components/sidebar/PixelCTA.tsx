@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 function PixelCTA({
   children,
   onClick,
@@ -7,28 +5,18 @@ function PixelCTA({
   children: React.ReactNode;
   onClick?: () => void;
 }) {
-  const [pressed, setPressed] = useState(false);
-  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
+      className="bg-[var(--arcade-cta)] hover:bg-[var(--arcade-accent)] border-2 border-[var(--arcade-text)] hover:border-[var(--arcade-h)] [box-shadow:3px_3px_0px_var(--arcade-shadow)] active:[box-shadow:0px_0px_0px_var(--arcade-shadow)] active:translate-x-[3px] active:translate-y-[3px] transition-[background,border-color] duration-100"
       style={{
         width: "100%",
-        background: hovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-        border: `2px solid ${hovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-        boxShadow: pressed ? "0px 0px 0px var(--arcade-shadow)" : "3px 3px 0px var(--arcade-shadow)",
-        transform: pressed ? "translate(3px,3px)" : "translate(0,0)",
         color: "#fff",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.5rem",
         padding: "10px 8px",
         cursor: "pointer",
         letterSpacing: "0.06em",
-        transition: "background 0.1s, border-color 0.1s",
         textAlign: "center",
         display: "block",
       }}
