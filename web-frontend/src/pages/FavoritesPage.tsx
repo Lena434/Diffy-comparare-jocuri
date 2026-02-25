@@ -77,7 +77,7 @@ function FavoritesPage() {
               <ComparisonCard
                 key={comp.id}
                 gameIds={comp.gameIds}
-                onView={() => navigate(ROUTES.COMPARE)}
+                onView={() => navigate(ROUTES.COMPARE, { state: { viewGameIds: comp.gameIds } })}
                 onRemove={() => setConfirmRemoveId(comp.id)}
               />
             ))}

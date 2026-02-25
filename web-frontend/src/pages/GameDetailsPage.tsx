@@ -389,7 +389,7 @@ function GameDetailsPage() {
             {/* Action Buttons */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
               <button
-                onClick={() => navigate('/compare')}
+                onClick={() => navigate(ROUTES.COMPARE, { state: { preselectedGameId: game.id } })}
                 className="[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] transition-[background,border-color] duration-[80ms]"
                 style={{
                   flex: "1 1 200px",
