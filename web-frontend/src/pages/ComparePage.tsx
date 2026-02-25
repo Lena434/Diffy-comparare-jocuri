@@ -68,29 +68,19 @@ function ComparePage() {
                   setSaved(true);
                   setTimeout(() => setSaved(false), 2000);
                 }}
+                className={
+                  saved
+                    ? "[background:rgba(34,197,94,0.8)] [border-color:#4ade80] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] border-solid transition-[background,border-color] duration-[150ms]"
+                    : "[background:var(--arcade-cta)] [border-color:var(--arcade-text)] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] border-solid transition-[background,border-color] duration-[150ms]"
+                }
                 style={{
-                  background: saved ? "rgba(34,197,94,0.8)" : "var(--arcade-cta)",
-                  border: `3px solid ${saved ? "#4ade80" : "var(--arcade-text)"}`,
-                  boxShadow: "4px 4px 0px var(--arcade-shadow)",
-                  color: "#fff",
+                  borderWidth: "3px",
+                  borderStyle: "solid",
                   fontFamily: "'Press Start 2P', monospace",
                   fontSize: "0.45rem",
                   padding: "14px 24px",
                   cursor: "pointer",
                   letterSpacing: "0.06em",
-                  transition: "background 0.15s, border-color 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (!saved) {
-                    e.currentTarget.style.background = "var(--arcade-accent)";
-                    e.currentTarget.style.borderColor = "var(--arcade-h)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!saved) {
-                    e.currentTarget.style.background = "var(--arcade-cta)";
-                    e.currentTarget.style.borderColor = "var(--arcade-text)";
-                  }
                 }}
               >
                 {saved ? "✓ SAVED!" : "⭐ SAVE TO FAVORITES"}

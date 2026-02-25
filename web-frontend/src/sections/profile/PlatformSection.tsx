@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ProfilePanel } from "../../components/arcade/ProfilePanel";
 import { PixelInput } from "../../components/arcade/PixelInput";
 import { PixelSelect } from "../../components/arcade/PixelSelect";
@@ -15,17 +14,16 @@ function PlatformChip({
 }: {
   label: string; icon: string; active: boolean; onClick: () => void;
 }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={
+        active
+          ? "[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-h)] text-white [box-shadow:3px_3px_0px_var(--arcade-shadow)] transition-all duration-[100ms]"
+          : "bg-transparent border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-text)] hover:[background:rgba(139,92,246,0.15)] hover:[border-color:var(--arcade-border)] hover:[color:var(--arcade-h)] transition-all duration-[100ms]"
+      }
       style={{
-        background: active ? "var(--arcade-cta)" : hovered ? "rgba(139,92,246,0.15)" : "transparent",
-        border: `3px solid ${active ? "var(--arcade-h)" : hovered ? "var(--arcade-border)" : "var(--arcade-shadow)"}`,
-        boxShadow: active ? "3px 3px 0px var(--arcade-shadow)" : "none",
-        color: active ? "#fff" : hovered ? "var(--arcade-h)" : "var(--arcade-text)",
+        borderWidth: "3px",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.4rem",
         padding: "10px 16px",
@@ -34,7 +32,6 @@ function PlatformChip({
         display: "flex",
         alignItems: "center",
         gap: "8px",
-        transition: "all 0.1s",
       }}
     >
       <span style={{ fontSize: "1rem" }}>{icon}</span>

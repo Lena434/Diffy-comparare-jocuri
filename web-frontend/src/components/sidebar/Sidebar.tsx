@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../routes/routes";
 import { useIsMobile } from "../../hooks/useIsMobile";
@@ -16,7 +16,6 @@ export const SIDEBAR_WIDTH = 220;
 function Sidebar() {
   const isMobile = useIsMobile();
   const { open, setOpen } = useSidebar();
-  const [toggleHovered, setToggleHovered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,18 +54,15 @@ function Sidebar() {
       {/* Toggle Button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        onMouseEnter={() => setToggleHovered(true)}
-        onMouseLeave={() => setToggleHovered(false)}
         title={open ? "Close sidebar" : "Open sidebar"}
+        className="[background:var(--arcade-panel)] border-solid [border-color:var(--arcade-border)] [color:var(--arcade-border)] [box-shadow:3px_3px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] hover:text-white"
         style={{
           position: "fixed",
           top: "72px",
           left: open ? `${SIDEBAR_WIDTH + 8}px` : "8px",
           zIndex: 200,
-          background: toggleHovered ? "var(--arcade-accent)" : "var(--arcade-panel)",
-          border: `3px solid ${toggleHovered ? "var(--arcade-h)" : "var(--arcade-border)"}`,
-          boxShadow: "3px 3px 0px var(--arcade-shadow)",
-          color: toggleHovered ? "#fff" : "var(--arcade-border)",
+          borderWidth: "3px",
+          borderStyle: "solid",
           fontFamily: "'Press Start 2P', monospace",
           fontSize: "0.7rem",
           width: "32px",

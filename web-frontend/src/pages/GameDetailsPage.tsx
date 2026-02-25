@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getGameById, getSimilarGames } from '../services/gameService';
 import GameCard from '../components/game/GameCard';
@@ -13,11 +12,6 @@ function GameDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const loading = useSimulatedLoading(400);
-  const [compareHovered, setCompareHovered] = useState(false);
-  const [comparePressed, setComparePressed] = useState(false);
-  const [favHovered, setFavHovered] = useState(false);
-  const [favPressed, setFavPressed] = useState(false);
-  const [backHovered, setBackHovered] = useState(false);
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
 
@@ -99,12 +93,8 @@ function GameDetailsPage() {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          onMouseEnter={() => setBackHovered(true)}
-          onMouseLeave={() => setBackHovered(false)}
+          className="bg-transparent border-2 border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-muted)] hover:[background:var(--arcade-border)] hover:[border-color:var(--arcade-accent)] hover:[color:var(--arcade-accent)] transition-[color,border-color,background] duration-[100ms]"
           style={{
-            background: backHovered ? "var(--arcade-border)" : "transparent",
-            border: `2px solid ${backHovered ? "var(--arcade-accent)" : "var(--arcade-shadow)"}`,
-            color: backHovered ? "var(--arcade-accent)" : "var(--arcade-muted)",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.45rem",
             cursor: "pointer",
@@ -114,7 +104,6 @@ function GameDetailsPage() {
             gap: "8px",
             padding: "9px 18px",
             letterSpacing: "0.06em",
-            transition: "color 0.1s, border-color 0.1s, background 0.1s",
           }}
         >
           <span>◄</span>
@@ -407,23 +396,16 @@ function GameDetailsPage() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
               <button
                 onClick={() => navigate('/compare')}
-                onMouseEnter={() => setCompareHovered(true)}
-                onMouseLeave={() => { setCompareHovered(false); setComparePressed(false); }}
-                onMouseDown={() => setComparePressed(true)}
-                onMouseUp={() => setComparePressed(false)}
+                className="[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] transition-[background,border-color] duration-[80ms]"
                 style={{
                   flex: "1 1 200px",
-                  background: compareHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-                  border: `3px solid ${compareHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-                  boxShadow: comparePressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
-                  transform: comparePressed ? "translate(4px,4px)" : "translate(0,0)",
-                  color: "#fff",
+                  borderWidth: "3px",
+                  borderStyle: "solid",
                   fontFamily: "'Press Start 2P', monospace",
                   fontSize: "0.45rem",
                   padding: "14px 20px",
                   cursor: "pointer",
                   letterSpacing: "0.06em",
-                  transition: "background 0.08s, border-color 0.08s",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -442,32 +424,22 @@ function GameDetailsPage() {
                   }
                   toggleFavoriteGame(game.id);
                 }}
-                onMouseEnter={() => setFavHovered(true)}
-                onMouseLeave={() => { setFavHovered(false); setFavPressed(false); }}
-                onMouseDown={() => setFavPressed(true)}
-                onMouseUp={() => setFavPressed(false)}
+                className="[background:var(--fav-bg)] [border-color:rgba(219,39,119,0.9)] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] transition-[background,border-color] duration-[80ms]"
                 style={{
+                  '--fav-bg': (isAuthenticated && isFavoriteGame(game.id)) ? 'rgba(239,68,68,0.8)' : 'rgba(236,72,153,0.8)',
                   flex: "1 1 200px",
-                  background: favHovered
-                    ? "var(--arcade-accent)"
-                    : (isAuthenticated && isFavoriteGame(game.id))
-                      ? "rgba(239,68,68,0.8)"
-                      : "rgba(236, 72, 153, 0.8)",
-                  border: `3px solid ${favHovered ? "var(--arcade-h)" : "rgba(219, 39, 119, 0.9)"}`,
-                  boxShadow: favPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
-                  transform: favPressed ? "translate(4px,4px)" : "translate(0,0)",
-                  color: "#fff",
+                  borderWidth: "3px",
+                  borderStyle: "solid",
                   fontFamily: "'Press Start 2P', monospace",
                   fontSize: "0.45rem",
                   padding: "14px 20px",
                   cursor: "pointer",
                   letterSpacing: "0.06em",
-                  transition: "background 0.08s, border-color 0.08s",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "8px",
-                }}
+                } as React.CSSProperties}
               >
                 <span>{isAuthenticated && isFavoriteGame(game.id) ? "❤" : "🤍"}</span>
                 <span>{isAuthenticated && isFavoriteGame(game.id) ? "UNFAVORITE" : "FAVORITE"}</span>

@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { ProfilePanel } from "../../components/arcade/ProfilePanel";
 import { getGamesByIds } from "../../services/gameService";
 
 function ComparisonCard({ gameIds, onRemove }: { gameIds: number[]; onRemove: () => void }) {
-  const [removeHovered, setRemoveHovered] = useState(false);
   const games = getGamesByIds(gameIds);
 
   return (
@@ -33,12 +31,8 @@ function ComparisonCard({ gameIds, onRemove }: { gameIds: number[]; onRemove: ()
       </p>
       <button
         onClick={onRemove}
-        onMouseEnter={() => setRemoveHovered(true)}
-        onMouseLeave={() => setRemoveHovered(false)}
+        className="bg-transparent border-2 border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-muted)] hover:bg-[#dc2626] hover:[border-color:#f87171] hover:text-white transition-[background,border-color,color] duration-[80ms]"
         style={{
-          background: removeHovered ? "#dc2626" : "transparent",
-          border: `2px solid ${removeHovered ? "#f87171" : "var(--arcade-shadow)"}`,
-          color: removeHovered ? "#fff" : "var(--arcade-muted)",
           fontFamily: "'Press Start 2P', monospace",
           fontSize: "0.3rem",
           padding: "6px 10px",

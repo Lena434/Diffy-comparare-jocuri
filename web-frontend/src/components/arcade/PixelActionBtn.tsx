@@ -9,36 +9,25 @@ export function PixelActionBtn({
   onClick: () => void;
   variant?: "primary" | "secondary" | "danger";
 }) {
-  const bg =
+  const variantClass =
     variant === "primary"
-      ? "var(--arcade-cta)"
+      ? "[background:var(--arcade-cta)] [border-color:var(--arcade-text)] text-white"
       : variant === "danger"
-      ? "rgba(239,68,68,0.8)"
-      : "transparent";
-  const borderColor = variant === "secondary" ? "var(--arcade-border)" : "var(--arcade-text)";
+      ? "[background:rgba(239,68,68,0.8)] [border-color:var(--arcade-text)] text-white"
+      : "bg-transparent [border-color:var(--arcade-border)] [color:var(--arcade-text)]";
 
   return (
     <button
       onClick={onClick}
+      className={`${variantClass} border-solid [box-shadow:4px_4px_0px_var(--arcade-shadow)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] transition-[transform,box-shadow] duration-[80ms]`}
       style={{
-        background: bg,
-        border: `3px solid ${borderColor}`,
-        boxShadow: "4px 4px 0px var(--arcade-shadow)",
-        color: variant === "secondary" ? "var(--arcade-text)" : "#fff",
+        borderWidth: "3px",
+        borderStyle: "solid",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.45rem",
         padding: "12px 20px",
         cursor: "pointer",
         letterSpacing: "0.06em",
-        transition: "transform 0.08s, box-shadow 0.08s",
-      }}
-      onMouseDown={(e) => {
-        e.currentTarget.style.transform = "translate(4px, 4px)";
-        e.currentTarget.style.boxShadow = "0 0 0 var(--arcade-shadow)";
-      }}
-      onMouseUp={(e) => {
-        e.currentTarget.style.transform = "translate(0,0)";
-        e.currentTarget.style.boxShadow = "4px 4px 0px var(--arcade-shadow)";
       }}
     >
       {children}

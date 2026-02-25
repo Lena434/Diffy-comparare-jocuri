@@ -55,8 +55,8 @@ function ProfilePage() {
   const favoriteGames = getGamesByIds(favoriteGameIds);
 
   function handleSaveInfo() {
-    if (!username.trim()) { setInfoMsg({ text: "USERNAME REQUIRED!", type: "error" }); return; }
-    if (!email.trim()) { setInfoMsg({ text: "EMAIL REQUIRED!", type: "error" }); return; }
+    const validationErr = !username.trim() ? "USERNAME REQUIRED!" : !email.trim() ? "EMAIL REQUIRED!" : null;
+    if (validationErr) { setInfoMsg({ text: validationErr, type: "error" }); return; }
     const err = updateProfile({ username: username.trim(), email: email.trim() });
     setInfoMsg(err ? { text: err, type: "error" } : { text: "PROFILE UPDATED!", type: "success" });
   }
@@ -70,12 +70,14 @@ function ProfilePage() {
 
   function handleSavePlatform() {
     if (!platform) { setPlatMsg({ text: "SELECT A PLATFORM!", type: "error" }); return; }
-    const profile: UserProfile = { platform };
-    if (platform === "playstation" || platform === "xbox") {
-      if (!platformVersion) { setPlatMsg({ text: "SELECT VERSION!", type: "error" }); return; }
-      profile.platformVersion = platformVersion;
+    if ((platform === "playstation" || platform === "xbox") && !platformVersion) {
+      setPlatMsg({ text: "SELECT VERSION!", type: "error" }); return;
     }
-    if (platform === "pc") profile.pcSpecs = pcSpecs;
+    const profile: UserProfile = {
+      platform,
+      ...(platformVersion ? { platformVersion } : {}),
+      ...(platform === "pc" ? { pcSpecs } : {}),
+    };
     const err = updateProfile({ profile });
     setPlatMsg(err ? { text: err, type: "error" } : { text: "PLATFORM SAVED!", type: "success" });
   }
@@ -158,29 +160,13 @@ function ProfilePage() {
         <div style={{ marginTop: "8px", marginBottom: "48px", display: "flex", justifyContent: "center" }}>
           <button
             onClick={() => setShowLogoutConfirm(true)}
+            className="bg-transparent hover:bg-[#ef4444] text-[#ef4444] hover:text-white border-[3px] border-[#ef4444] [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[box-shadow:6px_6px_0px_var(--arcade-shadow)] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-all duration-100"
             style={{
-              background: "transparent",
-              border: "3px solid #ef4444",
-              boxShadow: "4px 4px 0px var(--arcade-shadow)",
-              color: "#ef4444",
               fontFamily: FONT,
               fontSize: "0.45rem",
               padding: "12px 28px",
               cursor: "pointer",
               letterSpacing: "0.08em",
-              transition: "all 0.1s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#ef4444";
-              e.currentTarget.style.color = "#fff";
-              e.currentTarget.style.transform = "translate(-2px, -2px)";
-              e.currentTarget.style.boxShadow = "6px 6px 0px var(--arcade-shadow)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#ef4444";
-              e.currentTarget.style.transform = "translate(0,0)";
-              e.currentTarget.style.boxShadow = "4px 4px 0px var(--arcade-shadow)";
             }}
           >
             ⏻ LOG OUT

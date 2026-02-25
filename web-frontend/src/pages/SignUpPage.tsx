@@ -137,25 +137,17 @@ function SignUpPage() {
         {/* Back button */}
         <button
           onClick={() => navigate(ROUTES.HOME)}
+          className="bg-transparent border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-muted)] hover:[border-color:var(--arcade-border)] hover:[color:var(--arcade-h)] transition-[border-color,color] duration-[80ms]"
           style={{
             display: "block",
             margin: "16px auto 0",
-            background: "transparent",
-            border: "2px solid var(--arcade-shadow)",
-            color: "var(--arcade-muted)",
+            borderWidth: "2px",
+            borderStyle: "solid",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.45rem",
             padding: "8px 16px",
             cursor: "pointer",
             letterSpacing: "0.06em",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--arcade-border)";
-            e.currentTarget.style.color = "var(--arcade-h)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--arcade-shadow)";
-            e.currentTarget.style.color = "var(--arcade-muted)";
           }}
         >
           ◀ BACK
