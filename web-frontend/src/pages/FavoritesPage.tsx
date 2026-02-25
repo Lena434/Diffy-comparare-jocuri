@@ -16,13 +16,7 @@ function FavoritesPage() {
 
   const favoriteGames = getGamesByIds(favoriteGameIds);
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
-        <PixelLoader message="LOADING FAVORITES..." />
-      </div>
-    );
-  }
+  if (loading) return <PixelLoader message="LOADING FAVORITES..." />;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>

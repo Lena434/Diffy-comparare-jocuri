@@ -15,13 +15,7 @@ function GameDetailsPage() {
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
-        <PixelLoader message="LOADING GAME..." />
-      </div>
-    );
-  }
+  if (loading) return <PixelLoader message="LOADING GAME..." />;
 
   const game = getGameById(Number(id));
 

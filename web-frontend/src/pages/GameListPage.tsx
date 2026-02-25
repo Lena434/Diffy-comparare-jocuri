@@ -28,13 +28,7 @@ function GameListPage() {
     clearFilters,
   } = useGameFilters(getAllGames(), 8);
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
-        <PixelLoader message="LOADING GAMES..." />
-      </div>
-    );
-  }
+  if (loading) return <PixelLoader message="LOADING GAMES..." />;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
@@ -64,12 +58,11 @@ function GameListPage() {
               margin: 0,
             }}
           >
-            SHOWING{" "}
+            {`SHOWING `}
             <span style={{ color: "var(--arcade-accent)" }}>{filteredGames.length}</span>
-            {" "}OF{" "}
+            {` OF `}
             <span style={{ color: "var(--arcade-accent)" }}>{totalFilteredGames}</span>
-            {" "}{totalFilteredGames === 1 ? 'GAME' : 'GAMES'}
-            {totalPages > 1 && ` (PAGE ${currentPage} OF ${totalPages})`}
+            {` ${totalFilteredGames === 1 ? 'GAME' : 'GAMES'}${totalPages > 1 ? ` (PAGE ${currentPage} OF ${totalPages})` : ''}`}
           </p>
         </div>
 

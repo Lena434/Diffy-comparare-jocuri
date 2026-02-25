@@ -23,6 +23,7 @@ function PixelLoader({ message = 'LOADING....' }: { message?: string }) {
   return (
     <div
       style={{
+        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

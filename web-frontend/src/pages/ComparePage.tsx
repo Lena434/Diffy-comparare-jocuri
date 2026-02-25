@@ -30,13 +30,7 @@ function ComparePage() {
     (game): game is NonNullable<typeof game> => Boolean(game)
   );
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
-        <PixelLoader message="LOADING COMPARE..." />
-      </div>
-    );
-  }
+  if (loading) return <PixelLoader message="LOADING COMPARE..." />;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
