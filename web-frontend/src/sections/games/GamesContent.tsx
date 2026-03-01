@@ -1,5 +1,5 @@
 import GamesGrid from './GamesGrid';
-import Pagination from '../../components/Pagination';  
+import Pagination from '../../components/navigation/Pagination';  
 import type { Game } from '../../types';
 
 interface GamesContentProps {

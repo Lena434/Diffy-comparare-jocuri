@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/ui/ScrollToTop";
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import GameListPage from "./pages/GameListPage";
@@ -27,13 +27,13 @@ function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="/games" element={<GameListPage />} />
-        <Route path="/games/:id" element={<GameDetailsPage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path={ROUTES.GAMES} element={<GameListPage />} />
+        <Route path={ROUTES.GAME_DETAIL} element={<GameDetailsPage />} />
+        <Route path={ROUTES.ABOUT} element={<AboutPage />} />
 
         {/* Protected routes - require login */}
         <Route element={<Guard requireAuth />}>
-          <Route path="/compare" element={<ComparePage />} />
+          <Route path={ROUTES.COMPARE} element={<ComparePage />} />
           <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>

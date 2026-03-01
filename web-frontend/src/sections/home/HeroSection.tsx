@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import HeroSearchBar from '../../components/HeroSearchBar';
-import StatChip from '../../components/StatChip';
+import HeroSearchBar from '../../components/navigation/HeroSearchBar';
+import StatChip from '../../components/game/StatChip';
 
 function PixelBtn({
   children,
@@ -12,29 +11,21 @@ function PixelBtn({
   onClick: () => void;
   primary?: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const [pressed, setPressed] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setPressed(false); }}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
+      className={
+        primary
+          ? "[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:5px_5px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(5px,5px)] transition-[background,border-color,color] duration-[80ms]"
+          : "bg-transparent border-solid [border-color:var(--arcade-border)] [color:var(--arcade-border)] [box-shadow:5px_5px_0px_#0e4a5e] hover:[border-color:#06b6d4] hover:[color:#06b6d4] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(5px,5px)] transition-[background,border-color,color] duration-[80ms]"
+      }
       style={{
-        background: primary ? (hovered ? "var(--arcade-accent)" : "var(--arcade-cta)") : "transparent",
-        border: primary
-          ? `3px solid ${hovered ? "var(--arcade-h)" : "var(--arcade-text)"}`
-          : `3px solid ${hovered ? "#06b6d4" : "var(--arcade-border)"}`,
-        boxShadow: pressed ? "0 0 0 var(--arcade-shadow)" : primary ? "5px 5px 0px var(--arcade-shadow)" : "5px 5px 0px #0e4a5e",
-        transform: pressed ? "translate(5px,5px)" : "translate(0,0)",
-        color: primary ? "#fff" : hovered ? "#06b6d4" : "var(--arcade-border)",
+        borderWidth: "3px",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.6rem",
         padding: "14px 24px",
         cursor: "pointer",
         letterSpacing: "0.08em",
-        transition: "background 0.08s, border-color 0.08s, color 0.08s",
         minWidth: "140px",
       }}
     >

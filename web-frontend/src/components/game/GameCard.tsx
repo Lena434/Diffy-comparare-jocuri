@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { Game } from '../types';
-import { useAuth } from '../contexts/AuthContext';
-import { useFavorites } from '../contexts/FavoritesContext';
+import type { Game } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import GenreBadge from './GenreBadge';
 
 interface GameCardProps {
@@ -10,8 +9,6 @@ interface GameCardProps {
 }
 
 function GameCard({ game }: GameCardProps) {
-  const [hovered, setHovered] = useState(false);
-  const [favHovered, setFavHovered] = useState(false);
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
   const isFav = isAuthenticated && isFavoriteGame(game.id);
@@ -19,16 +16,9 @@ function GameCard({ game }: GameCardProps) {
   return (
     <Link
       to={`/games/${game.id}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="group border-[3px] border-[var(--arcade-border)] hover:border-[var(--arcade-accent)] [box-shadow:5px_5px_0px_var(--arcade-shadow),8px_8px_0px_#000] hover:[box-shadow:6px_6px_0px_var(--arcade-accent-dark),10px_10px_0px_#000] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-[border-color,box-shadow,transform] duration-100"
       style={{
         background: "var(--arcade-panel)",
-        border: `3px solid ${hovered ? "var(--arcade-accent)" : "var(--arcade-border)"}`,
-        boxShadow: hovered
-          ? "6px 6px 0px var(--arcade-accent-dark), 10px 10px 0px #000"
-          : "5px 5px 0px var(--arcade-shadow), 8px 8px 0px #000",
-        transform: hovered ? "translate(-2px,-2px)" : "translate(0,0)",
-        transition: "border-color 0.1s, box-shadow 0.1s, transform 0.1s",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
@@ -42,12 +32,11 @@ function GameCard({ game }: GameCardProps) {
         <img
           src={game.image}
           alt={game.title}
+          className="transition-transform duration-200 group-hover:scale-[1.06]"
           style={{
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            transform: hovered ? "scale(1.06)" : "scale(1)",
-            transition: "transform 0.2s",
             filter: "brightness(0.85) saturate(0.8)",
           }}
         />
@@ -110,13 +99,14 @@ function GameCard({ game }: GameCardProps) {
               e.stopPropagation();
               toggleFavoriteGame(game.id);
             }}
-            onMouseEnter={() => setFavHovered(true)}
-            onMouseLeave={() => setFavHovered(false)}
+            className={isFav
+              ? "bg-[rgba(239,68,68,0.9)]"
+              : "bg-[var(--arcade-input-bg)] hover:bg-[rgba(239,68,68,0.9)] transition-[background] duration-100"
+            }
             style={{
               position: "absolute",
               bottom: "8px",
               right: "8px",
-              background: isFav || favHovered ? "rgba(239,68,68,0.9)" : "var(--arcade-input-bg)",
               border: `2px solid ${isFav ? "#f87171" : "var(--arcade-shadow)"}`,
               boxShadow: "2px 2px 0px var(--arcade-shadow)",
               width: "28px",
@@ -127,7 +117,6 @@ function GameCard({ game }: GameCardProps) {
               cursor: "pointer",
               fontSize: "0.7rem",
               padding: 0,
-              transition: "background 0.1s, border-color 0.1s",
               zIndex: 2,
             }}
             title={isFav ? "Remove from favorites" : "Add to favorites"}
@@ -141,15 +130,13 @@ function GameCard({ game }: GameCardProps) {
       <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "8px", flex: 1, minHeight: "170px" }}>
         {/* Title */}
         <h3
+          className="text-[var(--arcade-h)] [text-shadow:1px_1px_0px_var(--arcade-h-shadow)] group-hover:text-[var(--arcade-accent)] group-hover:[text-shadow:1px_1px_0px_var(--arcade-accent-dark)] transition-[color,text-shadow] duration-100"
           style={{
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.55rem",
-            color: hovered ? "var(--arcade-accent)" : "var(--arcade-h)",
-            textShadow: hovered ? "1px 1px 0px var(--arcade-accent-dark)" : "1px 1px 0px var(--arcade-h-shadow)",
             letterSpacing: "0.04em",
             margin: 0,
             lineHeight: 1.6,
-            transition: "color 0.1s",
           }}
         >
           {game.title}

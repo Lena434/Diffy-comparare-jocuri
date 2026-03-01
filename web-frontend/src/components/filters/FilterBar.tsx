@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import CompactSearchBar from './CompactSearchBar';
 import Dropdown from './Dropdown';
 
@@ -25,8 +24,6 @@ function FilterBar({
   onSort,
   onClearFilters,
 }: FilterBarProps) {
-  const [clearHovered, setClearHovered] = useState(false);
-  const [clearPressed, setClearPressed] = useState(false);
   const genres = ['All', 'RPG', 'Action', 'FPS', 'Simulation', 'Metroidvania', 'Platformer', 'Competitive'];
   const platforms = ['All', 'PC', 'PlayStation', 'Xbox', 'Switch', 'Mobile'];
   const sortOptions = [
@@ -112,22 +109,15 @@ function FilterBar({
         />
         <button
           onClick={onClearFilters}
-          onMouseEnter={() => setClearHovered(true)}
-          onMouseLeave={() => { setClearHovered(false); setClearPressed(false); }}
-          onMouseDown={() => setClearPressed(true)}
-          onMouseUp={() => setClearPressed(false)}
+          className="[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(4px,4px)] transition-[background,border-color] duration-[80ms]"
           style={{
-            background: clearHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-            border: `3px solid ${clearHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-            boxShadow: clearPressed ? "0 0 0 var(--arcade-shadow)" : "4px 4px 0px var(--arcade-shadow)",
-            transform: clearPressed ? "translate(4px,4px)" : "translate(0,0)",
-            color: "#fff",
+            borderWidth: "3px",
+            borderStyle: "solid",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.45rem",
             padding: "12px 16px",
             cursor: "pointer",
             letterSpacing: "0.06em",
-            transition: "background 0.08s, border-color 0.08s",
             alignSelf: "end",
           }}
         >

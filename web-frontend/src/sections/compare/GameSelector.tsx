@@ -1,4 +1,4 @@
-import Dropdown from '../../components/Dropdown';
+import Dropdown from '../../components/filters/Dropdown';
 import type { Game } from '../../types';
 
 interface GameSelectorProps {

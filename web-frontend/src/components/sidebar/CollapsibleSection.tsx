@@ -10,19 +10,16 @@ function CollapsibleSection({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
   return (
     <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        className="bg-transparent hover:bg-[rgba(139,92,246,0.1)]"
         style={{
           width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: hovered ? "rgba(139,92,246,0.1)" : "transparent",
           border: "none",
           color: "var(--arcade-border)",
           fontFamily: "'Press Start 2P', monospace",

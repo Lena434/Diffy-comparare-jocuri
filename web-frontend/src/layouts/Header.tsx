@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navigation/NavigationBar';
 import { ROUTES } from '../routes/routes';
 import { useTheme, type Theme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,31 +15,20 @@ function PixelHeaderBtn({
   onClick: () => void;
   primary?: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const [pressed, setPressed] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setPressed(false); }}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
+      className={
+        primary
+          ? "[background:var(--arcade-cta)] border-2 border-solid [border-color:var(--arcade-text)] text-white [box-shadow:3px_3px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(3px,3px)] transition-[background,border-color,color] duration-[80ms]"
+          : "bg-transparent border-2 border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-text)] hover:[background:rgba(139,92,246,0.15)] hover:[border-color:var(--arcade-border)] hover:[color:var(--arcade-h)] active:[transform:translate(3px,3px)] transition-[background,border-color,color] duration-[80ms]"
+      }
       style={{
-        background: primary
-          ? (hovered ? "var(--arcade-accent)" : "var(--arcade-cta)")
-          : (hovered ? "rgba(139,92,246,0.15)" : "transparent"),
-        border: primary
-          ? `2px solid ${hovered ? "var(--arcade-h)" : "var(--arcade-text)"}`
-          : `2px solid ${hovered ? "var(--arcade-border)" : "var(--arcade-shadow)"}`,
-        boxShadow: pressed ? "0 0 0 var(--arcade-shadow)" : (primary ? "3px 3px 0px var(--arcade-shadow)" : "none"),
-        transform: pressed ? "translate(3px,3px)" : "translate(0,0)",
-        color: primary ? "#fff" : (hovered ? "var(--arcade-h)" : "var(--arcade-text)"),
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.45rem",
         padding: "8px 14px",
         cursor: "pointer",
         letterSpacing: "0.06em",
-        transition: "background 0.08s, border-color 0.08s, color 0.08s",
         whiteSpace: "nowrap",
       }}
     >
@@ -63,25 +51,22 @@ function ThemeChip({
   active: boolean;
   onClick: () => void;
 }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       title={`Switch to ${targetTheme} theme`}
+      className={
+        active
+          ? "[background:var(--arcade-border)] border-2 border-solid [border-color:var(--arcade-h)] [color:var(--arcade-h)] [box-shadow:2px_2px_0px_var(--arcade-shadow)] transition-all duration-[80ms]"
+          : "bg-transparent border-2 border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-muted)] hover:[background:rgba(139,92,246,0.15)] hover:[border-color:var(--arcade-border)] hover:[color:var(--arcade-text)] transition-all duration-[80ms]"
+      }
       style={{
-        background: active ? "var(--arcade-border)" : (hovered ? "rgba(139,92,246,0.15)" : "transparent"),
-        border: `2px solid ${active ? "var(--arcade-h)" : hovered ? "var(--arcade-border)" : "var(--arcade-shadow)"}`,
-        boxShadow: active ? "2px 2px 0px var(--arcade-shadow)" : "none",
-        color: active ? "var(--arcade-h)" : hovered ? "var(--arcade-text)" : "var(--arcade-muted)",
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "0.4rem",
         padding: "6px 10px",
         cursor: "pointer",
         letterSpacing: "0.05em",
         whiteSpace: "nowrap",
-        transition: "all 0.08s",
         display: "flex",
         alignItems: "center",
         gap: "5px",
@@ -217,16 +202,14 @@ function Header() {
                 <>
                   <span
                     onClick={() => navigate(ROUTES.PROFILE)}
+                    className="[color:var(--arcade-h)] hover:[color:var(--arcade-accent)] transition-[color] duration-[80ms]"
                     style={{
                       fontFamily: "'Press Start 2P', monospace",
                       fontSize: "0.4rem",
-                      color: "var(--arcade-h)",
                       letterSpacing: "0.05em",
                       whiteSpace: "nowrap",
                       cursor: "pointer",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--arcade-accent)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--arcade-h)")}
                   >
                     🎮 {currentUser?.username.toUpperCase()}
                   </span>

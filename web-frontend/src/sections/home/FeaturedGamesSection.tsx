@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllGames } from '../../services/gameService';
-import GameCard from '../../components/GameCard';
+import GameCard from '../../components/game/GameCard';
 import { ROUTES } from '../../routes/routes';
 
 function FeaturedGamesSection() {
-  const [btnHovered, setBtnHovered] = useState(false);
-  const [btnPressed, setBtnPressed] = useState(false);
-
   return (
     <section style={{ padding: "60px 24px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
@@ -83,22 +79,14 @@ function FeaturedGamesSection() {
         <div style={{ textAlign: "center" }}>
           <Link
             to={ROUTES.GAMES}
-            onMouseEnter={() => setBtnHovered(true)}
-            onMouseLeave={() => { setBtnHovered(false); setBtnPressed(false); }}
-            onMouseDown={() => setBtnPressed(true)}
-            onMouseUp={() => setBtnPressed(false)}
+            className="[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:5px_5px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(5px,5px)] transition-[background,border-color] duration-[80ms]"
             style={{
-              background: btnHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-              border: `3px solid ${btnHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-              boxShadow: btnPressed ? "0 0 0 var(--arcade-shadow)" : "5px 5px 0px var(--arcade-shadow)",
-              transform: btnPressed ? "translate(5px,5px)" : "translate(0,0)",
-              color: "#fff",
+              borderWidth: "3px",
               fontFamily: "'Press Start 2P', monospace",
               fontSize: "0.55rem",
               padding: "14px 28px",
               cursor: "pointer",
               letterSpacing: "0.08em",
-              transition: "background 0.08s, border-color 0.08s",
               textDecoration: "none",
               display: "inline-block",
             }}

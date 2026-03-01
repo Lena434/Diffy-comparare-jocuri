@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface ConfirmDialogProps {
   open: boolean;
   title: string;
@@ -21,15 +19,6 @@ function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const [confirmHovered, setConfirmHovered] = useState(false);
-  const [cancelHovered, setCancelHovered] = useState(false);
-
-  const confirmBg   = confirmColor === 'yellow'
-    ? (confirmHovered ? '#b45309' : '#d97706')
-    : (confirmHovered ? '#dc2626' : '#ef4444');
-  const confirmBorder = confirmColor === 'yellow'
-    ? (confirmHovered ? '#fcd34d' : '#92400e')
-    : (confirmHovered ? '#f87171' : '#b91c1c');
   const confirmText = confirmColor === 'yellow' ? '#000' : '#fff';
 
   if (!open) return null;
@@ -87,17 +76,17 @@ function ConfirmDialog({
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
           <button
             onClick={onConfirm}
-            onMouseEnter={() => setConfirmHovered(true)}
-            onMouseLeave={() => setConfirmHovered(false)}
+            className={
+              confirmColor === 'yellow'
+                ? "bg-[#d97706] hover:bg-[#b45309] border-2 border-[#92400e] hover:border-[#fcd34d] cursor-pointer transition-[background,border-color] duration-100"
+                : "bg-[#ef4444] hover:bg-[#dc2626] border-2 border-[#b91c1c] hover:border-[#f87171] cursor-pointer transition-[background,border-color] duration-100"
+            }
             style={{
-              background: confirmBg,
-              border: `2px solid ${confirmBorder}`,
               boxShadow: '3px 3px 0px var(--arcade-shadow)',
               color: confirmText,
               fontFamily: "'Press Start 2P', monospace",
               fontSize: '0.38rem',
               padding: '10px 20px',
-              cursor: 'pointer',
               letterSpacing: '0.06em',
             }}
           >
@@ -105,17 +94,13 @@ function ConfirmDialog({
           </button>
           <button
             onClick={onCancel}
-            onMouseEnter={() => setCancelHovered(true)}
-            onMouseLeave={() => setCancelHovered(false)}
+            className="bg-[#dc2626] hover:bg-[#b91c1c] border-2 border-[#991b1b] hover:border-[#f87171] cursor-pointer transition-[background,border-color] duration-100"
             style={{
-              background: cancelHovered ? '#b91c1c' : '#dc2626',
-              border: `2px solid ${cancelHovered ? '#f87171' : '#991b1b'}`,
               boxShadow: '3px 3px 0px var(--arcade-shadow)',
               color: '#fff',
               fontFamily: "'Press Start 2P', monospace",
               fontSize: '0.38rem',
               padding: '10px 20px',
-              cursor: 'pointer',
               letterSpacing: '0.06em',
             }}
           >
