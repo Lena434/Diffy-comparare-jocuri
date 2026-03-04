@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/ui/ScrollToTop";
 import MainLayout from "./layouts/MainLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import HomePage from "./pages/HomePage";
@@ -23,6 +23,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import FavoritesPage from "./pages/FavoritesPage";
+import ProfilePage from "./pages/ProfilePage";
 
 
 function App() {
@@ -35,13 +36,13 @@ function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="/games" element={<GameListPage />} />
-        <Route path="/games/:id" element={<GameDetailsPage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path={ROUTES.GAMES} element={<GameListPage />} />
+        <Route path={ROUTES.GAME_DETAIL} element={<GameDetailsPage />} />
+        <Route path={ROUTES.ABOUT} element={<AboutPage />} />
 
         {/* Protected routes - require login */}
         <Route element={<Guard requireAuth />}>
-          <Route path="/compare" element={<ComparePage />} />
+          <Route path={ROUTES.COMPARE} element={<ComparePage />} />
           <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>

@@ -1,249 +1,200 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/routes';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useFavorites } from "../contexts/FavoritesContext";
+import { ROUTES } from "../routes/routes";
+import { getGamesByIds } from "../services/gameService";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import type { UserProfile, PcSpecs } from "../contexts/AuthContext";
+import { PlayerInfoSection } from "../sections/profile/PlayerInfoSection";
+import { PasswordSection } from "../sections/profile/PasswordSection";
+import { PlatformSection } from "../sections/profile/PlatformSection";
+import { FavoritesSection } from "../sections/profile/FavoritesSection";
+import { ComparisonsSection } from "../sections/profile/ComparisonsSection";
 
-// TODO: Replace with real user data from your auth context
-const MOCK_USER = {
-  username: 'ShadowNinja42',
-  email: 'shadow@mail.com',
-  joined: 'January 15, 2024',
-  avatar: 'SN',
-  comparisons: 47,
-  gamesViewed: 312,
-  favoriteGenre: 'RPG',
-};
+const FONT = "'Press Start 2P', monospace";
 
-const MOCK_HISTORY = [
-  { id: 1, game1: 'Cyberpunk 2077', game2: 'The Witcher 3', winner: 'The Witcher 3', date: '2 hours ago' },
-  { id: 2, game1: 'Elden Ring',     game2: 'Dark Souls 3',  winner: 'Elden Ring',     date: '1 day ago'  },
-  { id: 3, game1: 'CS2',            game2: 'Valorant',      winner: 'CS2',            date: '3 days ago' },
-  { id: 4, game1: 'Minecraft',      game2: 'Terraria',      winner: 'Minecraft',      date: '1 week ago' },
-];
-
-type Tab = 'profile' | 'history' | 'settings';
-
-const panel: React.CSSProperties = {
-  background: 'var(--arcade-panel)',
-  border: '3px solid var(--arcade-border)',
-  boxShadow: '5px 5px 0px var(--arcade-shadow), 8px 8px 0px #000',
-  padding: '28px',
-  marginBottom: '24px',
-};
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Press Start 2P', monospace",
-  fontSize: 'clamp(0.55rem, 1.2vw, 0.75rem)',
-  color: 'var(--arcade-h)',
-  letterSpacing: '0.08em',
-  margin: '0 0 20px 0',
-};
-
-const label: React.CSSProperties = {
-  fontFamily: "'Press Start 2P', monospace",
-  fontSize: '0.38rem',
-  color: 'var(--arcade-muted)',
-  letterSpacing: '0.05em',
-  marginBottom: '6px',
-};
-
-const value: React.CSSProperties = {
-  fontFamily: "'Press Start 2P', monospace",
-  fontSize: '0.5rem',
-  color: 'var(--arcade-text)',
-  letterSpacing: '0.03em',
-};
+type Msg = { text: string; type: "success" | "error" } | null;
+type PlayerInfoForm = { username: string; email: string };
+type PasswordForm = { oldPw: string; newPw: string; confirmPw: string };
+type PlatformForm = { platform: "playstation" | "xbox" | "pc" | ""; platformVersion: string; pcSpecs: PcSpecs };
+type Dialogs = { logout: boolean; password: boolean };
 
 function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<Tab>('profile');
-  const [form, setForm] = useState({
-    username: MOCK_USER.username,
-    email: MOCK_USER.email,
-    password: '',
-    confirm: '',
+  const { currentUser, updateProfile, changePassword, logout } = useAuth();
+  const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
+  const navigate = useNavigate();
+
+  const [dialogs, setDialogs] = useState<Dialogs>({ logout: false, password: false });
+
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfoForm>({
+    username: currentUser?.username ?? "",
+    email: currentUser?.email ?? "",
   });
-  const [saved, setSaved] = useState(false);
+  const [infoMsg, setInfoMsg] = useState<Msg>(null);
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: call your API here
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
+  const [passwordForm, setPasswordForm] = useState<PasswordForm>({ oldPw: "", newPw: "", confirmPw: "" });
+  const [pwMsg, setPwMsg] = useState<Msg>(null);
 
-  const tabStyle = (tab: Tab): React.CSSProperties => ({
-    fontFamily: "'Press Start 2P', monospace",
-    fontSize: '0.45rem',
-    padding: '10px 20px',
-    border: '3px solid var(--arcade-border)',
-    background: activeTab === tab ? 'var(--arcade-accent)' : 'transparent',
-    color: activeTab === tab ? '#fff' : 'var(--arcade-muted)',
-    cursor: 'pointer',
-    letterSpacing: '0.05em',
-    transition: 'background 0.1s, color 0.1s',
+  const [platformForm, setPlatformForm] = useState<PlatformForm>({
+    platform: currentUser?.profile?.platform ?? "",
+    platformVersion: currentUser?.profile?.platformVersion ?? "",
+    pcSpecs: currentUser?.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" },
   });
+  const [platMsg, setPlatMsg] = useState<Msg>(null);
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 14px',
-    background: 'rgba(124,77,255,0.08)',
-    border: '2px solid var(--arcade-border)',
-    color: 'var(--arcade-text)',
-    fontFamily: "'Press Start 2P', monospace",
-    fontSize: '0.4rem',
-    letterSpacing: '0.03em',
-    outline: 'none',
-    boxSizing: 'border-box',
-  };
+  useEffect(() => {
+    if (currentUser) {
+      setPlayerInfo({ username: currentUser.username, email: currentUser.email });
+      setPlatformForm({
+        platform: currentUser.profile?.platform ?? "",
+        platformVersion: currentUser.profile?.platformVersion ?? "",
+        pcSpecs: currentUser.profile?.pcSpecs ?? { cpu: "", gpu: "", ram: "", os: "", storage: "" },
+      });
+    }
+  }, [currentUser]);
+
+  const favoriteGames = getGamesByIds(favoriteGameIds);
+
+  function handleSaveInfo() {
+    const validationErr = !playerInfo.username.trim() ? "USERNAME REQUIRED!" : !playerInfo.email.trim() ? "EMAIL REQUIRED!" : null;
+    if (validationErr) { setInfoMsg({ text: validationErr, type: "error" }); return; }
+    const err = updateProfile({ username: playerInfo.username.trim(), email: playerInfo.email.trim() });
+    setInfoMsg(err ? { text: err, type: "error" } : { text: "PROFILE UPDATED!", type: "success" });
+  }
+
+  function handleChangePassword() {
+    const err = changePassword(passwordForm.oldPw, passwordForm.newPw);
+    if (err) { setPwMsg({ text: err, type: "error" }); return; }
+    setPwMsg({ text: "PASSWORD CHANGED!", type: "success" });
+    setPasswordForm({ oldPw: "", newPw: "", confirmPw: "" });
+  }
+
+  function handleSavePlatform() {
+    if (!platformForm.platform) { setPlatMsg({ text: "SELECT A PLATFORM!", type: "error" }); return; }
+    if ((platformForm.platform === "playstation" || platformForm.platform === "xbox") && !platformForm.platformVersion) {
+      setPlatMsg({ text: "SELECT VERSION!", type: "error" }); return;
+    }
+    const profile: UserProfile = {
+      platform: platformForm.platform,
+      ...(platformForm.platformVersion ? { platformVersion: platformForm.platformVersion } : {}),
+      ...(platformForm.platform === "pc" ? { pcSpecs: platformForm.pcSpecs } : {}),
+    };
+    const err = updateProfile({ profile });
+    setPlatMsg(err ? { text: err, type: "error" } : { text: "PLATFORM SAVED!", type: "success" });
+  }
+
+  function handlePlatformChange(p: "playstation" | "xbox" | "pc") {
+    setPlatformForm(prev => ({ ...prev, platform: p, platformVersion: "" }));
+    setPlatMsg(null);
+  }
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '100px', paddingBottom: '60px', paddingLeft: '16px', paddingRight: '16px' }}>
-      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+    <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
 
-        {/* Page title */}
-        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.4rem', color: 'var(--arcade-muted)', letterSpacing: '0.1em', textAlign: 'center', marginBottom: '16px', animation: 'pixel-blink 1.2s steps(1) infinite' }}>
-          ★ PLAYER CARD ★
-        </div>
-        <h1 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 'clamp(1rem, 4vw, 1.8rem)', color: 'var(--arcade-accent)', textShadow: '4px 4px 0px var(--arcade-accent-dark), 8px 8px 0px #000', letterSpacing: '0.1em', textAlign: 'center', margin: '0 0 32px 0' }}>
-          MY PROFILE
-        </h1>
-
-        {/* Avatar + stats row */}
-        <div style={{ ...panel, display: 'flex', gap: '28px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          {/* Avatar */}
-          <div style={{ width: '90px', height: '90px', background: 'var(--arcade-accent)', border: '4px solid var(--arcade-border)', boxShadow: '4px 4px 0 #000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Press Start 2P', monospace", fontSize: '1.4rem', color: '#fff', flexShrink: 0 }}>
-            {MOCK_USER.avatar}
-          </div>
-
-          {/* Name + meta */}
-          <div style={{ flex: 1, minWidth: '180px' }}>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 'clamp(0.7rem, 2vw, 1rem)', color: 'var(--arcade-h)', letterSpacing: '0.05em', marginBottom: '10px' }}>
-              {MOCK_USER.username}
-            </div>
-            <div style={{ ...value, opacity: 0.7, marginBottom: '6px' }}>{MOCK_USER.email}</div>
-            <div style={{ ...value, fontSize: '0.38rem', color: 'var(--arcade-muted)' }}>JOINED: {MOCK_USER.joined}</div>
-          </div>
-
-          {/* Quick stats */}
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-            {[
-              { label: 'COMPARISONS', val: MOCK_USER.comparisons },
-              { label: 'GAMES VIEWED', val: MOCK_USER.gamesViewed },
-              { label: 'FAV GENRE',    val: MOCK_USER.favoriteGenre },
-            ].map(s => (
-              <div key={s.label} style={{ background: 'rgba(124,77,255,0.1)', border: '2px solid var(--arcade-shadow)', padding: '14px 18px', textAlign: 'center', minWidth: '90px' }}>
-                <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 'clamp(0.7rem, 2vw, 1.1rem)', color: 'var(--arcade-accent)', marginBottom: '8px' }}>{s.val}</div>
-                <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.32rem', color: 'var(--arcade-muted)', letterSpacing: '0.05em' }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+        <div style={{ marginBottom: "32px", marginTop: "24px" }}>
+          <h1
+            style={{
+              fontFamily: FONT,
+              fontSize: "clamp(1rem, 3vw, 1.8rem)",
+              color: "var(--arcade-h)",
+              textShadow: "3px 3px 0px var(--arcade-h-shadow), 6px 6px 0px #000",
+              letterSpacing: "0.1em",
+              margin: "0 0 12px",
+            }}
+          >
+            👤 PLAYER PROFILE
+          </h1>
+          <p
+            style={{
+              fontFamily: FONT,
+              fontSize: "0.4rem",
+              color: "var(--arcade-muted)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            MANAGE YOUR ACCOUNT AND PREFERENCES
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          {(['profile', 'history', 'settings'] as Tab[]).map(tab => (
-            <button key={tab} style={tabStyle(tab)} onClick={() => setActiveTab(tab)}>
-              {tab === 'profile' ? '▸ INFO' : tab === 'history' ? '▸ HISTORY' : '▸ SETTINGS'}
-            </button>
-          ))}
+        <PlayerInfoSection
+          username={playerInfo.username}
+          email={playerInfo.email}
+          setUsername={v => setPlayerInfo(prev => ({ ...prev, username: v }))}
+          setEmail={v => setPlayerInfo(prev => ({ ...prev, email: v }))}
+          onSave={handleSaveInfo}
+          msg={infoMsg}
+        />
+
+        <PasswordSection
+          oldPw={passwordForm.oldPw}
+          newPw={passwordForm.newPw}
+          confirmPw={passwordForm.confirmPw}
+          setOldPw={v => setPasswordForm(prev => ({ ...prev, oldPw: v }))}
+          setNewPw={v => setPasswordForm(prev => ({ ...prev, newPw: v }))}
+          setConfirmPw={v => setPasswordForm(prev => ({ ...prev, confirmPw: v }))}
+          onRequestUpdate={() => setDialogs(prev => ({ ...prev, password: true }))}
+          msg={pwMsg}
+          setMsg={setPwMsg}
+          currentUserEmail={currentUser?.email}
+        />
+
+        <PlatformSection
+          platform={platformForm.platform}
+          platformVersion={platformForm.platformVersion}
+          pcSpecs={platformForm.pcSpecs}
+          onPlatformChange={handlePlatformChange}
+          setPlatformVersion={v => setPlatformForm(prev => ({ ...prev, platformVersion: v }))}
+          setPcSpecs={v => setPlatformForm(prev => ({ ...prev, pcSpecs: v }))}
+          onSave={handleSavePlatform}
+          msg={platMsg}
+        />
+
+        <FavoritesSection games={favoriteGames} />
+
+        <ComparisonsSection
+          savedComparisons={savedComparisons}
+          onRemove={removeComparison}
+        />
+
+        <div style={{ marginTop: "8px", marginBottom: "48px", display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={() => setDialogs(prev => ({ ...prev, logout: true }))}
+            className="bg-transparent hover:bg-[#ef4444] text-[#ef4444] hover:text-white border-[3px] border-[#ef4444] [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[box-shadow:6px_6px_0px_var(--arcade-shadow)] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-all duration-100"
+            style={{
+              fontFamily: FONT,
+              fontSize: "0.45rem",
+              padding: "12px 28px",
+              cursor: "pointer",
+              letterSpacing: "0.08em",
+            }}
+          >
+            ⏻ LOG OUT
+          </button>
         </div>
 
-        {/* Tab: Profile Info */}
-        {activeTab === 'profile' && (
-          <div style={panel}>
-            <h2 style={heading}>▸ PLAYER INFO</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-              {[
-                { label: 'USERNAME',       val: MOCK_USER.username },
-                { label: 'EMAIL',          val: MOCK_USER.email },
-                { label: 'MEMBER SINCE',   val: MOCK_USER.joined },
-                { label: 'ACCOUNT STATUS', val: 'ACTIVE' },
-                { label: 'FAVORITE GENRE', val: MOCK_USER.favoriteGenre },
-                { label: 'TOTAL COMPARES', val: String(MOCK_USER.comparisons) },
-              ].map(row => (
-                <div key={row.label} style={{ background: 'rgba(124,77,255,0.06)', border: '2px solid var(--arcade-shadow)', padding: '14px 18px' }}>
-                  <div style={label}>{row.label}</div>
-                  <div style={value}>{row.val}</div>
-                </div>
-              ))}
-            </div>
+        <ConfirmDialog
+          open={dialogs.logout}
+          title="LOG OUT?"
+          message="ARE YOU SURE YOU WANT TO LOG OUT?"
+          confirmLabel="YES, LOG OUT"
+          cancelLabel="CANCEL"
+          confirmColor="yellow"
+          onConfirm={() => { setDialogs(prev => ({ ...prev, logout: false })); logout(); navigate(ROUTES.HOME); }}
+          onCancel={() => setDialogs(prev => ({ ...prev, logout: false }))}
+        />
 
-            <div style={{ marginTop: '28px', textAlign: 'center' }}>
-              <Link
-                to={ROUTES.COMPARE}
-                style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.45rem', padding: '12px 24px', border: '3px solid var(--arcade-accent)', color: 'var(--arcade-accent)', textDecoration: 'none', letterSpacing: '0.05em', boxShadow: '4px 4px 0 #000', display: 'inline-block' }}
-              >
-                ⚔ START COMPARING
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Tab: History */}
-        {activeTab === 'history' && (
-          <div style={panel}>
-            <h2 style={heading}>▸ RECENT COMPARISONS</h2>
-            {MOCK_HISTORY.length === 0 ? (
-              <div style={{ ...value, textAlign: 'center', padding: '40px 0', color: 'var(--arcade-muted)' }}>NO COMPARISONS YET...</div>
-            ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['GAME 1', 'GAME 2', 'WINNER', 'DATE'].map(h => (
-                      <th key={h} style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: 'var(--arcade-accent)', padding: '12px 14px', textAlign: 'left', borderBottom: '3px solid var(--arcade-border)', letterSpacing: '0.05em' }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {MOCK_HISTORY.map(row => (
-                    <tr key={row.id}>
-                      <td style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: 'var(--arcade-text)', padding: '12px 14px', borderBottom: '2px solid var(--arcade-shadow)' }}>{row.game1}</td>
-                      <td style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: 'var(--arcade-text)', padding: '12px 14px', borderBottom: '2px solid var(--arcade-shadow)' }}>{row.game2}</td>
-                      <td style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: 'var(--arcade-accent)', padding: '12px 14px', borderBottom: '2px solid var(--arcade-shadow)' }}>{row.winner}</td>
-                      <td style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.35rem', color: 'var(--arcade-muted)', padding: '12px 14px', borderBottom: '2px solid var(--arcade-shadow)' }}>{row.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
-
-        {/* Tab: Settings */}
-        {activeTab === 'settings' && (
-          <div style={panel}>
-            <h2 style={heading}>▸ ACCOUNT SETTINGS</h2>
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '480px' }}>
-              <div>
-                <div style={label}>USERNAME</div>
-                <input style={inputStyle} value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))} />
-              </div>
-              <div>
-                <div style={label}>EMAIL</div>
-                <input style={inputStyle} type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-              </div>
-              <div>
-                <div style={label}>NEW PASSWORD</div>
-                <input style={inputStyle} type="password" placeholder="leave blank to keep current" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
-              </div>
-              <div>
-                <div style={label}>CONFIRM PASSWORD</div>
-                <input style={inputStyle} type="password" value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} />
-              </div>
-
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <button type="submit" style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.45rem', padding: '12px 24px', background: 'var(--arcade-accent)', border: '3px solid var(--arcade-border)', color: '#fff', cursor: 'pointer', letterSpacing: '0.05em', boxShadow: '4px 4px 0 #000' }}>
-                  SAVE CHANGES
-                </button>
-                {saved && (
-                  <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: '#22c55e', letterSpacing: '0.05em' }}>
-                    ✓ SAVED!
-                  </span>
-                )}
-              </div>
-            </form>
-          </div>
-        )}
-
+        <ConfirmDialog
+          open={dialogs.password}
+          title="CHANGE PASSWORD?"
+          message="ARE YOU SURE YOU WANT TO UPDATE YOUR PASSWORD?"
+          confirmLabel="YES, CHANGE"
+          cancelLabel="CANCEL"
+          confirmColor="yellow"
+          onConfirm={() => { setDialogs(prev => ({ ...prev, password: false })); handleChangePassword(); }}
+          onCancel={() => setDialogs(prev => ({ ...prev, password: false }))}
+        />
       </div>
     </div>
   );

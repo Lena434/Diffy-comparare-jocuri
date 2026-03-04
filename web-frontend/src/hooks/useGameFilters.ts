@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { Game } from '../_mock/games';
+import type { Game } from '../types';
 
 export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
   const [searchParams] = useSearchParams();
@@ -65,28 +65,28 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
     setCurrentPage(1);
   }, [searchQuery, genreFilter, platformFilter, sortBy, urlMode, urlMaxPrice]);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSearchQuery('');
     setGenreFilter('All');
     setPlatformFilter('All');
     setSortBy('title');
     setCurrentPage(1);
-  };
+  }, []);
 
-  const goToNextPage = () => {
+  const goToNextPage = useCallback(() => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
     window.scrollTo(0, 0);
-  };
+  }, [totalPages]);
 
-  const goToPreviousPage = () => {
+  const goToPreviousPage = useCallback(() => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
     window.scrollTo(0, 0);
-  };
+  }, []);
 
-  const goToPage = (page: number) => {
+  const goToPage = useCallback((page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     window.scrollTo(0, 0);
-  };
+  }, [totalPages]);
 
   return {
     searchQuery,

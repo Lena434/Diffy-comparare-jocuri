@@ -1,11 +1,14 @@
-import { mockGames } from '../_mock/games';
-import FilterBar from '../components/FilterBar';
+import { getAllGames } from '../services/gameService';
+import FilterBar from '../components/filters/FilterBar';
 import GamesHeader from '../sections/games/GamesHeader';
 import GamesGrid from '../sections/games/GamesGrid';
-import Pagination from '../components/Pagination';
+import Pagination from '../components/navigation/Pagination';
+import PixelLoader from '../components/ui/PixelLoader';
 import { useGameFilters } from '../hooks/useGameFilters';
+import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
 
 function GameListPage() {
+  const loading = useSimulatedLoading(500);
   const {
     searchQuery,
     setSearchQuery,
@@ -23,13 +26,15 @@ function GameListPage() {
     goToPreviousPage,
     goToPage,
     clearFilters,
-  } = useGameFilters(mockGames, 8);
+  } = useGameFilters(getAllGames(), 8);
+
+  if (loading) return <PixelLoader message="LOADING GAMES..." />;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
 
-        <GamesHeader totalGames={mockGames.length} />
+        <GamesHeader totalGames={getAllGames().length} />
 
         <FilterBar
           searchValue={searchQuery}
@@ -53,12 +58,11 @@ function GameListPage() {
               margin: 0,
             }}
           >
-            SHOWING{" "}
+            {`SHOWING `}
             <span style={{ color: "var(--arcade-accent)" }}>{filteredGames.length}</span>
-            {" "}OF{" "}
+            {` OF `}
             <span style={{ color: "var(--arcade-accent)" }}>{totalFilteredGames}</span>
-            {" "}{totalFilteredGames === 1 ? 'GAME' : 'GAMES'}
-            {totalPages > 1 && ` (PAGE ${currentPage} OF ${totalPages})`}
+            {` ${totalFilteredGames === 1 ? 'GAME' : 'GAMES'}${totalPages > 1 ? ` (PAGE ${currentPage} OF ${totalPages})` : ''}`}
           </p>
         </div>
 

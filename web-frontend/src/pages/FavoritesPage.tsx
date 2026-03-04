@@ -2,14 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { ROUTES } from "../routes/routes";
-import { mockGames } from "../_mock/games";
-import GameCard from "../components/GameCard";
+import { getGamesByIds } from "../services/gameService";
+import GameCard from "../components/game/GameCard";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import PixelLoader from "../components/ui/PixelLoader";
+import { useSimulatedLoading } from "../hooks/useSimulatedLoading";
 
 function FavoritesPage() {
   const navigate = useNavigate();
+  const loading = useSimulatedLoading(400);
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 
-  const favoriteGames = mockGames.filter((g) => favoriteGameIds.includes(g.id));
+  const favoriteGames = getGamesByIds(favoriteGameIds);
+
+  if (loading) return <PixelLoader message="LOADING FAVORITES..." />;
 
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
@@ -70,10 +77,22 @@ function FavoritesPage() {
               <ComparisonCard
                 key={comp.id}
                 gameIds={comp.gameIds}
-                onView={() => navigate(ROUTES.COMPARE)}
-                onRemove={() => removeComparison(comp.id)}
+                onView={() => navigate(ROUTES.COMPARE, { state: { viewGameIds: comp.gameIds } })}
+                onRemove={() => setConfirmRemoveId(comp.id)}
               />
             ))}
+            <ConfirmDialog
+              open={confirmRemoveId !== null}
+              title="REMOVE COMPARISON?"
+              message="THIS COMPARISON WILL BE PERMANENTLY DELETED FROM YOUR FAVORITES."
+              confirmLabel="DELETE"
+              cancelLabel="CANCEL"
+              onConfirm={() => {
+                if (confirmRemoveId) removeComparison(confirmRemoveId);
+                setConfirmRemoveId(null);
+              }}
+              onCancel={() => setConfirmRemoveId(null)}
+            />
           </div>
         ) : (
           <EmptyState message="NO SAVED COMPARISONS YET" hint="COMPARE GAMES AND SAVE THEM HERE" />
@@ -162,12 +181,7 @@ function ComparisonCard({
   onView: () => void;
   onRemove: () => void;
 }) {
-  const [viewHovered, setViewHovered] = useState(false);
-  const [removeHovered, setRemoveHovered] = useState(false);
-
-  const games = gameIds
-    .map((id) => mockGames.find((g) => g.id === id))
-    .filter(Boolean);
+  const games = getGamesByIds(gameIds);
 
   return (
     <div
@@ -193,7 +207,7 @@ function ComparisonCard({
             marginBottom: "6px",
           }}
         >
-          ⚔ {games.map((g) => g!.title.toUpperCase()).join(" VS ")}
+          ⚔ {games.map((g) => g.title.toUpperCase()).join(" VS ")}
         </p>
         <p
           style={{
@@ -209,13 +223,8 @@ function ComparisonCard({
       <div style={{ display: "flex", gap: "8px" }}>
         <button
           onClick={onView}
-          onMouseEnter={() => setViewHovered(true)}
-          onMouseLeave={() => setViewHovered(false)}
+          className="[background:var(--arcade-cta)] border-2 border-solid [border-color:var(--arcade-text)] text-white [box-shadow:3px_3px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] transition-[background,border-color] duration-[80ms]"
           style={{
-            background: viewHovered ? "var(--arcade-accent)" : "var(--arcade-cta)",
-            border: `2px solid ${viewHovered ? "var(--arcade-h)" : "var(--arcade-text)"}`,
-            boxShadow: "3px 3px 0px var(--arcade-shadow)",
-            color: "#fff",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.35rem",
             padding: "8px 12px",
@@ -227,13 +236,8 @@ function ComparisonCard({
         </button>
         <button
           onClick={onRemove}
-          onMouseEnter={() => setRemoveHovered(true)}
-          onMouseLeave={() => setRemoveHovered(false)}
+          className="bg-transparent border-2 border-solid [border-color:var(--arcade-shadow)] [color:var(--arcade-muted)] hover:bg-[#dc2626] hover:[border-color:#f87171] hover:text-white hover:[box-shadow:3px_3px_0px_var(--arcade-shadow)] transition-[background,border-color,color,box-shadow] duration-[80ms]"
           style={{
-            background: removeHovered ? "#dc2626" : "transparent",
-            border: `2px solid ${removeHovered ? "#f87171" : "var(--arcade-shadow)"}`,
-            boxShadow: removeHovered ? "3px 3px 0px var(--arcade-shadow)" : "none",
-            color: removeHovered ? "#fff" : "var(--arcade-muted)",
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "0.35rem",
             padding: "8px 12px",
