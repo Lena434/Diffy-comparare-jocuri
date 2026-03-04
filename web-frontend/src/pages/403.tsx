@@ -1,122 +1,91 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
+import { ArcadePanel } from '../components/arcade/ArcadePanel';
+
+const FONT = "'Press Start 2P', monospace";
 
 const Forbidden: React.FC = () => (
-  <div style={{
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px 24px',
-    textAlign: 'center',
-    fontFamily: "'Press Start 2P', monospace",
-  }}>
-    {/* Error code */}
-    <div style={{
-      fontSize: 'clamp(5rem, 20vw, 14rem)',
-      color: '#ef4444',
-      textShadow: '8px 8px 0 var(--arcade-shadow), 14px 14px 0 #000',
-      letterSpacing: '0.05em',
-      lineHeight: 0.9,
-      marginBottom: '20px',
-    }}>
-      403
-    </div>
+  <div
+    className="min-h-screen flex flex-col items-center justify-center px-4"
+    style={{
+      background: 'var(--arcade-bg)',
+      backgroundImage: `
+        linear-gradient(rgba(239,68,68,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(239,68,68,0.05) 1px, transparent 1px)
+      `,
+      backgroundSize: '32px 32px',
+      fontFamily: FONT,
+      textAlign: 'center',
+    }}
+  >
+    <div style={{ width: '100%', maxWidth: '560px' }}>
 
-    {/* Subtitle with glitch */}
-    <style>{`
-      @keyframes glitch-403 {
-        0%, 100% { transform: translate(0); }
-        20%  { transform: translate(-2px, 2px); }
-        40%  { transform: translate(2px, -2px); }
-        60%  { transform: translate(-1px, 1px); }
-        80%  { transform: translate(1px, -1px); }
-      }
-    `}</style>
-    <div style={{
-      fontSize: 'clamp(0.55rem, 2vw, 0.9rem)',
-      color: 'var(--arcade-accent)',
-      textShadow: '3px 3px 0 var(--arcade-accent-dark)',
-      letterSpacing: '0.12em',
-      marginBottom: '16px',
-      animation: 'glitch-403 2s infinite alternate',
-    }}>
-      FORBIDDEN ZONE
-    </div>
-
-    <div style={{
-      fontSize: 'clamp(1.4rem, 4vw, 2.5rem)',
-      marginBottom: '32px',
-    }}>
-      ⛔
-    </div>
-
-    {/* Panel */}
-    <div style={{
-      background: 'var(--arcade-panel)',
-      border: '3px solid var(--arcade-border)',
-      boxShadow: '5px 5px 0 var(--arcade-shadow), 8px 8px 0 #000',
-      padding: '28px 36px',
-      maxWidth: '560px',
-      marginBottom: '40px',
-    }}>
-      <p style={{
-        fontSize: '0.42rem',
-        color: 'var(--arcade-text)',
-        lineHeight: 2.4,
-        letterSpacing: '0.04em',
-        margin: 0,
+      {/* Blink label */}
+      <div style={{
+        fontSize: '0.4rem',
+        color: 'var(--arcade-muted)',
+        letterSpacing: '0.1em',
+        marginBottom: '16px',
+        animation: 'pixel-blink 1.2s steps(1) infinite',
       }}>
-        THIS SECTOR IS RESTRICTED.<br />
-        YOU DON'T HAVE THE CLEARANCE LEVEL TO ENTER.<br />
-        DIFFERENT PERMISSIONS REQUIRED TO PROCEED.
-      </p>
-    </div>
+        ★ RESTRICTED ZONE ★
+      </div>
 
-    {/* Buttons */}
-    <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', justifyContent: 'center' }}>
-      <Link to={ROUTES.LOGIN} style={{
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '0.48rem',
-        padding: '14px 28px',
-        background: '#ef4444',
-        border: '3px solid var(--arcade-border)',
-        color: '#fff',
-        textDecoration: 'none',
+      {/* Error code */}
+      <div style={{
+        fontSize: 'clamp(5rem, 20vw, 12rem)',
+        color: '#ef4444',
+        textShadow: '8px 8px 0 var(--arcade-shadow), 14px 14px 0 #000',
         letterSpacing: '0.05em',
-        boxShadow: '5px 5px 0 #7f1d1d, 8px 8px 0 #000',
-        display: 'inline-block',
-        transition: 'all 0.08s',
+        lineHeight: 0.9,
+        marginBottom: '24px',
       }}>
-        AUTHENTICATE →
-      </Link>
-      <Link to={ROUTES.HOME} style={{
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: '0.48rem',
-        padding: '14px 28px',
-        background: 'transparent',
-        border: '3px solid var(--arcade-border)',
-        color: 'var(--arcade-text)',
-        textDecoration: 'none',
-        letterSpacing: '0.05em',
-        boxShadow: '5px 5px 0 var(--arcade-shadow), 8px 8px 0 #000',
-        display: 'inline-block',
-        transition: 'all 0.08s',
-      }}>
-        ← RETURN TO HUB
-      </Link>
-    </div>
+        403
+      </div>
 
-    {/* Footer hint */}
-    <div style={{
-      position: 'fixed',
-      bottom: '24px',
-      fontSize: '0.3rem',
-      color: 'var(--arcade-dim)',
-      letterSpacing: '0.12em',
-    }}>
-      — PRESS A TO RETRY / B TO ABORT —
+      {/* Panel */}
+      <ArcadePanel title="▸ FORBIDDEN ZONE">
+        <p style={{
+          fontSize: '0.42rem',
+          color: 'var(--arcade-text)',
+          lineHeight: 2.4,
+          letterSpacing: '0.04em',
+          margin: '0 0 28px 0',
+        }}>
+          THIS SECTOR IS RESTRICTED.<br />
+          YOU DON'T HAVE THE CLEARANCE LEVEL TO ENTER.<br />
+          DIFFERENT PERMISSIONS REQUIRED TO PROCEED.
+        </p>
+
+        {/* Buttons */}
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link
+            to={ROUTES.LOGIN}
+            className="bg-transparent border-solid [border-color:#ef4444] text-[#ef4444] [box-shadow:5px_5px_0px_#7f1d1d] hover:bg-[#ef4444] hover:text-white active:[box-shadow:0_0_0_#7f1d1d] active:[transform:translate(5px,5px)] transition-all duration-[80ms]"
+            style={{ borderWidth: '3px', fontFamily: FONT, fontSize: '0.48rem', padding: '12px 24px', letterSpacing: '0.06em', textDecoration: 'none', display: 'inline-block' }}
+          >
+            AUTHENTICATE →
+          </Link>
+          <Link
+            to={ROUTES.HOME}
+            className="bg-transparent border-solid [border-color:var(--arcade-border)] [color:var(--arcade-text)] [box-shadow:5px_5px_0px_var(--arcade-shadow)] hover:[border-color:var(--arcade-h)] hover:[color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(5px,5px)] transition-all duration-[80ms]"
+            style={{ borderWidth: '3px', fontFamily: FONT, fontSize: '0.48rem', padding: '12px 24px', letterSpacing: '0.06em', textDecoration: 'none', display: 'inline-block' }}
+          >
+            ← RETURN TO HUB
+          </Link>
+        </div>
+      </ArcadePanel>
+
+      {/* Footer */}
+      <div style={{
+        marginTop: '32px',
+        fontSize: '0.3rem',
+        color: 'var(--arcade-muted)',
+        letterSpacing: '0.12em',
+        animation: 'pixel-blink 1.4s steps(1) infinite',
+      }}>
+        — PRESS A TO RETRY / B TO ABORT —
+      </div>
     </div>
   </div>
 );

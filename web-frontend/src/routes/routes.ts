@@ -11,4 +11,7 @@ export const ROUTES = {
   PROFILE: "/profile",
   ADMIN: "/admin",
   ADMIN_USERS: "/admin/users",
+  ADMIN_GAMES: "/admin/games",
+  ADMIN_COMPARISONS: "/admin/comparisons",
+  ADMIN_SETTINGS: "/admin/settings",
 };

@@ -10,8 +10,11 @@ import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
-import AdminDashboard from "./pages/Admin";
-import UsersAdmin from "./pages/UsersAdmin";
+import AdminDashboard from "./pages/admin/Dashboard";
+import UsersAdmin from "./pages/admin/Users";
+import AdminGames from "./pages/admin/Games";
+import AdminComparisons from "./pages/admin/Comparisons";
+import AdminSettings from "./pages/admin/Settings";
 import Unauthorized from "./pages/401";
 import Forbidden from "./pages/403";
 import NotFound from "./pages/404";
@@ -23,7 +26,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import FavoritesPage from "./pages/FavoritesPage";
-import ProfilePage from "./pages/ProfilePage";
 
 
 function App() {
@@ -59,6 +61,9 @@ function App() {
         <Route element={<AdminLayout />}>
           <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
           <Route path={ROUTES.ADMIN_USERS} element={<UsersAdmin />} />
+          <Route path={ROUTES.ADMIN_GAMES} element={<AdminGames />} />
+          <Route path={ROUTES.ADMIN_COMPARISONS} element={<AdminComparisons />} />
+          <Route path={ROUTES.ADMIN_SETTINGS} element={<AdminSettings />} />
         </Route>
       </Route>
 

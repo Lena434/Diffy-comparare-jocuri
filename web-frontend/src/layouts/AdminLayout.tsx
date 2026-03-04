@@ -1,17 +1,19 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES } from '../routes/routes';
 
 const NAV_LINKS = [
-  { to: ROUTES.ADMIN,          label: '▸ DASHBOARD',   end: true  },
-  { to: ROUTES.ADMIN_USERS,    label: '▸ USERS',        end: false },
-  { to: '/admin/games',        label: '▸ GAMES',        end: false },
-  { to: '/admin/comparisons',  label: '▸ COMPARISONS',  end: false },
-  { to: '/admin/settings',     label: '▸ SETTINGS',     end: false },
+  { to: ROUTES.ADMIN,               label: '▸ DASHBOARD',   end: true  },
+  { to: ROUTES.ADMIN_USERS,         label: '▸ USERS',        end: false },
+  { to: ROUTES.ADMIN_GAMES,         label: '▸ GAMES',        end: false },
+  { to: ROUTES.ADMIN_COMPARISONS,   label: '▸ COMPARISONS',  end: false },
+  { to: ROUTES.ADMIN_SETTINGS,      label: '▸ SETTINGS',     end: false },
 ];
 
 const AdminLayout: React.FC = () => {
   const { logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -50,7 +52,7 @@ const AdminLayout: React.FC = () => {
             DIFFY
           </div>
           <div style={{
-            fontSize: '0.28rem',
+            fontSize: '0.4rem',
             color: 'var(--arcade-muted)',
             letterSpacing: '0.18em',
             marginTop: '8px',
@@ -73,7 +75,7 @@ const AdminLayout: React.FC = () => {
                 background: isActive ? 'rgba(255,122,0,0.12)' : 'transparent',
                 color: isActive ? 'var(--arcade-accent)' : 'var(--arcade-muted)',
                 textDecoration: 'none',
-                fontSize: '0.42rem',
+                fontSize: '0.55rem',
                 letterSpacing: '0.05em',
                 boxShadow: isActive
                   ? '3px 3px 0 var(--arcade-accent-dark)'
@@ -90,7 +92,7 @@ const AdminLayout: React.FC = () => {
         <div style={{
           marginTop: 'auto',
           paddingTop: '32px',
-          fontSize: '0.27rem',
+          fontSize: '0.35rem',
           color: 'var(--arcade-dim)',
           letterSpacing: '0.06em',
           lineHeight: 2.2,
@@ -122,23 +124,45 @@ const AdminLayout: React.FC = () => {
             ★ ADMIN CONTROL PANEL ★
           </div>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: '0.36rem',
-              padding: '10px 18px',
-              background: 'rgba(239,68,68,0.08)',
-              border: '3px solid #ef4444',
-              color: '#ef4444',
-              cursor: 'pointer',
-              letterSpacing: '0.05em',
-              boxShadow: '3px 3px 0 #7f1d1d',
-              transition: 'all 0.08s',
-            }}
-          >
-            LOGOUT
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            {/* Theme toggle */}
+            <button
+              onClick={() => toggleTheme(theme === 'dark' ? 'light' : 'dark')}
+              style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: '0.45rem',
+                padding: '10px 18px',
+                background: 'transparent',
+                border: '3px solid var(--arcade-border)',
+                color: 'var(--arcade-muted)',
+                cursor: 'pointer',
+                letterSpacing: '0.05em',
+                boxShadow: '3px 3px 0 var(--arcade-shadow)',
+                transition: 'all 0.08s',
+              }}
+            >
+              {theme === 'dark' ? '☀ LIGHT' : '☾ DARK'}
+            </button>
+
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: '0.45rem',
+                padding: '10px 18px',
+                background: 'rgba(239,68,68,0.08)',
+                border: '3px solid #ef4444',
+                color: '#ef4444',
+                cursor: 'pointer',
+                letterSpacing: '0.05em',
+                boxShadow: '3px 3px 0 #7f1d1d',
+                transition: 'all 0.08s',
+              }}
+            >
+              LOGOUT
+            </button>
+          </div>
         </header>
 
         {/* Page content via Outlet */}

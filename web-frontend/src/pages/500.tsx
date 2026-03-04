@@ -1,26 +1,27 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
+import { ArcadePanel } from '../components/arcade/ArcadePanel';
+
+const FONT = "'Press Start 2P', monospace";
 
 const ServerError: React.FC = () => {
   const handleRetry = () => window.location.reload();
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 24px',
-      textAlign: 'center',
-      fontFamily: "'Press Start 2P', monospace",
-    }}>
-      {/* Scanline overlay */}
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4"
+      style={{
+        background: 'var(--arcade-bg)',
+        backgroundImage: `
+          linear-gradient(rgba(239,68,68,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(239,68,68,0.05) 1px, transparent 1px)
+        `,
+        backgroundSize: '32px 32px',
+        fontFamily: FONT,
+        textAlign: 'center',
+      }}
+    >
       <style>{`
-        @keyframes scanline-500 {
-          0%   { transform: translateY(-100%); }
-          100% { transform: translateY(100vh); }
-        }
         @keyframes flicker-500 {
           0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
           20%, 24%, 55% { opacity: 0.35; }
@@ -34,102 +35,79 @@ const ServerError: React.FC = () => {
           100%{ transform: translate(0); }
         }
       `}</style>
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'repeating-linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.06) 1px, transparent 2px)',
-        backgroundSize: '100% 4px',
-        pointerEvents: 'none',
-        zIndex: 9999,
-        animation: 'scanline-500 10s linear infinite',
-      }} />
 
-      {/* Error code */}
-      <div style={{
-        fontSize: 'clamp(5rem, 20vw, 14rem)',
-        color: '#ef4444',
-        textShadow: '10px 10px 0 var(--arcade-shadow), 16px 16px 0 #000',
-        letterSpacing: '0.05em',
-        lineHeight: 0.9,
-        marginBottom: '20px',
-        animation: 'flicker-500 3s infinite alternate',
-      }}>
-        500
-      </div>
+      <div style={{ width: '100%', maxWidth: '640px' }}>
 
-      {/* Subtitle */}
-      <div style={{
-        fontSize: 'clamp(0.5rem, 1.8vw, 0.8rem)',
-        color: 'var(--arcade-accent)',
-        textShadow: '3px 3px 0 var(--arcade-accent-dark)',
-        letterSpacing: '0.1em',
-        marginBottom: '32px',
-        animation: 'glitch-500 1.8s infinite',
-      }}>
-        CRITICAL SYSTEM FAILURE
-      </div>
-
-      {/* Terminal panel */}
-      <div style={{
-        background: 'rgba(0,0,0,0.6)',
-        border: '3px solid #ef4444',
-        boxShadow: '5px 5px 0 var(--arcade-shadow), 8px 8px 0 #000',
-        padding: '24px 28px',
-        maxWidth: '680px',
-        marginBottom: '40px',
-        textAlign: 'left',
-      }}>
-        <div style={{ fontSize: '0.38rem', color: '#ff6b6b', lineHeight: 2.2, letterSpacing: '0.03em' }}>
-          <span style={{ color: '#ff9f9f' }}>[ERROR 0x500]</span> INTERNAL SERVER ERROR<br />
-          <span style={{ color: '#ff9f9f' }}>STACK TRACE:</span> ... segmentation fault in comparison engine<br />
-          <span style={{ color: '#ff9f9f' }}>STATUS:</span> core dumped<br />
-          <span style={{ color: '#ff9f9f' }}>REASON:</span> unexpected exception / overload / cosmic ray
-        </div>
-      </div>
-
-      {/* Buttons */}
-      <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <button
-          onClick={handleRetry}
-          style={{
-            fontFamily: "'Press Start 2P', monospace",
-            fontSize: '0.48rem',
-            padding: '14px 28px',
-            background: 'rgba(239,68,68,0.12)',
-            border: '3px solid #ef4444',
-            color: '#ef4444',
-            cursor: 'pointer',
-            letterSpacing: '0.05em',
-            boxShadow: '5px 5px 0 #7f1d1d, 8px 8px 0 #000',
-          }}
-        >
-          RETRY CONNECTION →
-        </button>
-        <Link to={ROUTES.HOME} style={{
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: '0.48rem',
-          padding: '14px 28px',
-          background: 'var(--arcade-accent)',
-          border: '3px solid var(--arcade-border)',
-          color: '#000',
-          textDecoration: 'none',
-          letterSpacing: '0.05em',
-          boxShadow: '5px 5px 0 var(--arcade-accent-dark), 8px 8px 0 #000',
-          display: 'inline-block',
+        {/* Blink label */}
+        <div style={{
+          fontSize: '0.4rem',
+          color: '#ef4444',
+          letterSpacing: '0.1em',
+          marginBottom: '16px',
+          animation: 'pixel-blink 1.2s steps(1) infinite',
         }}>
-          ← RETURN TO MAIN MENU
-        </Link>
-      </div>
+          ★ CRITICAL ERROR ★
+        </div>
 
-      {/* Footer */}
-      <div style={{
-        position: 'fixed',
-        bottom: '24px',
-        fontSize: '0.3rem',
-        color: '#ef4444',
-        letterSpacing: '0.12em',
-      }}>
-        — SYSTEM REBOOT RECOMMENDED —
+        {/* Error code */}
+        <div style={{
+          fontSize: 'clamp(5rem, 20vw, 12rem)',
+          color: '#ef4444',
+          textShadow: '10px 10px 0 var(--arcade-shadow), 16px 16px 0 #000',
+          letterSpacing: '0.05em',
+          lineHeight: 0.9,
+          marginBottom: '24px',
+          animation: 'flicker-500 3s infinite alternate',
+        }}>
+          500
+        </div>
+
+        {/* Panel */}
+        <ArcadePanel title="▸ SYSTEM FAILURE">
+          {/* Terminal output */}
+          <div style={{
+            background: 'rgba(0,0,0,0.5)',
+            border: '2px solid #ef4444',
+            padding: '16px 20px',
+            marginBottom: '28px',
+            textAlign: 'left',
+          }}>
+            <div style={{ fontSize: '0.38rem', color: '#ff6b6b', lineHeight: 2.2, letterSpacing: '0.03em', animation: 'glitch-500 3s infinite' }}>
+              <span style={{ color: '#ff9f9f' }}>[ERROR 0x500]</span> INTERNAL SERVER ERROR<br />
+              <span style={{ color: '#ff9f9f' }}>STATUS:</span> CORE DUMPED<br />
+              <span style={{ color: '#ff9f9f' }}>REASON:</span> UNEXPECTED EXCEPTION / OVERLOAD
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={handleRetry}
+              className="bg-transparent border-solid [border-color:#ef4444] text-[#ef4444] [box-shadow:5px_5px_0px_#7f1d1d] hover:bg-[#ef4444] hover:text-white active:[box-shadow:0_0_0_#7f1d1d] active:[transform:translate(5px,5px)] transition-all duration-[80ms]"
+              style={{ borderWidth: '3px', fontFamily: FONT, fontSize: '0.48rem', padding: '12px 24px', letterSpacing: '0.06em', cursor: 'pointer' }}
+            >
+              RETRY CONNECTION →
+            </button>
+            <Link
+              to={ROUTES.HOME}
+              className="[background:var(--arcade-cta)] border-solid [border-color:var(--arcade-text)] text-white [box-shadow:5px_5px_0px_var(--arcade-shadow)] hover:[background:var(--arcade-accent)] hover:[border-color:var(--arcade-h)] active:[box-shadow:0_0_0_var(--arcade-shadow)] active:[transform:translate(5px,5px)] transition-all duration-[80ms]"
+              style={{ borderWidth: '3px', fontFamily: FONT, fontSize: '0.48rem', padding: '12px 24px', letterSpacing: '0.06em', textDecoration: 'none', display: 'inline-block' }}
+            >
+              ← RETURN TO MAIN MENU
+            </Link>
+          </div>
+        </ArcadePanel>
+
+        {/* Footer */}
+        <div style={{
+          marginTop: '32px',
+          fontSize: '0.3rem',
+          color: '#ef4444',
+          letterSpacing: '0.12em',
+          animation: 'pixel-blink 1.4s steps(1) infinite',
+        }}>
+          — SYSTEM REBOOT RECOMMENDED —
+        </div>
       </div>
     </div>
   );
