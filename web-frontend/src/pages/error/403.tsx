@@ -18,7 +18,7 @@ const Forbidden: React.FC = () => (
       textAlign: 'center',
     }}
   >
-    <div style={{ width: '100%', maxWidth: '560px' }}>
+    <div style={{ width: '100%', maxWidth: '540px' }}>
 
       {/* Blink label */}
       <div style={{

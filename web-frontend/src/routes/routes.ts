@@ -15,4 +15,7 @@ export const ROUTES = {
   ADMIN_GAME_DETAIL: "/admin/games/:id",
   ADMIN_COMPARISONS: "/admin/comparisons",
   ADMIN_SETTINGS: "/admin/settings",
+  ERROR_401: "/401",
+  ERROR_403: "/403",
+  ERROR_500: "/500",
 };

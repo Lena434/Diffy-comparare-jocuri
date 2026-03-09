@@ -72,9 +72,9 @@ function App() {
       </Route>
 
       {/* Error pages */}
-      <Route path="/401" element={<Unauthorized />} />
-      <Route path="/403" element={<Forbidden />} />
-      <Route path="/500" element={<ServerError />} />
+      <Route path={ROUTES.ERROR_401} element={<Unauthorized />} />
+      <Route path={ROUTES.ERROR_403} element={<Forbidden />} />
+      <Route path={ROUTES.ERROR_500} element={<ServerError />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     </SidebarProvider>
