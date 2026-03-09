@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getUsers, saveUsers } from '../../services/authService';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import type { User } from '../../types';
@@ -13,9 +14,24 @@ function saveBannedEmails(emails: string[]) {
   localStorage.setItem(BANNED_KEY, JSON.stringify(emails));
 }
 
+function generateTempPassword(): string {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let pass = 'Tmp';
+  for (let i = 0; i < 6; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+  return pass + '!';
+}
+
 type FilterRole   = 'all' | 'admin' | 'user';
 type FilterStatus = 'all' | 'active' | 'banned';
 type DialogState  = { type: 'ban' | 'unban' | 'delete' | 'role'; user: User } | null;
+
+interface EditForm {
+  username: string;
+  email: string;
+  role: User['role'];
+  isBanned: boolean;
+  newPassword: string | null;
+}
 
 const inputBase: React.CSSProperties = {
   fontFamily: FONT,
@@ -65,6 +81,14 @@ const actionBtn = (color: string, shadow: string): React.CSSProperties => ({
   boxShadow: `2px 2px 0 ${shadow}`,
 });
 
+const fieldLabel: React.CSSProperties = {
+  fontFamily: FONT,
+  fontSize: '0.35rem',
+  color: 'var(--arcade-muted)',
+  letterSpacing: '0.06em',
+  marginBottom: '8px',
+};
+
 const UsersAdmin: React.FC = () => {
   const [users, setUsers]               = useState<User[]>(() => getUsers());
   const [banned, setBanned]             = useState<string[]>(() => getBannedEmails());
@@ -72,6 +96,9 @@ const UsersAdmin: React.FC = () => {
   const [filterRole, setFilterRole]     = useState<FilterRole>('all');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [dialog, setDialog]             = useState<DialogState>(null);
+  const [editTarget, setEditTarget]     = useState<User | null>(null);
+  const [editForm, setEditForm]         = useState<EditForm | null>(null);
+  const [editError, setEditError]       = useState<string | null>(null);
 
   const isBanned = (u: User) => banned.includes(u.email.toLowerCase());
 
@@ -82,6 +109,66 @@ const UsersAdmin: React.FC = () => {
     const matchStatus  = filterStatus === 'all' || (filterStatus === 'banned' ? isBanned(u) : !isBanned(u));
     return matchSearch && matchRole && matchStatus;
   });
+
+  function openEdit(user: User) {
+    setEditTarget(user);
+    setEditForm({
+      username: user.username,
+      email: user.email,
+      role: user.role ?? 'user',
+      isBanned: isBanned(user),
+      newPassword: null,
+    });
+    setEditError(null);
+  }
+
+  function closeEdit() {
+    setEditTarget(null);
+    setEditForm(null);
+    setEditError(null);
+  }
+
+  function handleResetPassword() {
+    if (!editForm) return;
+    setEditForm({ ...editForm, newPassword: generateTempPassword() });
+  }
+
+  function handleSaveEdit() {
+    if (!editTarget || !editForm) return;
+
+    const trimUsername = editForm.username.trim();
+    const trimEmail    = editForm.email.trim().toLowerCase();
+
+    if (!trimUsername) { setEditError('USERNAME CANNOT BE EMPTY.'); return; }
+    if (!trimEmail)    { setEditError('EMAIL CANNOT BE EMPTY.'); return; }
+
+    const emailTaken = users.some(
+      u => u.email.toLowerCase() === trimEmail &&
+           u.email.toLowerCase() !== editTarget.email.toLowerCase()
+    );
+    if (emailTaken) { setEditError('EMAIL ALREADY IN USE.'); return; }
+
+    const updatedUsers = users.map(u => {
+      if (u.email.toLowerCase() !== editTarget.email.toLowerCase()) return u;
+      return {
+        ...u,
+        username: trimUsername,
+        email: trimEmail,
+        role: editForm.role,
+        ...(editForm.newPassword ? { password: editForm.newPassword } : {}),
+      };
+    });
+    saveUsers(updatedUsers);
+    setUsers(updatedUsers);
+
+    const oldEmail  = editTarget.email.toLowerCase();
+    let nextBanned  = banned.filter(e => e !== oldEmail);
+    if (editForm.isBanned) nextBanned = [...nextBanned, trimEmail];
+    saveBannedEmails(nextBanned);
+    setBanned(nextBanned);
+
+    closeEdit();
+  }
 
   function confirmBanToggle() {
     if (!dialog) return;
@@ -175,16 +262,29 @@ const UsersAdmin: React.FC = () => {
                 return (
                   <tr key={user.email}>
                     <td style={{ ...cell, fontSize: '0.38rem', color: 'var(--arcade-muted)' }}>{i + 1}</td>
-                    <td style={{ ...cell, fontSize: '0.42rem', color: 'var(--arcade-text)' }}>{user.username}</td>
+                    <td style={{ ...cell, fontSize: '0.42rem' }}>
+                      <Link
+                        to={`/admin/users/${encodeURIComponent(user.email)}`}
+                        style={{ color: 'var(--arcade-text)', textDecoration: 'none', borderBottom: '2px solid var(--arcade-border)', paddingBottom: '1px', letterSpacing: '0.02em' }}
+                      >
+                        {user.username}
+                      </Link>
+                    </td>
                     <td style={{ ...cell, fontSize: '0.38rem', color: 'var(--arcade-muted)' }}>{user.email}</td>
                     <td style={{ ...cell }}>
-                      <span style={roleBadgeStyle(user.role)}>{user.role.toUpperCase()}</span>
+                      <span style={roleBadgeStyle(user.role ?? 'user')}>{(user.role ?? 'user').toUpperCase()}</span>
                     </td>
                     <td style={{ ...cell }}>
                       <span style={statusBadgeStyle(banned_)}>{banned_ ? 'BANNED' : 'ACTIVE'}</span>
                     </td>
                     <td style={{ ...cell }}>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => openEdit(user)}
+                          style={actionBtn('#06b6d4', '#164e63')}
+                        >
+                          EDIT
+                        </button>
                         <button
                           onClick={() => setDialog({ type: banned_ ? 'unban' : 'ban', user })}
                           style={banned_ ? actionBtn('#22c55e', '#14532d') : actionBtn('#ef4444', '#7f1d1d')}
@@ -195,7 +295,7 @@ const UsersAdmin: React.FC = () => {
                           onClick={() => setDialog({ type: 'role', user })}
                           style={actionBtn('var(--arcade-accent)', 'var(--arcade-accent-dark)')}
                         >
-                          {user.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}
+                          {(user.role ?? 'user') === 'admin' ? 'DEMOTE' : 'PROMOTE'}
                         </button>
                         <button
                           onClick={() => setDialog({ type: 'delete', user })}
@@ -212,6 +312,112 @@ const UsersAdmin: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {editTarget && editForm && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '24px' }}
+          onClick={closeEdit}
+        >
+          <div
+            style={{ background: 'var(--arcade-bg)', border: '3px solid var(--arcade-border)', boxShadow: '8px 8px 0 var(--arcade-shadow), 12px 12px 0 #000', padding: '32px', width: '100%', maxWidth: '480px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 style={{ fontFamily: FONT, fontSize: 'clamp(0.55rem, 1.5vw, 0.75rem)', color: 'var(--arcade-h)', textShadow: '2px 2px 0 var(--arcade-h-shadow)', letterSpacing: '0.08em', marginBottom: '28px' }}>
+              EDIT USER
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+
+              {/* Username */}
+              <div>
+                <div style={fieldLabel}>USERNAME</div>
+                <input
+                  type="text"
+                  value={editForm.username}
+                  onChange={e => setEditForm({ ...editForm, username: e.target.value })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <div style={fieldLabel}>EMAIL</div>
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={e => setEditForm({ ...editForm, email: e.target.value })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Role */}
+              <div>
+                <div style={fieldLabel}>ROLE</div>
+                <select
+                  value={editForm.role}
+                  onChange={e => setEditForm({ ...editForm, role: e.target.value as User['role'] })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer', boxSizing: 'border-box' }}
+                >
+                  <option value="user">USER</option>
+                  <option value="admin">ADMIN</option>
+                </select>
+              </div>
+
+              {/* Status */}
+              <div>
+                <div style={fieldLabel}>STATUS</div>
+                <select
+                  value={editForm.isBanned ? 'banned' : 'active'}
+                  onChange={e => setEditForm({ ...editForm, isBanned: e.target.value === 'banned' })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer', boxSizing: 'border-box' }}
+                >
+                  <option value="active">ACTIVE</option>
+                  <option value="banned">BANNED</option>
+                </select>
+              </div>
+
+              {/* Reset Password */}
+              <div>
+                <div style={fieldLabel}>PASSWORD</div>
+                <button onClick={handleResetPassword} style={{ ...actionBtn('#f59e0b', '#78350f'), padding: '8px 16px' }}>
+                  RESET PASSWORD
+                </button>
+                {editForm.newPassword && (
+                  <div style={{ marginTop: '10px', padding: '10px 14px', background: 'rgba(34,197,94,0.1)', border: '2px solid #22c55e', fontFamily: FONT, fontSize: '0.38rem', color: '#22c55e', letterSpacing: '0.04em', lineHeight: 1.8 }}>
+                    NEW PASS: <span style={{ color: '#fff' }}>{editForm.newPassword}</span>
+                    <br />
+                    <span style={{ fontSize: '0.32rem', color: 'var(--arcade-muted)' }}>SHARE THIS WITH THE USER.</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Error */}
+              {editError && (
+                <div style={{ fontFamily: FONT, fontSize: '0.38rem', color: '#ef4444', letterSpacing: '0.04em' }}>
+                  ⚠ {editError}
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+                <button
+                  onClick={handleSaveEdit}
+                  style={{ ...actionBtn('#22c55e', '#14532d'), flex: 1, padding: '10px', textAlign: 'center' as const }}
+                >
+                  SAVE CHANGES
+                </button>
+                <button
+                  onClick={closeEdit}
+                  style={{ ...actionBtn('var(--arcade-muted)', 'var(--arcade-shadow)'), flex: 1, padding: '10px', textAlign: 'center' as const }}
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirm dialogs */}
       <ConfirmDialog
