@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { useAuth } from "../contexts/AuthContext";
@@ -8,9 +8,15 @@ import { PixelButton } from "../components/arcade/PixelButton";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, role } = useAuth();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(role === 'admin' ? ROUTES.ADMIN : ROUTES.HOME, { replace: true });
+    }
+  }, [isAuthenticated, role]);
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,9 +24,7 @@ function LoginPage() {
     const err = login(credentials.email, credentials.password);
     if (err) {
       setError(err);
-      return;
     }
-    navigate(ROUTES.HOME);
   };
 
   return (

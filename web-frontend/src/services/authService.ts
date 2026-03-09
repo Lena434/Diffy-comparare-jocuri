@@ -3,6 +3,21 @@ import type { User } from '../types';
 const USERS_KEY = 'diffy-users';
 const CURRENT_USER_KEY = 'diffy-current-user';
 
+const SEED_ADMIN: User = {
+  username: 'admin',
+  email: 'admin@diffy.com',
+  password: 'Admin1234!',
+  role: 'admin',
+};
+
+export function seedAdminUser(): void {
+  const users = getUsers();
+  const alreadyExists = users.some(u => u.email.toLowerCase() === SEED_ADMIN.email);
+  if (!alreadyExists) {
+    saveUsers([SEED_ADMIN, ...users]);
+  }
+}
+
 export function getUsers(): User[] {
   try {
     return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
