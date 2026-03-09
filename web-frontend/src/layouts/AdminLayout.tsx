@@ -132,16 +132,16 @@ const AdminLayout: React.FC = () => {
                 fontFamily: "'Press Start 2P', monospace",
                 fontSize: '0.45rem',
                 padding: '10px 18px',
-                background: 'transparent',
-                border: '3px solid var(--arcade-border)',
-                color: 'var(--arcade-muted)',
+                background: 'rgba(139,92,246,0.08)',
+                border: '3px solid #8b5cf6',
+                color: '#8b5cf6',
                 cursor: 'pointer',
                 letterSpacing: '0.05em',
-                boxShadow: '3px 3px 0 var(--arcade-shadow)',
+                boxShadow: '3px 3px 0 #4c1d95',
                 transition: 'all 0.08s',
               }}
             >
-              {theme === 'dark' ? '☀ LIGHT' : '☾ DARK'}
+              {theme === 'dark' ? '☀️ LIGHT' : '🌙 DARK'}
             </button>
 
             {/* Logout */}

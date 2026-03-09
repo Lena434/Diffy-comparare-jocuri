@@ -8,10 +8,10 @@ export const ROUTES = {
   PROFILE: "/profile",
   LOGIN: "/login",
   SIGNUP: "/signup",
-  PROFILE: "/profile",
   ADMIN: "/admin",
   ADMIN_USERS: "/admin/users",
   ADMIN_GAMES: "/admin/games",
+  ADMIN_GAME_DETAIL: "/admin/games/:id",
   ADMIN_COMPARISONS: "/admin/comparisons",
   ADMIN_SETTINGS: "/admin/settings",
 };
