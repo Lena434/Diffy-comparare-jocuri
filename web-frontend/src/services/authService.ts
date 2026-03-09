@@ -32,7 +32,7 @@ export function saveUsers(users: User[]): void {
 
 export function loadCurrentUser(): User | null {
   try {
-    const stored = localStorage.getItem(CURRENT_USER_KEY);
+    const stored = sessionStorage.getItem(CURRENT_USER_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
@@ -41,9 +41,9 @@ export function loadCurrentUser(): User | null {
 
 export function saveCurrentUser(user: User | null): void {
   if (user) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(CURRENT_USER_KEY);
+    sessionStorage.removeItem(CURRENT_USER_KEY);
   }
 }
 

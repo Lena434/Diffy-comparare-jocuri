@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/routes';
-import { ArcadePanel } from '../components/arcade/ArcadePanel';
+import { ROUTES } from '../../routes/routes';
+import { ArcadePanel } from '../../components/arcade/ArcadePanel';
 
 const FONT = "'Press Start 2P', monospace";
 
