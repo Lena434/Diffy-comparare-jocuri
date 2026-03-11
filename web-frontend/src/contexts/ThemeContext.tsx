@@ -18,13 +18,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("diffy-theme", theme);
   }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme: setTheme }}>
-      {children}
+      <div data-theme={theme} className="theme-wrapper">
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 }
