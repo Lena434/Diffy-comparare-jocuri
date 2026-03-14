@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getAllGames, getAllGenres, getAllPlatforms } from '../../services/gameService';
 import { ROUTES } from '../../routes/routes';
 import type { Game } from '../../types';
@@ -59,8 +59,9 @@ const AdminGames: React.FC = () => {
       return 0;
     });
 
+  const navigate = useNavigate();
   const sortArrow = (key: SortKey) => sortBy === key ? (sortAsc ? ' ▲' : ' ▼') : '';
-  const detailPath = (id: number) => ROUTES.GAME_DETAIL.replace(':id', String(id));
+  const adminDetailPath = (id: number) => ROUTES.ADMIN_GAME_DETAIL.replace(':id', String(id));
 
   return (
     <div style={{ fontFamily: FONT }}>
@@ -140,14 +141,12 @@ const AdminGames: React.FC = () => {
                   <td style={{ ...cell, fontSize: '0.4rem', color: 'var(--arcade-muted)' }}>{game.releaseYear}</td>
                   <td style={{ ...cell, fontSize: '0.4rem', color: 'var(--arcade-text)' }}>{game.price != null ? `$${game.price}` : '—'}</td>
                   <td style={{ ...cell }}>
-                    <Link
-                      to={detailPath(game.id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ fontFamily: FONT, fontSize: '0.38rem', padding: '5px 12px', border: '2px solid var(--arcade-border)', color: 'var(--arcade-text)', textDecoration: 'none', display: 'inline-block', boxShadow: '2px 2px 0 var(--arcade-shadow)' }}
+                    <button
+                      onClick={() => navigate(adminDetailPath(game.id))}
+                      style={{ fontFamily: FONT, fontSize: '0.38rem', padding: '5px 12px', border: '2px solid var(--arcade-border)', background: 'transparent', color: 'var(--arcade-text)', cursor: 'pointer', boxShadow: '2px 2px 0 var(--arcade-shadow)' }}
                     >
                       VIEW →
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))

@@ -18,7 +18,7 @@ function Guard({ requireAuth = false, publicOnly = false, allowRoles }: GuardPro
   }
 
   if (publicOnly && isAuthenticated) {
-    return <Navigate to={ROUTES.HOME} replace />;
+    return <Navigate to={role === 'admin' ? ROUTES.ADMIN : ROUTES.HOME} replace />;
   }
 
   if (allowRoles && (!role || !allowRoles.includes(role))) {

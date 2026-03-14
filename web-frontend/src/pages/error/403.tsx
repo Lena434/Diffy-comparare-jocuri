@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/routes';
-import { ArcadePanel } from '../components/arcade/ArcadePanel';
+import { ROUTES } from '../../routes/routes';
+import { ArcadePanel } from '../../components/arcade/ArcadePanel';
 
 const FONT = "'Press Start 2P', monospace";
 
@@ -18,7 +18,7 @@ const Forbidden: React.FC = () => (
       textAlign: 'center',
     }}
   >
-    <div style={{ width: '100%', maxWidth: '560px' }}>
+    <div style={{ width: '100%', maxWidth: '540px' }}>
 
       {/* Blink label */}
       <div style={{

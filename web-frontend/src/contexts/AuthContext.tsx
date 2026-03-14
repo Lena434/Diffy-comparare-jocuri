@@ -42,6 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   function login(email: string, password: string): string | null {
     const found = findUserByCredentials(email, password);
     if (!found) return "INVALID EMAIL OR PASSWORD!";
+    const banned: string[] = (() => {
+      try { return JSON.parse(localStorage.getItem('diffy-banned-users') || '[]'); } catch { return []; }
+    })();
+    if (banned.includes(found.email.toLowerCase())) return "ACCOUNT BANNED. CONTACT SUPPORT.";
     setCurrentUser(found);
     saveCurrentUser(found);
     return null;

@@ -3,6 +3,21 @@ import type { User } from '../types';
 const USERS_KEY = 'diffy-users';
 const CURRENT_USER_KEY = 'diffy-current-user';
 
+const SEED_ADMIN: User = {
+  username: 'admin',
+  email: 'admin@diffy.com',
+  password: 'Admin1234!',
+  role: 'admin',
+};
+
+export function seedAdminUser(): void {
+  const users = getUsers();
+  const alreadyExists = users.some(u => u.email.toLowerCase() === SEED_ADMIN.email);
+  if (!alreadyExists) {
+    saveUsers([SEED_ADMIN, ...users]);
+  }
+}
+
 export function getUsers(): User[] {
   try {
     return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
@@ -17,7 +32,7 @@ export function saveUsers(users: User[]): void {
 
 export function loadCurrentUser(): User | null {
   try {
-    const stored = localStorage.getItem(CURRENT_USER_KEY);
+    const stored = sessionStorage.getItem(CURRENT_USER_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
@@ -26,9 +41,9 @@ export function loadCurrentUser(): User | null {
 
 export function saveCurrentUser(user: User | null): void {
   if (user) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(CURRENT_USER_KEY);
+    sessionStorage.removeItem(CURRENT_USER_KEY);
   }
 }
 

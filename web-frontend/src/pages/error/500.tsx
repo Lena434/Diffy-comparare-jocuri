@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/routes';
-import { ArcadePanel } from '../components/arcade/ArcadePanel';
+import { ROUTES } from '../../routes/routes';
+import { ArcadePanel } from '../../components/arcade/ArcadePanel';
 
 const FONT = "'Press Start 2P', monospace";
 
@@ -36,7 +36,7 @@ const ServerError: React.FC = () => {
         }
       `}</style>
 
-      <div style={{ width: '100%', maxWidth: '640px' }}>
+      <div style={{ width: '100%', maxWidth: '540px' }}>
 
         {/* Blink label */}
         <div style={{
@@ -53,7 +53,7 @@ const ServerError: React.FC = () => {
         <div style={{
           fontSize: 'clamp(5rem, 20vw, 12rem)',
           color: '#ef4444',
-          textShadow: '10px 10px 0 var(--arcade-shadow), 16px 16px 0 #000',
+          textShadow: '8px 8px 0 var(--arcade-shadow), 14px 14px 0 #000',
           letterSpacing: '0.05em',
           lineHeight: 0.9,
           marginBottom: '24px',
