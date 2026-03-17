@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { User, UserRole } from "../types";
 import {
   getUsers,
@@ -35,6 +35,12 @@ const AuthContext = createContext<AuthContextValue>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => loadCurrentUser());
+
+  useEffect(() => {
+    const handler = () => setCurrentUser(null);
+    window.addEventListener("unauthorized", handler);
+    return () => window.removeEventListener("unauthorized", handler);
+  }, []);
 
   const isAuthenticated = currentUser !== null;
   const role: UserRole | null = currentUser?.role ?? null;
