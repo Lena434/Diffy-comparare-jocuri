@@ -11,7 +11,31 @@ interface AxiosProviderProps {
 }
 
 export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.ReactElement {
-  const client: AxiosInstance = useMemo(() => axios.create({ baseURL }), [baseURL]);
+  const client: AxiosInstance = useMemo(() => {
+    const instance = axios.create({ baseURL });
+
+    instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (!error.response) {
+          console.error("Network error: server unavailable");
+          return Promise.reject(error);
+        }
+        const { status } = error.response;
+        if (status === 401) {
+          localStorage.removeItem("diffy-current-user");
+          window.location.href = "/login";
+        } else if (status === 403) {
+          console.warn("Access forbidden");
+        } else if (status >= 500) {
+          console.error("Server error:", status);
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return instance;
+  }, [baseURL]);
 
   const api: ApiClient = useMemo(() => createApi(client), [client]);
 
