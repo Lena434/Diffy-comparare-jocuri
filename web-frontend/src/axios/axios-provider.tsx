@@ -24,7 +24,7 @@ export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.
         const { status } = error.response;
         if (status === 401) {
           localStorage.removeItem("diffy-current-user");
-          window.location.href = "/login";
+          window.dispatchEvent(new Event("unauthorized"));
         } else if (status === 403) {
           console.warn("Access forbidden");
         } else if (status >= 500) {
