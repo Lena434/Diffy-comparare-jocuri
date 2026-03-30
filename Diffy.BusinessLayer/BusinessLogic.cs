@@ -19,4 +19,9 @@ public class BusinessLogic
     {
         return new UserLogic();
     }
+
+    public IUserAuthLogic GetUserAuthLogic()
+    {
+        return new UserAuthLogic();
+    }
 }

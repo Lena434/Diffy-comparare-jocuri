@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import type { User, UserRole } from "../types";
+import { useAxios } from "../axios/context";
 import {
   getUsers,
   saveUsers,
@@ -15,8 +16,8 @@ interface AuthContextValue {
   currentUser: User | null;
   isAuthenticated: boolean;
   role: UserRole | null;
-  login: (email: string, password: string) => string | null;
-  signup: (username: string, email: string, password: string) => string | null;
+  login: (email: string, password: string) => Promise<string | null>;
+  signup: (username: string, email: string, password: string) => Promise<string | null>;
   logout: () => void;
   updateProfile: (data: Partial<Pick<User, 'username' | 'email' | 'profile'>>) => string | null;
   changePassword: (oldPassword: string, newPassword: string) => string | null;
@@ -26,41 +27,47 @@ const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
   isAuthenticated: false,
   role: null,
-  login: () => null,
-  signup: () => null,
+  login: async () => null,
+  signup: async () => null,
   logout: () => {},
   updateProfile: () => null,
   changePassword: () => null,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { api } = useAxios();
   const [currentUser, setCurrentUser] = useState<User | null>(() => loadCurrentUser());
 
   const isAuthenticated = currentUser !== null;
   const role: UserRole | null = currentUser?.role ?? null;
 
-  function login(email: string, password: string): string | null {
-    const found = findUserByCredentials(email, password);
-    if (!found) return "INVALID EMAIL OR PASSWORD!";
-    const banned: string[] = (() => {
-      try { return JSON.parse(localStorage.getItem('diffy-banned-users') || '[]'); } catch { return []; }
-    })();
-    if (banned.includes(found.email.toLowerCase())) return "ACCOUNT BANNED. CONTACT SUPPORT.";
-    setCurrentUser(found);
-    saveCurrentUser(found);
-    return null;
+  async function login(email: string, password: string): Promise<string | null> {
+    try {
+      const userData = await api.post<any>("/api/auth/login", { email, password });
+      const loggedUser: User = {
+        username: userData.username,
+        email: userData.email,
+        password: password,
+        role: userData.role === 30 ? 'admin' : 'user',
+      };
+      setCurrentUser(loggedUser);
+      saveCurrentUser(loggedUser);
+      return null;
+    } catch {
+      return "INVALID EMAIL OR PASSWORD!";
+    }
   }
 
-  function signup(username: string, email: string, password: string): string | null {
-    if (isEmailTaken(email)) return "EMAIL ALREADY REGISTERED!";
-
-    const users = getUsers();
-    const newUser: User = { username, email, password, role: 'user' };
-    users.push(newUser);
-    saveUsers(users);
-    setCurrentUser(newUser);
-    saveCurrentUser(newUser);
-    return null;
+  async function signup(username: string, email: string, password: string): Promise<string | null> {
+    try {
+      await api.post("/api/auth/register", { username, email, password });
+      const fakeUser: User = { username, email, password, role: 'user' };
+      setCurrentUser(fakeUser);
+      saveCurrentUser(fakeUser);
+      return null;
+    } catch {
+      return "EMAIL ALREADY REGISTERED!";
+    }
   }
 
   function logout() {
