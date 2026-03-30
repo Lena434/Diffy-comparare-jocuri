@@ -43,5 +43,23 @@
           if (!result)
               return new ServiceResponse { IsSuccess = false, Message = "User not found" };
           return new ServiceResponse { IsSuccess = true, Message = "User deleted successfully" };
-      }                                                                                                                                                                            
+      } 
+      
+      public ServiceResponse ChangePassword(ChangePasswordDto dto)
+      {
+          var result = ChangePasswordAction(dto);
+          if (!result)
+              return new ServiceResponse { IsSuccess = false, Message = "Incorrect old password." };
+          return new ServiceResponse { IsSuccess = true, Message = "Password changed successfully." };
+      }
+
+      public ServiceResponse UpdateProfile(UserProfileUpdateDto userProfileUpdateDto)
+      {
+          var result = UpdateProfileAction(userProfileUpdateDto);                                                                                                                                
+          if (!result)                                                                                                                                                               
+              return new ServiceResponse { IsSuccess = false, Message = "User not found." };
+          return new ServiceResponse { IsSuccess = true, Message = "Profile updated successfully." };
+
+      }
+
   }

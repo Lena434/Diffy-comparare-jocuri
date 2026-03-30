@@ -1,14 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import type { User, UserRole } from "../types";
+import type { User, UserRole, UserProfile } from "../types";
 import { useAxios } from "../axios/context";
-import {
-  getUsers,
-  saveUsers,
-  loadCurrentUser,
-  saveCurrentUser,
-  findUserByCredentials,
-  isEmailTaken,
-} from "../services/authService";
+import { loadCurrentUser, saveCurrentUser } from "../services/authService";
 
 export type { User, UserRole, UserProfile, PcSpecs } from "../types";
 
@@ -19,8 +12,9 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<string | null>;
   signup: (username: string, email: string, password: string) => Promise<string | null>;
   logout: () => void;
-  updateProfile: (data: Partial<Pick<User, 'username' | 'email' | 'profile'>>) => string | null;
-  changePassword: (oldPassword: string, newPassword: string) => string | null;
+  updateProfile: (data: Partial<Pick<User, 'username' | 'email'>>) => Promise<string | null>;
+  updateLocalProfile: (profile: UserProfile) => void;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -30,8 +24,9 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => null,
   signup: async () => null,
   logout: () => {},
-  updateProfile: () => null,
-  changePassword: () => null,
+  updateProfile: async () => null,
+  updateLocalProfile: () => {},
+  changePassword: async () => null,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -45,9 +40,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const userData = await api.post<any>("/api/auth/login", { email, password });
       const loggedUser: User = {
+        id: userData.id,
         username: userData.username,
         email: userData.email,
-        password: password,
         role: userData.role === 30 ? 'admin' : 'user',
       };
       setCurrentUser(loggedUser);
@@ -72,46 +67,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     saveCurrentUser(null);
   }
 
-  function updateProfile(data: Partial<Pick<User, 'username' | 'email' | 'profile'>>): string | null {
+  async function updateProfile(data: Partial<Pick<User, 'username' | 'email'>>): Promise<string | null> {
     if (!currentUser) return "NOT LOGGED IN!";
-    const users = getUsers();
-    const idx = users.findIndex(
-      (u) => u.email.toLowerCase() === currentUser.email.toLowerCase()
-    );
-    if (idx === -1) return "USER NOT FOUND!";
-
-    if (data.email && data.email.toLowerCase() !== currentUser.email.toLowerCase()) {
-      if (isEmailTaken(data.email, idx)) return "EMAIL ALREADY IN USE!";
+    try {
+      await api.patch("/api/users/updateProfile", {
+        email: currentUser.email,
+        username: data.username,
+        newEmail: data.email,
+      });
+      const updated: User = { ...currentUser, ...data };
+      setCurrentUser(updated);
+      saveCurrentUser(updated);
+      return null;
+    } catch {
+      return "EMAIL ALREADY IN USE!";
     }
-
-    const updated: User = { ...users[idx], ...data };
-    users[idx] = updated;
-    saveUsers(users);
-    setCurrentUser(updated);
-    saveCurrentUser(updated);
-    return null;
   }
 
-  function changePassword(oldPassword: string, newPassword: string): string | null {
-    if (!currentUser) return "NOT LOGGED IN!";
-    if (currentUser.password !== oldPassword) return "INCORRECT OLD PASSWORD!";
-
-    const users = getUsers();
-    const idx = users.findIndex(
-      (u) => u.email.toLowerCase() === currentUser.email.toLowerCase()
-    );
-    if (idx === -1) return "USER NOT FOUND!";
-
-    users[idx].password = newPassword;
-    saveUsers(users);
-    const updated = { ...currentUser, password: newPassword };
+  function updateLocalProfile(profile: UserProfile) {
+    if (!currentUser) return;
+    const updated = { ...currentUser, profile };
     setCurrentUser(updated);
     saveCurrentUser(updated);
-    return null;
+  }
+
+
+  async function changePassword(oldPassword: string, newPassword: string): Promise<string | null> {
+    if (!currentUser) return "NOT LOGGED IN!";
+    try{
+      await api.patch("/api/users/changePassword", {
+        email: currentUser.email,
+        oldPassword,
+        newPassword,
+      });
+      return null;
+    } catch {
+      return "INCORRECT OLD PASSWORD!";
+    }
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, isAuthenticated, role, login, signup, logout, updateProfile, changePassword }}>
+    <AuthContext.Provider value={{ currentUser, isAuthenticated, role, login, signup, logout, updateProfile, updateLocalProfile, changePassword }}>
       {children}
     </AuthContext.Provider>
   );

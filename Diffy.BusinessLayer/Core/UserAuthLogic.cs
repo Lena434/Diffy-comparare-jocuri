@@ -9,4 +9,5 @@ public class UserAuthLogic: UserAuthActions, IUserAuthLogic
 {
     public ServiceResponse Register (UserCreateDto userCreateDto) => RegisterAction(userCreateDto);
     public ServiceResponse Login (UserLoginDto userLoginDto) => LoginAction(userLoginDto);
+    
 }

@@ -13,7 +13,7 @@
           _dbContext = new DiffyDbContext();
       }                                                                                                                                                                            
    
-      public bool CreateUserAction(UserCreateDto userCreateDto)                                                                                                                              
+      internal bool CreateUserAction(UserCreateDto userCreateDto)                                                                                                                              
       {           
           var userEntity = new UserEntity                                                                                                                                          
           {       
@@ -37,7 +37,7 @@
           }
       }
 
-      public UserInfoDto? GetUserByIdAction(int id)                                                                                                                                
+      internal UserInfoDto? GetUserByIdAction(int id)                                                                                                                                
       {
           var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);                                                                                                             
           if (user == null) return null;                                                                                                                                           
@@ -53,7 +53,7 @@
           };      
       }
 
-      public List<UserInfoDto> GetUserListAction()                                                                                                                                 
+      internal List<UserInfoDto> GetUserListAction()                                                                                                                                 
       {
           return _dbContext.Users.Select(user => new UserInfoDto                                                                                                                   
           {       
@@ -66,7 +66,7 @@
           }).ToList();
       }
 
-      public bool UpdateUserAction(int id, UserUpdateDto dto)                                                                                                                      
+      internal bool UpdateUserAction(int id, UserUpdateDto dto)                                                                                                                      
       {
           var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);                                                                                                             
           if (user == null) return false;
@@ -87,7 +87,7 @@
           }
       }
 
-      public bool DeleteUserAction(int id)
+      internal bool DeleteUserAction(int id)
       {
           var user = _dbContext.Users.FirstOrDefault(u => u.Id == id);
           if (user == null) return false;                                                                                                                                          
@@ -103,4 +103,40 @@
               return false;
           }
       }
+      
+      internal bool ChangePasswordAction(ChangePasswordDto dto)                                                                                                                          
+      {                                                                                                                                                                              
+          var user = _dbContext.Users.FirstOrDefault(u => u.Email == dto.Email);
+          if (user == null || user.PasswordHash != dto.OldPassword) return false;
+
+          user.PasswordHash = dto.NewPassword;
+          try
+          {
+              _dbContext.SaveChanges();
+              return true;
+          }
+          catch (Exception e)
+          {
+              return false;
+          }
+      }
+
+      internal bool UpdateProfileAction(UserProfileUpdateDto dto)                                                                                                                      
+      {                                                                                                                                                                                
+          var user = _dbContext.Users.FirstOrDefault(u => u.Email == dto.Email);                                                                                                       
+          if (user == null) return false;                                                                                                                                            
+
+          user.Username = dto.Username;
+          user.Email = dto.NewEmail;
+          try
+          {
+              _dbContext.SaveChanges();
+              return true;
+          }
+          catch (Exception e)
+          {
+              return false;
+          }
+      }
+
   }

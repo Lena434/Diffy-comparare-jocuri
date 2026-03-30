@@ -59,4 +59,24 @@ public class UserController : ControllerBase
             return NotFound(result.Message);
         return Ok(result.Message);
     }
+    
+    [HttpPatch("changePassword")]
+    public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        var result = _userLogic.ChangePassword(dto);
+        if (!result.IsSuccess)
+            return BadRequest(result.Message);
+        return Ok(result.Message);
+    }
+    
+    [HttpPatch("updateProfile")] 
+    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto userProfileUpdateDto)
+    {
+        var result = _userLogic.UpdateProfile(userProfileUpdateDto);
+        if (!result.IsSuccess)
+            return NotFound(result.Message);
+        return Ok(result.Message);
+    }
+
+    
 }

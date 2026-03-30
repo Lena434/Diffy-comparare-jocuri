@@ -34,4 +34,5 @@ public class AuthController : ControllerBase
             return Unauthorized(result.Message);
         return Ok(result.Data);
     }
+    
 }
