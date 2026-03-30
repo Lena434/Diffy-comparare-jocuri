@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../routes/routes';
 import { ArcadePanel } from '../../components/arcade/ArcadePanel';
 
 const FONT = "'Press Start 2P', monospace";
 
 const ServerError: React.FC = () => {
-  const handleRetry = () => window.location.reload();
+  const navigate = useNavigate();
+  const handleRetry = () => navigate(0);
 
   return (
     <div

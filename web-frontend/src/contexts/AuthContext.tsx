@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import type { User, UserRole, UserProfile } from "../types";
 import { useAxios } from "../axios/context";
 import { loadCurrentUser, saveCurrentUser } from "../services/authService";
+import { API_ROUTES } from "../axios/apiRoutes";
 
 export type { User, UserRole, UserProfile, PcSpecs } from "../types";
 
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function login(email: string, password: string): Promise<string | null> {
     try {
-      const userData = await api.post<any>("/api/auth/login", { email, password });
+      const userData = await api.post<any>(API_ROUTES.AUTH.LOGIN, { email, password });
       const loggedUser: User = {
         id: userData.id,
         username: userData.username,
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signup(username: string, email: string, password: string): Promise<string | null> {
     try {
-      await api.post("/api/auth/register", { username, email, password });
+      await api.post(API_ROUTES.AUTH.REGISTER, { username, email, password });
       return await login(email, password);
     } catch {
       return "EMAIL ALREADY REGISTERED!";
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function updateProfile(data: Partial<Pick<User, 'username' | 'email'>>): Promise<string | null> {
     if (!currentUser) return "NOT LOGGED IN!";
     try {
-      await api.patch("/api/users/updateProfile", {
+      await api.patch(API_ROUTES.USERS.UPDATE_PROFILE, {
         email: currentUser.email,
         username: data.username,
         newEmail: data.email,
@@ -94,8 +95,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function changePassword(oldPassword: string, newPassword: string): Promise<string | null> {
     if (!currentUser) return "NOT LOGGED IN!";
-    try{
-      await api.patch("/api/users/changePassword", {
+    try {
+      await api.patch(API_ROUTES.USERS.CHANGE_PASSWORD, {
         email: currentUser.email,
         oldPassword,
         newPassword,
