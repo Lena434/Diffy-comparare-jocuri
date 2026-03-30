@@ -18,10 +18,10 @@ function LoginPage() {
     }
   }, [isAuthenticated, role]);
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    const err = login(credentials.email, credentials.password);
+    const err = await login(credentials.email, credentials.password);
     if (err) {
       setError(err);
     }

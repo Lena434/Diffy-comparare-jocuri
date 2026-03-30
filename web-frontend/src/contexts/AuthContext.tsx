@@ -61,10 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signup(username: string, email: string, password: string): Promise<string | null> {
     try {
       await api.post("/api/auth/register", { username, email, password });
-      const fakeUser: User = { username, email, password, role: 'user' };
-      setCurrentUser(fakeUser);
-      saveCurrentUser(fakeUser);
-      return null;
+      return await login(email, password);
     } catch {
       return "EMAIL ALREADY REGISTERED!";
     }
