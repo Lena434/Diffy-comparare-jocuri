@@ -43,4 +43,22 @@ public class GameController : ControllerBase
             return BadRequest(result.Message);
         return Ok(result.Message);
     }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateGame([FromRoute] int id, [FromBody] GameUpdateDto gameUpdateDto)
+    {
+        var result = _gameLogic.UpdateGame(id, gameUpdateDto);
+        if (!result.IsSuccess)
+            return BadRequest(result.Message);
+        return Ok(result.Message);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteGame([FromRoute] int id)
+    {
+        var result = _gameLogic.DeleteGame(id);
+        if (!result.IsSuccess)
+            return NotFound(result.Message);
+        return Ok(result.Message);
+    }
 }

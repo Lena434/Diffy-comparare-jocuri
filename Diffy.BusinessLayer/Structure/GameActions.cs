@@ -62,4 +62,43 @@ public class GameActions
         }).ToList();
         return games;
     }
+
+    public bool UpdateGameAction(int id, GameUpdateDto gameUpdateDto)
+    {
+        var game = _dbContext.Games.FirstOrDefault(g => g.Id == id);
+        if (game == null) return false;
+        
+        game.Title = gameUpdateDto.Title;
+        game.Genre = gameUpdateDto.Genre;
+        game.Price = gameUpdateDto.Price;
+
+        try
+        {
+            _dbContext.SaveChanges();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public bool DeleteGameAction(int id)
+    {
+        var game = _dbContext.Games.FirstOrDefault(g => g.Id == id);
+        if (game == null) return false;
+
+        try
+        {
+            _dbContext.Games.Remove(game);
+            _dbContext.SaveChanges();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+    
+    
 }
