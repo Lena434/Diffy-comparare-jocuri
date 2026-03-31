@@ -1,6 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../routes/routes";
 import { AxiosContext } from "./context";
 import { createApi } from "./create-api";
 import type { ApiClient } from "./types";
@@ -11,10 +13,12 @@ interface AxiosProviderProps {
 }
 
 export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.ReactElement {
-  const client: AxiosInstance = useMemo(() => {
-    const instance = axios.create({ baseURL });
+  const navigate = useNavigate();
 
-    instance.interceptors.response.use(
+  const client: AxiosInstance = useMemo(() => axios.create({ baseURL }), [baseURL]);
+
+  useEffect(() => {
+    const interceptorId = client.interceptors.response.use(
       (response) => response,
       (error) => {
         if (!error.response) {
@@ -24,18 +28,18 @@ export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.
         const { status } = error.response;
         if (status === 401) {
           localStorage.removeItem("diffy-current-user");
-          window.dispatchEvent(new Event("unauthorized"));
+          navigate(ROUTES.LOGIN);
         } else if (status === 403) {
-          console.warn("Access forbidden");
+          navigate(ROUTES.ERROR_403);
         } else if (status >= 500) {
-          console.error("Server error:", status);
+          navigate(ROUTES.ERROR_500);
         }
         return Promise.reject(error);
       }
     );
 
-    return instance;
-  }, [baseURL]);
+    return () => client.interceptors.response.eject(interceptorId);
+  }, [client, navigate]);
 
   const api: ApiClient = useMemo(() => createApi(client), [client]);
 

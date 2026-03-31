@@ -49,4 +49,36 @@ public class GameLogic: GameActions, IGameLogic
             Data = games
         };
     }
+
+    public ServiceResponse UpdateGame(int id, GameUpdateDto gameUpdateDto)
+    {
+        var result = UpdateGameAction(id, gameUpdateDto);
+        if (!result)
+            return new ServiceResponse
+            {
+                IsSuccess = false,
+                Message = "Game update failed"
+            };
+        return new ServiceResponse
+        {
+            IsSuccess = true,
+            Message = "Game updated successfully"
+        };
+    }
+
+    public ServiceResponse DeleteGame(int id)
+    {
+        var result = DeleteGameAction(id);
+        if (!result)
+            return new ServiceResponse
+            {
+                IsSuccess = false,
+                Message = "Game deletion failed"
+            };
+        return new ServiceResponse
+        {
+            IsSuccess = true,
+            Message = "Game deleted successfully"
+        };
+    }
 }

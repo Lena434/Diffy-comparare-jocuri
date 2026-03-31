@@ -19,14 +19,14 @@ function SignUpPage() {
   const [form, setForm] = useState<SignUpForm>({ username: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (form.password !== form.confirm) {
       setError("PASSWORDS DO NOT MATCH!");
       return;
     }
     setError("");
-    const err = signup(form.username, form.email, form.password);
+    const err = await signup(form.username, form.email, form.password);
     if (err) {
       setError(err);
       return;

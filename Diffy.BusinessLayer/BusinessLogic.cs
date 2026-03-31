@@ -14,5 +14,14 @@ public class BusinessLogic
     {
         return new GameLogic();
     }
-    
+
+    public IUserLogic GetUserLogic()
+    {
+        return new UserLogic();
+    }
+
+    public IUserAuthLogic GetUserAuthLogic()
+    {
+        return new UserAuthLogic();
+    }
 }

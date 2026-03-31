@@ -21,7 +21,7 @@ type PlatformForm = { platform: "playstation" | "xbox" | "pc" | ""; platformVers
 type Dialogs = { logout: boolean; password: boolean };
 
 function ProfilePage() {
-  const { currentUser, updateProfile, changePassword, logout } = useAuth();
+  const { currentUser, updateProfile, changePassword, logout, updateLocalProfile } = useAuth();
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
   const navigate = useNavigate();
 
@@ -56,15 +56,15 @@ function ProfilePage() {
 
   const favoriteGames = getGamesByIds(favoriteGameIds);
 
-  function handleSaveInfo() {
+  async function handleSaveInfo() {
     const validationErr = !playerInfo.username.trim() ? "USERNAME REQUIRED!" : !playerInfo.email.trim() ? "EMAIL REQUIRED!" : null;
     if (validationErr) { setInfoMsg({ text: validationErr, type: "error" }); return; }
-    const err = updateProfile({ username: playerInfo.username.trim(), email: playerInfo.email.trim() });
+    const err = await updateProfile({ username: playerInfo.username.trim(), email: playerInfo.email.trim() });
     setInfoMsg(err ? { text: err, type: "error" } : { text: "PROFILE UPDATED!", type: "success" });
   }
 
-  function handleChangePassword() {
-    const err = changePassword(passwordForm.oldPw, passwordForm.newPw);
+  async function handleChangePassword() {
+    const err = await changePassword(passwordForm.oldPw, passwordForm.newPw);
     if (err) { setPwMsg({ text: err, type: "error" }); return; }
     setPwMsg({ text: "PASSWORD CHANGED!", type: "success" });
     setPasswordForm({ oldPw: "", newPw: "", confirmPw: "" });
@@ -80,9 +80,11 @@ function ProfilePage() {
       ...(platformForm.platformVersion ? { platformVersion: platformForm.platformVersion } : {}),
       ...(platformForm.platform === "pc" ? { pcSpecs: platformForm.pcSpecs } : {}),
     };
-    const err = updateProfile({ profile });
-    setPlatMsg(err ? { text: err, type: "error" } : { text: "PLATFORM SAVED!", type: "success" });
+    if (!currentUser) return;
+    updateLocalProfile(profile);
+    setPlatMsg({ text: "PLATFORM SAVED!", type: "success" });
   }
+
 
   function handlePlatformChange(p: "playstation" | "xbox" | "pc") {
     setPlatformForm(prev => ({ ...prev, platform: p, platformVersion: "" }));

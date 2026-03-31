@@ -28,10 +28,12 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import FavoritesPage from "./pages/FavoritesPage";
+import { AxiosProvider } from "./axios/axios-provider";
 
 
 function App() {
   return (
+    <AxiosProvider baseURL="http://localhost:5258">
     <ThemeProvider>
     <AuthProvider>
     <FavoritesProvider>
@@ -81,6 +83,7 @@ function App() {
     </FavoritesProvider>
     </AuthProvider>
     </ThemeProvider>
+    </AxiosProvider>
   );
 }
 
