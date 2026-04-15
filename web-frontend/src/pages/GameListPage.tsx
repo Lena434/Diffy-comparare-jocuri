@@ -1,14 +1,27 @@
-import { getAllGames } from '../services/gameService';
+import { useState, useEffect } from 'react';
+import { useGameService } from '../services/gameService';
 import FilterBar from '../components/filters/FilterBar';
 import GamesHeader from '../sections/games/GamesHeader';
 import GamesGrid from '../sections/games/GamesGrid';
 import Pagination from '../components/navigation/Pagination';
 import PixelLoader from '../components/ui/PixelLoader';
 import { useGameFilters } from '../hooks/useGameFilters';
-import { useSimulatedLoading } from '../hooks/useSimulatedLoading';
+import type { Game } from '../types';
 
 function GameListPage() {
-  const loading = useSimulatedLoading(500);
+  const { getAll } = useGameService();
+  const [allGames, setAllGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAll()
+      .then((games) => {
+        setAllGames(games);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [getAll]);
+
   const {
     searchQuery,
     setSearchQuery,
@@ -26,7 +39,7 @@ function GameListPage() {
     goToPreviousPage,
     goToPage,
     clearFilters,
-  } = useGameFilters(getAllGames(), 8);
+  } = useGameFilters(allGames, 8);
 
   if (loading) return <PixelLoader message="LOADING GAMES..." />;
 
@@ -34,7 +47,7 @@ function GameListPage() {
     <div style={{ minHeight: "100vh", padding: "80px 24px 40px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
 
-        <GamesHeader totalGames={getAllGames().length} />
+        <GamesHeader totalGames={allGames.length} />
 
         <FilterBar
           searchValue={searchQuery}

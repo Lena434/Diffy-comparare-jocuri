@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getUsers, saveUsers } from '../../services/authService';
-import { getAllGames } from '../../services/gameService';
+import { useGameService } from '../../services/gameService';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 const FONT = "'Press Start 2P', monospace";
@@ -42,11 +42,16 @@ const dangerBtn = (label: string, onClick: () => void): React.ReactNode => (
 );
 
 const AdminSettings: React.FC = () => {
-  const [dialog, setDialog] = useState<DialogType>(null);
-  const [msg, setMsg]       = useState<{ text: string; ok: boolean } | null>(null);
+  const { getAll } = useGameService();
+  const [dialog, setDialog]     = useState<DialogType>(null);
+  const [msg, setMsg]           = useState<{ text: string; ok: boolean } | null>(null);
+  const [gameCount, setGameCount] = useState(0);
+
+  useEffect(() => {
+    getAll().then((games) => setGameCount(games.length)).catch(() => {});
+  }, [getAll]);
 
   const users    = getUsers();
-  const games    = getAllGames();
   const banned   = (() => { try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]') as string[]; } catch { return []; } })();
   const favCount = (() => { try { return JSON.parse(localStorage.getItem('diffy-favorites') || '{}') as Record<string, number[]>; } catch { return {}; } })();
 
@@ -95,9 +100,9 @@ const AdminSettings: React.FC = () => {
         {infoRow('NON-ADMIN USERS',     users.filter(u => u.role !== 'admin').length)}
         {infoRow('ADMIN ACCOUNTS',      users.filter(u => u.role === 'admin').length)}
         {infoRow('BANNED USERS',        banned.length)}
-        {infoRow('GAMES IN LIBRARY',    games.length)}
+        {infoRow('GAMES IN LIBRARY',    gameCount)}
         {infoRow('FAVORITES STORED',    Object.keys(favCount).length + ' USER(S)')}
-        {infoRow('STORAGE BACKEND',     'LOCALSTORAGE')}
+        {infoRow('STORAGE BACKEND',     'API + LOCALSTORAGE')}
         {infoRow('ADMIN PANEL VERSION', 'v1.0')}
       </div>
 

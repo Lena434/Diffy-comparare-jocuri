@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { getAllGames } from '../../services/gameService';
 
 const FONT = "'Press Start 2P', monospace";
 
@@ -13,39 +12,24 @@ interface ComparisonLog {
   time: string;
 }
 
-const USERS = ['ShadowNinja42', 'PixelHunter99', 'NeonRacer', 'VoxelWizard', 'RetroKing', 'GameMaster7', 'PixelHunter99', 'NeonRacer', 'VoxelWizard', 'ShadowNinja42', 'RetroKing', 'ShadowNinja42'];
-const DATES = ['2026-03-04', '2026-03-04', '2026-03-04', '2026-03-04', '2026-03-03', '2026-03-03', '2026-03-03', '2026-03-03', '2026-03-02', '2026-03-02', '2026-03-02', '2026-03-01'];
-const TIMES = ['14:22', '13:50', '12:11', '11:03', '22:47', '20:30', '18:55', '17:20', '16:05', '14:40', '12:22', '21:10'];
-
-// Pairs as [indexA, indexB] into getAllGames()
-const PAIRS: [number, number][] = [
-  [0,  2],  // Cyberpunk 2077      vs Counter-Strike 2
-  [6,  11], // Elden Ring          vs Dark Souls III
-  [5,  13], // Minecraft           vs Terraria
-  [4,  3],  // The Witcher 3       vs Hollow Knight
-  [2,  9],  // Counter-Strike 2    vs Valorant
-  [8,  0],  // Red Dead Redemption 2 vs Cyberpunk 2077
-  [3,  14], // Hollow Knight       vs Celeste
-  [16, 1],  // Hades               vs Stardew Valley
-  [17, 12], // Apex Legends        vs Overwatch 2
-  [1,  5],  // Stardew Valley      vs Minecraft
-  [16, 18], // Hades               vs Portal 2
-  [6,  3],  // Elden Ring          vs Hollow Knight
+// Static mock comparison log
+const COMPARISONS: ComparisonLog[] = [
+  { id:  1, user: 'ShadowNinja42', game1: 'Cyberpunk 2077',       game2: 'Counter-Strike 2',    winner: 'Cyberpunk 2077',       date: '2026-03-04', time: '14:22' },
+  { id:  2, user: 'PixelHunter99', game1: 'Elden Ring',            game2: 'Dark Souls III',       winner: 'Elden Ring',            date: '2026-03-04', time: '13:50' },
+  { id:  3, user: 'NeonRacer',     game1: 'Minecraft',              game2: 'Terraria',             winner: 'Minecraft',             date: '2026-03-04', time: '12:11' },
+  { id:  4, user: 'VoxelWizard',   game1: 'The Witcher 3',          game2: 'Hollow Knight',        winner: 'The Witcher 3',         date: '2026-03-04', time: '11:03' },
+  { id:  5, user: 'RetroKing',     game1: 'Counter-Strike 2',       game2: 'Valorant',             winner: 'Counter-Strike 2',     date: '2026-03-03', time: '22:47' },
+  { id:  6, user: 'GameMaster7',   game1: 'Red Dead Redemption 2',  game2: 'Cyberpunk 2077',       winner: 'Red Dead Redemption 2', date: '2026-03-03', time: '20:30' },
+  { id:  7, user: 'PixelHunter99', game1: 'Hollow Knight',          game2: 'Celeste',              winner: 'Hollow Knight',         date: '2026-03-03', time: '18:55' },
+  { id:  8, user: 'NeonRacer',     game1: 'Hades',                  game2: 'Stardew Valley',       winner: 'Hades',                 date: '2026-03-03', time: '17:20' },
+  { id:  9, user: 'VoxelWizard',   game1: 'Apex Legends',           game2: 'Overwatch 2',          winner: 'Apex Legends',          date: '2026-03-02', time: '16:05' },
+  { id: 10, user: 'ShadowNinja42', game1: 'Stardew Valley',         game2: 'Minecraft',            winner: 'Minecraft',             date: '2026-03-02', time: '14:40' },
+  { id: 11, user: 'RetroKing',     game1: 'Hades',                  game2: 'Portal 2',             winner: 'Hades',                 date: '2026-03-02', time: '12:22' },
+  { id: 12, user: 'ShadowNinja42', game1: 'Elden Ring',             game2: 'Hollow Knight',        winner: 'Elden Ring',            date: '2026-03-01', time: '21:10' },
 ];
 
-function buildComparisons(): ComparisonLog[] {
-  const games = getAllGames();
-  return PAIRS.map(([a, b], i) => {
-    const ga = games[a];
-    const gb = games[b];
-    if (!ga || !gb) return null;
-    const winner = ga.rating >= gb.rating ? ga.title : gb.title;
-    return { id: i + 1, user: USERS[i], game1: ga.title, game2: gb.title, winner, date: DATES[i], time: TIMES[i] };
-  }).filter((c): c is ComparisonLog => c !== null);
-}
-
-const COMPARISONS = buildComparisons();
-const TODAY = COMPARISONS.filter(c => c.date === DATES[0]);
+const TODAY_DATE = '2026-03-04';
+const TODAY = COMPARISONS.filter(c => c.date === TODAY_DATE);
 
 const inputBase: React.CSSProperties = {
   fontFamily: FONT,

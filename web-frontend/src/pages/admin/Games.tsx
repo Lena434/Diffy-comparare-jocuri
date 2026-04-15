@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getAllGames, getAllGenres, getAllPlatforms } from '../../services/gameService';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useGameService } from '../../services/gameService';
 import { ROUTES } from '../../routes/routes';
+import PixelLoader from '../../components/ui/PixelLoader';
 import type { Game } from '../../types';
 
 const FONT = "'Press Start 2P', monospace";
@@ -22,12 +23,30 @@ const cell: React.CSSProperties = {
   letterSpacing: '0.02em',
 };
 
-type SortKey = 'title' | 'rating' | 'releaseYear' | 'price';
+type SortKey = 'title' | 'averageRating' | 'releaseYear' | 'price';
 
 const AdminGames: React.FC = () => {
-  const allGames     = getAllGames();
-  const allGenres    = getAllGenres();
-  const allPlatforms = getAllPlatforms();
+  const { getAll } = useGameService();
+  const [allGames, setAllGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAll()
+      .then((games) => { setAllGames(games); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [getAll]);
+
+  const allGenres = useMemo(() => {
+    const genres = new Set<string>();
+    allGames.forEach((g) => g.genres.forEach((genre) => genres.add(genre)));
+    return Array.from(genres).sort();
+  }, [allGames]);
+
+  const allPlatforms = useMemo(() => {
+    const platforms = new Set<string>();
+    allGames.forEach((g) => g.platforms.forEach((p) => platforms.add(p)));
+    return Array.from(platforms).sort();
+  }, [allGames]);
 
   const [search, setSearch]                 = useState('');
   const [filterGenre, setFilterGenre]       = useState('all');
@@ -44,16 +63,16 @@ const AdminGames: React.FC = () => {
     .filter(g => {
       const q = search.toLowerCase();
       const matchSearch   = g.title.toLowerCase().includes(q) || (g.developer ?? '').toLowerCase().includes(q);
-      const matchGenre    = filterGenre    === 'all' || g.genre.includes(filterGenre);
-      const matchPlatform = filterPlatform === 'all' || g.platform.includes(filterPlatform);
+      const matchGenre    = filterGenre    === 'all' || g.genres.includes(filterGenre);
+      const matchPlatform = filterPlatform === 'all' || g.platforms.includes(filterPlatform);
       return matchSearch && matchGenre && matchPlatform;
     })
     .sort((a, b) => {
       let va: string | number, vb: string | number;
-      if (sortBy === 'title')       { va = a.title;       vb = b.title; }
-      else if (sortBy === 'rating') { va = a.rating;      vb = b.rating; }
-      else if (sortBy === 'price')  { va = a.price ?? 0;  vb = b.price ?? 0; }
-      else                          { va = a.releaseYear; vb = b.releaseYear; }
+      if (sortBy === 'title')           { va = a.title;            vb = b.title; }
+      else if (sortBy === 'averageRating') { va = a.averageRating; vb = b.averageRating; }
+      else if (sortBy === 'price')      { va = a.price ?? 0;       vb = b.price ?? 0; }
+      else                              { va = a.releaseYear;       vb = b.releaseYear; }
       if (va < vb) return sortAsc ? -1 :  1;
       if (va > vb) return sortAsc ?  1 : -1;
       return 0;
@@ -62,6 +81,8 @@ const AdminGames: React.FC = () => {
   const navigate = useNavigate();
   const sortArrow = (key: SortKey) => sortBy === key ? (sortAsc ? ' ▲' : ' ▼') : '';
   const adminDetailPath = (id: number) => ROUTES.ADMIN_GAME_DETAIL.replace(':id', String(id));
+
+  if (loading) return <PixelLoader message="LOADING GAMES..." />;
 
   return (
     <div style={{ fontFamily: FONT }}>
@@ -104,8 +125,8 @@ const AdminGames: React.FC = () => {
               </th>
               <th style={{ padding: '14px 14px', textAlign: 'left', fontSize: '0.42rem', color: 'var(--arcade-accent)', letterSpacing: '0.06em', borderBottom: '3px solid var(--arcade-border)' }}>GENRE</th>
               <th style={{ padding: '14px 14px', textAlign: 'left', fontSize: '0.42rem', color: 'var(--arcade-accent)', letterSpacing: '0.06em', borderBottom: '3px solid var(--arcade-border)' }}>PLATFORM</th>
-              <th style={{ padding: '14px 14px', textAlign: 'left', fontSize: '0.42rem', color: 'var(--arcade-accent)', letterSpacing: '0.06em', borderBottom: '3px solid var(--arcade-border)', cursor: 'pointer' }} onClick={() => toggleSort('rating')}>
-                RATING{sortArrow('rating')}
+              <th style={{ padding: '14px 14px', textAlign: 'left', fontSize: '0.42rem', color: 'var(--arcade-accent)', letterSpacing: '0.06em', borderBottom: '3px solid var(--arcade-border)', cursor: 'pointer' }} onClick={() => toggleSort('averageRating')}>
+                RATING{sortArrow('averageRating')}
               </th>
               <th style={{ padding: '14px 14px', textAlign: 'left', fontSize: '0.42rem', color: 'var(--arcade-accent)', letterSpacing: '0.06em', borderBottom: '3px solid var(--arcade-border)', cursor: 'pointer' }} onClick={() => toggleSort('releaseYear')}>
                 YEAR{sortArrow('releaseYear')}
@@ -128,15 +149,15 @@ const AdminGames: React.FC = () => {
                 <tr key={game.id}>
                   <td style={{ ...cell, fontSize: '0.42rem', color: 'var(--arcade-text)', maxWidth: '200px' }}>{game.title}</td>
                   <td style={{ ...cell, fontSize: '0.38rem', color: 'var(--arcade-muted)' }}>
-                    {game.genre.slice(0, 2).join(', ')}
-                    {game.genre.length > 2 && <span style={{ color: 'var(--arcade-accent)' }}> +{game.genre.length - 2}</span>}
+                    {game.genres.slice(0, 2).join(', ')}
+                    {game.genres.length > 2 && <span style={{ color: 'var(--arcade-accent)' }}> +{game.genres.length - 2}</span>}
                   </td>
                   <td style={{ ...cell, fontSize: '0.38rem', color: 'var(--arcade-muted)' }}>
-                    {game.platform.slice(0, 2).join(', ')}
-                    {game.platform.length > 2 && <span style={{ color: 'var(--arcade-accent)' }}> +{game.platform.length - 2}</span>}
+                    {game.platforms.slice(0, 2).join(', ')}
+                    {game.platforms.length > 2 && <span style={{ color: 'var(--arcade-accent)' }}> +{game.platforms.length - 2}</span>}
                   </td>
-                  <td style={{ ...cell, fontSize: '0.42rem', color: game.rating >= 8 ? '#22c55e' : game.rating >= 6 ? 'var(--arcade-accent)' : '#ef4444' }}>
-                    {game.rating.toFixed(1)}
+                  <td style={{ ...cell, fontSize: '0.42rem', color: game.averageRating >= 8 ? '#22c55e' : game.averageRating >= 6 ? 'var(--arcade-accent)' : '#ef4444' }}>
+                    {game.averageRating.toFixed(1)}
                   </td>
                   <td style={{ ...cell, fontSize: '0.4rem', color: 'var(--arcade-muted)' }}>{game.releaseYear}</td>
                   <td style={{ ...cell, fontSize: '0.4rem', color: 'var(--arcade-text)' }}>{game.price != null ? `$${game.price}` : '—'}</td>
