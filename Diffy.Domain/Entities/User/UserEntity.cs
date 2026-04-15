@@ -9,5 +9,5 @@ public class UserEntity
     public UserRole Role { get; set; }
     public bool IsBanned { get; set; }
     public DateTime RegisteredOn { get; set; }
-    
+    public UserProfileEntity? UserProfile { get; set; }
 }
