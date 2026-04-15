@@ -1,64 +1,73 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Diffy.BusinessLayer;
+using AutoMapper;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Models.Game;
-using Diffy.Domain.Models.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Diffy.Api.Controllers;
 
 [ApiController]
-[Route("api/games")]
+[Route("api/game")]
 public class GameController : ControllerBase
 {
-    private readonly IGameLogic _gameLogic;
+    private readonly IGame _game;
+    private readonly IMapper _mapper;
 
-    public GameController()
+    public GameController(IGame game, IMapper mapper)
     {
-        var bl = new BusinessLogic();
-        _gameLogic = bl.GetGameLogic();
+        _game = game;
+        _mapper = mapper;
     }
 
-    [HttpGet("list")]
-    public IActionResult GetGameList()
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
-        var result =  _gameLogic.GetGameList();
-        return Ok(result.Data);
+        var games = await _game.GetAllAsync();
+        return Ok(_mapper.Map<List<GameInfoDto>>(games));
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetGameById([FromRoute] int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var result = _gameLogic.GetGameById(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        
-        return Ok(result.Data);
+        var game = await _game.GetByIdAsync(id);
+        if (game == null)
+            return NotFound();
+        return Ok(_mapper.Map<GameInfoDto>(game));
     }
 
-    [HttpPost("create")]
-    public IActionResult CreateGame([FromBody] GameCreateDto gameCreateDto)
+    [HttpGet("compare")]
+    public async Task<IActionResult> Compare([FromQuery] string ids)
     {
-        var result = _gameLogic.CreateGame(gameCreateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        var idList = ids.Split(',').Select(int.Parse).ToList();
+        var games = await _game.GetByIdsAsync(idList);
+        return Ok(_mapper.Map<List<GameInfoDto>>(games));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Add([FromBody] GameCreateDto dto)
+    {
+        var entity = _mapper.Map<GameEntity>(dto);
+        await _game.AddAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+        return Ok();
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateGame([FromRoute] int id, [FromBody] GameUpdateDto gameUpdateDto)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] GameUpdateDto dto)
     {
-        var result = _gameLogic.UpdateGame(id, gameUpdateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        var entity = _mapper.Map<GameEntity>(dto);
+        entity.Id = id;
+        await _game.UpdateAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+        return Ok();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteGame([FromRoute] int id)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = _gameLogic.DeleteGame(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Message);
+        await _game.DeleteAsync(id);
+        return Ok();
     }
 }
