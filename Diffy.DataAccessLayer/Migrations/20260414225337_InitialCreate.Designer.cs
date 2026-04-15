@@ -3,6 +3,7 @@ using System;
 using Diffy.DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Diffy.DataAccessLayer.Migrations
 {
     [DbContext(typeof(DiffyDbContext))]
-    partial class DiffyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414225337_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,27 +108,6 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.ToTable("GamePlatforms");
                 });
 
-            modelBuilder.Entity("Diffy.Domain.Entities.Game.GameRatingEntity", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("Score")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("UserId", "GameId");
-
-                    b.HasIndex("GameId");
-
-                    b.ToTable("GameRatings");
-                });
-
             modelBuilder.Entity("Diffy.Domain.Entities.GameModeEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -209,24 +191,6 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Diffy.Domain.Entities.User.UserFavoriteEntity", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("AddedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("UserId", "GameId");
-
-                    b.HasIndex("GameId");
-
-                    b.ToTable("UserFavorites");
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.User.UserProfileEntity", b =>
@@ -317,44 +281,6 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("Diffy.Domain.Entities.Game.GameRatingEntity", b =>
-                {
-                    b.HasOne("Diffy.Domain.Entities.Game.GameEntity", "Game")
-                        .WithMany("Ratings")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Diffy.Domain.Entities.User.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Diffy.Domain.Entities.User.UserFavoriteEntity", b =>
-                {
-                    b.HasOne("Diffy.Domain.Entities.Game.GameEntity", "Game")
-                        .WithMany()
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Diffy.Domain.Entities.User.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Diffy.Domain.Entities.User.UserProfileEntity", b =>
                 {
                     b.HasOne("Diffy.Domain.Entities.User.UserEntity", "User")
@@ -373,8 +299,6 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.Navigation("GameModes");
 
                     b.Navigation("GamePlatforms");
-
-                    b.Navigation("Ratings");
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.GenreEntity", b =>
