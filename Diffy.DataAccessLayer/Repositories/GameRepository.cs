@@ -29,6 +29,7 @@ public class GameRepository
             .Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
             .Include(g => g.GamePlatforms).ThenInclude(gp => gp.Platform)
             .Include(g => g.GameModes).ThenInclude(gm => gm.GameMode)
+            .Include(g => g.Ratings)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
