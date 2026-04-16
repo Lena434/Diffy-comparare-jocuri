@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useGameService } from '../../services/gameService';
-import { getUsers } from '../../services/authService';
+import { useAxios } from '../../axios/context';
+import { API_ROUTES } from '../../axios/apiRoutes';
 import { ROUTES } from '../../routes/routes';
 
 const FONT = "'Press Start 2P', monospace";
@@ -24,8 +25,11 @@ const cell: React.CSSProperties = { padding: '13px 14px', fontSize: '0.42rem', b
 
 const Dashboard: React.FC = () => {
   const { getAll } = useGameService();
+  const { api } = useAxios();
   const [gameCount, setGameCount] = useState(0);
   const [avgRating, setAvgRating] = useState('0.0');
+  const [userCount, setUserCount] = useState(0);
+  const [adminCount, setAdminCount] = useState(0);
 
   useEffect(() => {
     getAll().then((games) => {
@@ -37,12 +41,17 @@ const Dashboard: React.FC = () => {
     }).catch(() => {});
   }, [getAll]);
 
-  const users  = getUsers();
+  useEffect(() => {
+    api.get<{ role: string }[]>(API_ROUTES.USERS.LIST).then((users) => {
+      setUserCount(users.length);
+      setAdminCount(users.filter(u => u.role === 'Admin').length);
+    }).catch(() => {});
+  }, [api]);
+
   const banned = getBannedEmails();
-  const admins = users.filter(u => u.role === 'admin').length;
 
   const STATS = [
-    { label: 'TOTAL USERS',  value: String(users.length),  trend: `${admins} ADMIN(S)`,   trendColor: 'var(--arcade-accent)' },
+    { label: 'TOTAL USERS',  value: String(userCount),  trend: `${adminCount} ADMIN(S)`,   trendColor: 'var(--arcade-accent)' },
     { label: 'TOTAL GAMES',  value: String(gameCount),     trend: 'IN LIBRARY',            trendColor: '#22c55e' },
     { label: 'BANNED USERS', value: String(banned.length), trend: banned.length > 0 ? '⚠ ACTIVE BANS' : '✓ CLEAN', trendColor: banned.length > 0 ? '#ef4444' : '#22c55e' },
     { label: 'AVG RATING',   value: avgRating,             trend: 'OUT OF 10',             trendColor: 'var(--arcade-muted)' },

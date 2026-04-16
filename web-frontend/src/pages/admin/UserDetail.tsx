@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getUsers } from '../../services/authService';
+import { useAxios } from '../../axios/context';
+import { API_ROUTES } from '../../axios/apiRoutes';
 import { ROUTES } from '../../routes/routes';
+import type { User } from '../../types';
 
 const FONT = "'Press Start 2P', monospace";
 const BANNED_KEY = 'diffy-banned-users';
@@ -36,11 +38,29 @@ const value: React.CSSProperties = {
 const AdminUserDetail: React.FC = () => {
   const { email: rawEmail } = useParams<{ email: string }>();
   const navigate = useNavigate();
+  const { api } = useAxios();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const email = decodeURIComponent(rawEmail ?? '');
-  const users  = getUsers();
+
+  useEffect(() => {
+    api.get<User[]>(API_ROUTES.USERS.LIST)
+      .then(setUsers)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [api]);
+
   const banned = getBannedEmails();
   const user   = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+  if (loading) {
+    return (
+      <div style={{ fontFamily: FONT, textAlign: 'center', padding: '80px 0', fontSize: '0.5rem', color: 'var(--arcade-muted)' }}>
+        LOADING...
+      </div>
+    );
+  }
 
   if (!user) {
     return (

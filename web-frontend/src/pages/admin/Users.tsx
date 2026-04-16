@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getUsers, saveUsers } from '../../services/authService';
+import { useAxios } from '../../axios/context';
+import { API_ROUTES } from '../../axios/apiRoutes';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import type { User } from '../../types';
 
@@ -90,8 +91,13 @@ const fieldLabel: React.CSSProperties = {
 };
 
 const UsersAdmin: React.FC = () => {
-  const [users, setUsers]               = useState<User[]>(() => getUsers());
+  const { api } = useAxios();
+  const [users, setUsers]               = useState<User[]>([]);
   const [banned, setBanned]             = useState<string[]>(() => getBannedEmails());
+
+  useEffect(() => {
+    api.get<User[]>(API_ROUTES.USERS.LIST).then(setUsers).catch(() => {});
+  }, [api]);
   const [search, setSearch]             = useState('');
   const [filterRole, setFilterRole]     = useState<FilterRole>('all');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
@@ -158,7 +164,6 @@ const UsersAdmin: React.FC = () => {
         ...(editForm.newPassword ? { password: editForm.newPassword } : {}),
       };
     });
-    saveUsers(updatedUsers);
     setUsers(updatedUsers);
 
     const oldEmail  = editTarget.email.toLowerCase();
@@ -184,7 +189,6 @@ const UsersAdmin: React.FC = () => {
   function confirmDelete() {
     if (!dialog) return;
     const next = users.filter(u => u.email !== dialog.user.email);
-    saveUsers(next);
     setUsers(next);
     const nextBanned = banned.filter(e => e !== dialog.user.email.toLowerCase());
     saveBannedEmails(nextBanned);
@@ -199,7 +203,6 @@ const UsersAdmin: React.FC = () => {
         ? { ...u, role: (u.role === 'admin' ? 'user' : 'admin') as User['role'] }
         : u
     );
-    saveUsers(next);
     setUsers(next);
     setDialog(null);
   }
