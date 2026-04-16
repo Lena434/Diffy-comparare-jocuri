@@ -1,17 +1,21 @@
-using Diffy.BusinessLayer.Interfaces;
-using Diffy.BusinessLayer.Structure;
+using Diffy.Api;
+using Diffy.DataAccessLayer;
 using Diffy.DataAccessLayer.Context;
-using Diffy.DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+AppConfig.Initialize(builder.Configuration);
+DbConfig.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -40,11 +44,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]!.Split(',');
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -54,26 +59,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<DiffyDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<GenreRepository>();
-builder.Services.AddScoped<PlatformRepository>();
-builder.Services.AddScoped<GameModeRepository>();
-builder.Services.AddScoped<GameRepository>();
-
-builder.Services.AddScoped<IGenre, GenreActions>();
-builder.Services.AddScoped<IPlatform, PlatformActions>();
-builder.Services.AddScoped<IGameMode, GameModeActions>();
-builder.Services.AddScoped<IGame, GameActions>();
-
-builder.Services.AddScoped<UserFavoriteRepository>();
-builder.Services.AddScoped<IUserFavorite, UserFavoriteActions>();
-builder.Services.AddScoped<GameRatingRepository>();
-builder.Services.AddScoped<IGameRating, GameRatingActions>();
-builder.Services.AddScoped<UserProfileRepository>();
-builder.Services.AddScoped<IUserProfile, UserProfileActions>();
-
-builder.Services.AddAutoMapper(typeof(Diffy.Api.MappingProfile));
-
-var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -83,18 +68,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            ValidIssuer = AppConfig.JwtIssuer,
+            ValidAudience = AppConfig.JwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtKey))
         };
     });
 
 builder.Services.AddAuthorization();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
