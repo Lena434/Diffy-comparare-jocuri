@@ -1,4 +1,4 @@
-using AutoMapper;
+using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
 using Diffy.Domain.Entities;
 using Diffy.Domain.Models.GameMode;
@@ -11,36 +11,56 @@ namespace Diffy.Api.Controllers;
 [Route("api/gamemode")]
 public class GameModeController : ControllerBase
 {
-    private readonly IGameMode _gameMode;
-    private readonly IMapper _mapper;
-
-    public GameModeController(IGameMode gameMode, IMapper mapper)
-    {
-        _gameMode = gameMode;
-        _mapper = mapper;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var gameModes = await _gameMode.GetAllAsync();
-        return Ok(_mapper.Map<List<GameModeDto>>(gameModes));
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var gameModes = await service.GetAllAsync();
+            return Ok(gameModes.Select(e => new GameModeDto { Id = e.Id, Name = e.Name }).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving game modes.");
+        }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] GameModeDto dto)
     {
-        var entity = _mapper.Map<GameModeEntity>(dto);
-        await _gameMode.AddAsync(entity);
-        return Ok();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var entity = new GameModeEntity { Name = dto.Name };
+            await service.AddAsync(entity);
+            return StatusCode(201);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while adding the game mode.");
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _gameMode.DeleteAsync(id);
-        return Ok();
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while deleting the game mode.");
+        }
     }
 }

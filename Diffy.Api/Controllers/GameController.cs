@@ -1,4 +1,4 @@
-using AutoMapper;
+using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
 using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Models.Game;
@@ -11,63 +11,156 @@ namespace Diffy.Api.Controllers;
 [Route("api/game")]
 public class GameController : ControllerBase
 {
-    private readonly IGame _game;
-    private readonly IMapper _mapper;
-
-    public GameController(IGame game, IMapper mapper)
+    private static GameInfoDto ToDto(GameEntity g) => new()
     {
-        _game = game;
-        _mapper = mapper;
-    }
+        Id = g.Id,
+        Title = g.Title,
+        Description = g.Description,
+        Developer = g.Developer,
+        Publisher = g.Publisher,
+        ReleaseYear = g.ReleaseYear,
+        Price = g.Price,
+        ImageUrl = g.ImageUrl,
+        Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
+        Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
+        GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
+        AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
+    };
+
+    private static GameEntity ToEntity(GameCreateDto dto) => new()
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        Developer = dto.Developer,
+        Publisher = dto.Publisher,
+        ReleaseYear = dto.ReleaseYear,
+        Price = dto.Price,
+        ImageUrl = dto.ImageUrl,
+    };
+
+    private static GameEntity ToEntity(GameUpdateDto dto) => new()
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        Developer = dto.Developer,
+        Publisher = dto.Publisher,
+        ReleaseYear = dto.ReleaseYear,
+        Price = dto.Price,
+        ImageUrl = dto.ImageUrl,
+    };
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var games = await _game.GetAllAsync();
-        return Ok(_mapper.Map<List<GameInfoDto>>(games));
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var games = await service.GetAllAsync();
+            return Ok(games.Select(ToDto).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving games.");
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var game = await _game.GetByIdAsync(id);
-        if (game == null)
-            return NotFound();
-        return Ok(_mapper.Map<GameInfoDto>(game));
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var game = await service.GetByIdAsync(id);
+            if (game == null)
+                return NotFound();
+            return Ok(ToDto(game));
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the game.");
+        }
     }
 
     [HttpGet("compare")]
     public async Task<IActionResult> Compare([FromQuery] string ids)
     {
-        var idList = ids.Split(',').Select(int.Parse).ToList();
-        var games = await _game.GetByIdsAsync(idList);
-        return Ok(_mapper.Map<List<GameInfoDto>>(games));
+        var idList = new List<int>();
+        foreach (var part in ids.Split(','))
+        {
+            if (!int.TryParse(part.Trim(), out var parsed) || parsed <= 0)
+                return BadRequest($"Invalid game id: '{part}'");
+            idList.Add(parsed);
+        }
+
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var games = await service.GetByIdsAsync(idList);
+            return Ok(games.Select(ToDto).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while comparing games.");
+        }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] GameCreateDto dto)
     {
-        var entity = _mapper.Map<GameEntity>(dto);
-        await _game.AddAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
-        return Ok();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            await service.AddAsync(ToEntity(dto), dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return StatusCode(201);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while adding the game.");
+        }
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id, [FromBody] GameUpdateDto dto)
     {
-        var entity = _mapper.Map<GameEntity>(dto);
-        entity.Id = id;
-        await _game.UpdateAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
-        return Ok();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            var entity = ToEntity(dto);
+            entity.Id = id;
+            await service.UpdateAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the game.");
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _game.DeleteAsync(id);
-        return Ok();
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while deleting the game.");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Diffy.BusinessLayer;
@@ -13,40 +13,50 @@ namespace Diffy.Api.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IUserAuthLogic _userAuthLogic;
-    private readonly IConfiguration _config;
-
-    public AuthController(IConfiguration config)
-    {
-        var bl = new BusinessLogic();
-        _userAuthLogic = bl.GetUserAuthLogic();
-        _config = config;
-    }
+    private readonly IUserAuthLogic _userAuthLogic = new BusinessLogic().GetUserAuthLogic();
 
     [HttpPost("register")]
     public IActionResult Register([FromBody] UserCreateDto userCreateDto)
     {
-        var result = _userAuthLogic.Register(userCreateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            var result = _userAuthLogic.Register(userCreateDto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            return StatusCode(201, result.Message);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while registering.");
+        }
     }
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] UserLoginDto userLoginDto)
     {
-        var result = _userAuthLogic.Login(userLoginDto);
-        if (!result.IsSuccess)
-            return Unauthorized(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            var result = _userAuthLogic.Login(userLoginDto);
+            if (!result.IsSuccess)
+                return Unauthorized(result.Message);
 
-        var user = (UserInfoDto)result.Data!;
-        var token = GenerateJwtToken(user);
-        return Ok(new { token, user });
+            var user = (UserInfoDto)result.Data!;
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, user });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while logging in.");
+        }
     }
 
-    private string GenerateJwtToken(UserInfoDto user)
+    private static string GenerateJwtToken(UserInfoDto user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
@@ -56,8 +66,8 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
+            issuer: AppConfig.JwtIssuer,
+            audience: AppConfig.JwtAudience,
             claims: claims,
             expires: DateTime.UtcNow.AddDays(7),
             signingCredentials: creds

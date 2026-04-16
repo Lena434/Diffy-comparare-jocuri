@@ -1,4 +1,4 @@
-using AutoMapper;
+using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
 using Diffy.Domain.Entities;
 using Diffy.Domain.Models.Platform;
@@ -11,36 +11,56 @@ namespace Diffy.Api.Controllers;
 [Route("api/platform")]
 public class PlatformController : ControllerBase
 {
-    private readonly IPlatform _platform;
-    private readonly IMapper _mapper;
-
-    public PlatformController(IPlatform platform, IMapper mapper)
-    {
-        _platform = platform;
-        _mapper = mapper;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var platforms = await _platform.GetAllAsync();
-        return Ok(_mapper.Map<List<PlatformDto>>(platforms));
+        try
+        {
+            IPlatform service = new BusinessLogic().GetPlatform();
+            var platforms = await service.GetAllAsync();
+            return Ok(platforms.Select(e => new PlatformDto { Id = e.Id, Name = e.Name }).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving platforms.");
+        }
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] PlatformDto dto)
     {
-        var entity = _mapper.Map<PlatformEntity>(dto);
-        await _platform.AddAsync(entity);
-        return Ok();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IPlatform service = new BusinessLogic().GetPlatform();
+            var entity = new PlatformEntity { Name = dto.Name };
+            await service.AddAsync(entity);
+            return StatusCode(201);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while adding the platform.");
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _platform.DeleteAsync(id);
-        return Ok();
+        try
+        {
+            IPlatform service = new BusinessLogic().GetPlatform();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while deleting the platform.");
+        }
     }
 }
