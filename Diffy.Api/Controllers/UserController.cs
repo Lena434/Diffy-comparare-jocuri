@@ -1,82 +1,154 @@
-﻿using Diffy.BusinessLayer;
+using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
 using Diffy.Domain.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/users")]
+[Authorize]
 public class UserController : ControllerBase
 {
-    private readonly IUserLogic _userLogic;
-
-    public UserController()
-    {
-        var bl = new BusinessLogic();
-        _userLogic = bl.GetUserLogic();
-    }
-
     [HttpGet("list")]
+    [Authorize(Roles = "Admin")]
     public IActionResult GetUserList()
     {
-        var result = _userLogic.GetUserList();
-        return Ok(result.Data);
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.GetUserList();
+            return Ok(result.Data);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving users.");
+        }
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult GetUserById([FromRoute] int id)
     {
-        var result = _userLogic.GetUserById(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Data);
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.GetUserById(id);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return Ok(result.Data);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the user.");
+        }
     }
 
     [HttpPost("create")]
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateUser([FromBody] UserCreateDto userCreateDto)
     {
-        var result = _userLogic.CreateUser(userCreateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.CreateUser(userCreateDto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            return StatusCode(201, result.Message);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while creating the user.");
+        }
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserUpdateDto userUpdateDto)
     {
-        var result = _userLogic.UpdateUser(id, userUpdateDto);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.UpdateUser(id, userUpdateDto);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the user.");
+        }
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteUser([FromRoute] int id)
     {
-        var result = _userLogic.DeleteUser(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Message);
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.DeleteUser(id);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while deleting the user.");
+        }
     }
-    
+
     [HttpPatch("changePassword")]
     public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
     {
-        var result = _userLogic.ChangePassword(dto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
-    }
-    
-    [HttpPatch("updateProfile")] 
-    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto userProfileUpdateDto)
-    {
-        var result = _userLogic.UpdateProfile(userProfileUpdateDto);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var authenticatedEmail = User.FindFirstValue(ClaimTypes.Email);
+        if (authenticatedEmail == null)
+            return Unauthorized();
+
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.ChangePassword(authenticatedEmail, dto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while changing the password.");
+        }
     }
 
-    
+    [HttpPatch("updateProfile")]
+    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto userProfileUpdateDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var authenticatedEmail = User.FindFirstValue(ClaimTypes.Email);
+        if (authenticatedEmail == null)
+            return Unauthorized();
+
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.UpdateProfile(authenticatedEmail, userProfileUpdateDto);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the profile.");
+        }
+    }
 }
