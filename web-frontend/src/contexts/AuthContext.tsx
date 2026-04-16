@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role === 30 ? 'admin' : 'user',
+        role: (user.role as string)?.toLowerCase() as UserRole,
       };
       saveToken(token);
       setCurrentUser(loggedUser);

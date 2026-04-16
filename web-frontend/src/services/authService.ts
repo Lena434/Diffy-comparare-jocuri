@@ -1,21 +1,7 @@
 import type { User } from '../types';
 
-const USERS_KEY = 'diffy-users';
 const CURRENT_USER_KEY = 'diffy-current-user';
 const TOKEN_KEY = 'diffy-token';
-
-
-export function getUsers(): User[] {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-export function saveUsers(users: User[]): void {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
 
 export function loadCurrentUser(): User | null {
   try {
