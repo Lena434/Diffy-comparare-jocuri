@@ -1,8 +1,16 @@
-﻿namespace Diffy.Domain.Models.User;
+using System.ComponentModel.DataAnnotations;
+
+namespace Diffy.Domain.Models.User;
 
 public class UserProfileUpdateDto
 {
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string NewEmail { get; set; }
+    [Required]
+    [StringLength(50, MinimumLength = 3)]
+    public string Username { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    public string NewEmail { get; set; } = string.Empty;
 }
