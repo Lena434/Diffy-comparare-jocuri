@@ -2,6 +2,7 @@
 using Diffy.Domain.Entities;
 using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Entities.User;
+using Diffy.DataAccessLayer;
 
 
 
@@ -9,7 +10,14 @@ namespace Diffy.DataAccessLayer.Context;
 
 public class DiffyDbContext : DbContext
 {
+    public DiffyDbContext() { }
     public DiffyDbContext(DbContextOptions<DiffyDbContext> options) : base(options) { }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured && !string.IsNullOrEmpty(DbConfig.ConnectionString))
+            optionsBuilder.UseNpgsql(DbConfig.ConnectionString);
+    }
 
     public DbSet<GameEntity> Games { get; set; }
     public DbSet<UserEntity> Users { get; set; }
