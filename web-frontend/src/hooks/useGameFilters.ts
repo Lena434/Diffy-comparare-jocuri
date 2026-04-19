@@ -27,7 +27,7 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
 
   const sorters: Record<string, (a: Game, b: Game) => number> = {
     title: (a, b) => a.title.localeCompare(b.title),
-    rating: (a, b) => b.rating - a.rating,
+    rating: (a, b) => b.averageRating - a.averageRating,
     year: (a, b) => b.releaseYear - a.releaseYear,
   };
 
@@ -37,9 +37,9 @@ export function useGameFilters(games: Game[], gamesPerPage: number = 8) {
 
     const filters: ((game: Game) => boolean)[] = [
       (game) => !searchQuery || game.title.toLowerCase().includes(searchQuery.toLowerCase()),
-      (game) => genreFilter === 'All' || game.genre.includes(genreFilter),
-      (game) => platformFilter === 'All' || game.platform.includes(platformFilter),
-      (game) => !urlMode || game.gameMode.some((m) => m.toLowerCase().includes(urlMode.toLowerCase())),
+      (game) => genreFilter === 'All' || game.genres.includes(genreFilter),
+      (game) => platformFilter === 'All' || game.platforms.includes(platformFilter),
+      (game) => !urlMode || game.gameModes.some((m) => m.toLowerCase().includes(urlMode.toLowerCase())),
       (game) => !urlMaxPrice || (!isNaN(maxPrice) && game.price !== undefined && game.price <= maxPrice),
     ];
 

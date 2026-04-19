@@ -34,3 +34,7 @@ dist-ssr
 bin/
 obj/
 
+# ASP.NET Core secrets
+appsettings.json
+appsettings.Development.json
+

@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useFavorites } from "../contexts/FavoritesContext";
+import { useGameService } from "../services/gameService";
+import { useAxios } from "../axios/context";
+import { API_ROUTES } from "../axios/apiRoutes";
 import { ROUTES } from "../routes/routes";
-import { getGamesByIds } from "../services/gameService";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import type { UserProfile, PcSpecs } from "../contexts/AuthContext";
 import { PlayerInfoSection } from "../sections/profile/PlayerInfoSection";
@@ -11,6 +13,7 @@ import { PasswordSection } from "../sections/profile/PasswordSection";
 import { PlatformSection } from "../sections/profile/PlatformSection";
 import { FavoritesSection } from "../sections/profile/FavoritesSection";
 import { ComparisonsSection } from "../sections/profile/ComparisonsSection";
+import type { Game } from "../types";
 
 const FONT = "'Press Start 2P', monospace";
 
@@ -23,9 +26,12 @@ type Dialogs = { logout: boolean; password: boolean };
 function ProfilePage() {
   const { currentUser, updateProfile, changePassword, logout, updateLocalProfile } = useAuth();
   const { favoriteGameIds, savedComparisons, removeComparison } = useFavorites();
+  const { getByIds } = useGameService();
+  const { api } = useAxios();
   const navigate = useNavigate();
 
   const [dialogs, setDialogs] = useState<Dialogs>({ logout: false, password: false });
+  const [favoriteGames, setFavoriteGames] = useState<Game[]>([]);
 
   const [playerInfo, setPlayerInfo] = useState<PlayerInfoForm>({
     username: currentUser?.username ?? "",
@@ -54,7 +60,11 @@ function ProfilePage() {
     }
   }, [currentUser]);
 
-  const favoriteGames = getGamesByIds(favoriteGameIds);
+  useEffect(() => {
+    getByIds(favoriteGameIds)
+      .then(setFavoriteGames)
+      .catch(() => {});
+  }, [favoriteGameIds, getByIds]);
 
   async function handleSaveInfo() {
     const validationErr = !playerInfo.username.trim() ? "USERNAME REQUIRED!" : !playerInfo.email.trim() ? "EMAIL REQUIRED!" : null;
@@ -70,21 +80,35 @@ function ProfilePage() {
     setPasswordForm({ oldPw: "", newPw: "", confirmPw: "" });
   }
 
-  function handleSavePlatform() {
+  async function handleSavePlatform() {
     if (!platformForm.platform) { setPlatMsg({ text: "SELECT A PLATFORM!", type: "error" }); return; }
     if ((platformForm.platform === "playstation" || platformForm.platform === "xbox") && !platformForm.platformVersion) {
       setPlatMsg({ text: "SELECT VERSION!", type: "error" }); return;
     }
-    const profile: UserProfile = {
-      platform: platformForm.platform,
-      ...(platformForm.platformVersion ? { platformVersion: platformForm.platformVersion } : {}),
-      ...(platformForm.platform === "pc" ? { pcSpecs: platformForm.pcSpecs } : {}),
-    };
-    if (!currentUser) return;
-    updateLocalProfile(profile);
-    setPlatMsg({ text: "PLATFORM SAVED!", type: "success" });
-  }
 
+    const dto = {
+      platform: platformForm.platform,
+      platformVersion: platformForm.platformVersion || null,
+      cpuModel: platformForm.platform === "pc" ? platformForm.pcSpecs.cpu || null : null,
+      gpuModel: platformForm.platform === "pc" ? platformForm.pcSpecs.gpu || null : null,
+      ramGb: platformForm.platform === "pc" ? (parseInt(platformForm.pcSpecs.ram) || null) : null,
+      storageGb: platformForm.platform === "pc" ? (parseInt(platformForm.pcSpecs.storage) || null) : null,
+      operatingSystem: platformForm.platform === "pc" ? platformForm.pcSpecs.os || null : null,
+    };
+
+    try {
+      await api.put(API_ROUTES.PROFILE.UPDATE, dto);
+      const profile: UserProfile = {
+        platform: platformForm.platform,
+        ...(platformForm.platformVersion ? { platformVersion: platformForm.platformVersion } : {}),
+        ...(platformForm.platform === "pc" ? { pcSpecs: platformForm.pcSpecs } : {}),
+      };
+      if (currentUser) updateLocalProfile(profile);
+      setPlatMsg({ text: "PLATFORM SAVED!", type: "success" });
+    } catch {
+      setPlatMsg({ text: "FAILED TO SAVE!", type: "error" });
+    }
+  }
 
   function handlePlatformChange(p: "playstation" | "xbox" | "pc") {
     setPlatformForm(prev => ({ ...prev, platform: p, platformVersion: "" }));
@@ -96,26 +120,10 @@ function ProfilePage() {
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
 
         <div style={{ marginBottom: "32px", marginTop: "24px" }}>
-          <h1
-            style={{
-              fontFamily: FONT,
-              fontSize: "clamp(1rem, 3vw, 1.8rem)",
-              color: "var(--arcade-h)",
-              textShadow: "3px 3px 0px var(--arcade-h-shadow), 6px 6px 0px #000",
-              letterSpacing: "0.1em",
-              margin: "0 0 12px",
-            }}
-          >
+          <h1 style={{ fontFamily: FONT, fontSize: "clamp(1rem, 3vw, 1.8rem)", color: "var(--arcade-h)", textShadow: "3px 3px 0px var(--arcade-h-shadow), 6px 6px 0px #000", letterSpacing: "0.1em", margin: "0 0 12px" }}>
             👤 PLAYER PROFILE
           </h1>
-          <p
-            style={{
-              fontFamily: FONT,
-              fontSize: "0.4rem",
-              color: "var(--arcade-muted)",
-              letterSpacing: "0.06em",
-            }}
-          >
+          <p style={{ fontFamily: FONT, fontSize: "0.4rem", color: "var(--arcade-muted)", letterSpacing: "0.06em" }}>
             MANAGE YOUR ACCOUNT AND PREFERENCES
           </p>
         </div>
@@ -164,13 +172,7 @@ function ProfilePage() {
           <button
             onClick={() => setDialogs(prev => ({ ...prev, logout: true }))}
             className="bg-transparent hover:bg-[#ef4444] text-[#ef4444] hover:text-white border-[3px] border-[#ef4444] [box-shadow:4px_4px_0px_var(--arcade-shadow)] hover:[box-shadow:6px_6px_0px_var(--arcade-shadow)] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-all duration-100"
-            style={{
-              fontFamily: FONT,
-              fontSize: "0.45rem",
-              padding: "12px 28px",
-              cursor: "pointer",
-              letterSpacing: "0.08em",
-            }}
+            style={{ fontFamily: FONT, fontSize: "0.45rem", padding: "12px 28px", cursor: "pointer", letterSpacing: "0.08em" }}
           >
             ⏻ LOG OUT
           </button>

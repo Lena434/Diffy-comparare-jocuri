@@ -1,8 +1,20 @@
 import { ProfilePanel } from "../../components/arcade/ProfilePanel";
-import { getGamesByIds } from "../../services/gameService";
 
-function ComparisonCard({ gameIds, onRemove }: { gameIds: number[]; onRemove: () => void }) {
-  const games = getGamesByIds(gameIds);
+interface Props {
+  savedComparisons: { id: string; gameIds: number[]; gameTitles?: string[] }[];
+  onRemove: (id: string) => void;
+}
+
+function ComparisonCard({
+  comp,
+  onRemove,
+}: {
+  comp: Props["savedComparisons"][number];
+  onRemove: () => void;
+}) {
+  const titles = comp.gameTitles && comp.gameTitles.length > 0
+    ? comp.gameTitles
+    : comp.gameIds.map((id) => `#${id}`);
 
   return (
     <div
@@ -27,7 +39,7 @@ function ComparisonCard({ gameIds, onRemove }: { gameIds: number[]; onRemove: ()
           margin: 0,
         }}
       >
-        ⚔ {games.map((g) => g!.title.toUpperCase()).join(" VS ")}
+        ⚔ {titles.map((t) => t.toUpperCase()).join(" VS ")}
       </p>
       <button
         onClick={onRemove}
@@ -45,11 +57,6 @@ function ComparisonCard({ gameIds, onRemove }: { gameIds: number[]; onRemove: ()
   );
 }
 
-interface Props {
-  savedComparisons: { id: string; gameIds: number[] }[];
-  onRemove: (id: string) => void;
-}
-
 export function ComparisonsSection({ savedComparisons, onRemove }: Props) {
   return (
     <ProfilePanel title="▸ SAVED COMPARISONS">
@@ -58,7 +65,7 @@ export function ComparisonsSection({ savedComparisons, onRemove }: Props) {
           {savedComparisons.map((comp) => (
             <ComparisonCard
               key={comp.id}
-              gameIds={comp.gameIds}
+              comp={comp}
               onRemove={() => onRemove(comp.id)}
             />
           ))}

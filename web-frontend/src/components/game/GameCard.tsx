@@ -30,7 +30,7 @@ function GameCard({ game }: GameCardProps) {
       {/* Image */}
       <div style={{ position: "relative", height: "160px", overflow: "hidden" }}>
         <img
-          src={game.image}
+          src={game.imageUrl ?? ''}
           alt={game.title}
           className="transition-transform duration-200 group-hover:scale-[1.06]"
           style={{
@@ -73,7 +73,7 @@ function GameCard({ game }: GameCardProps) {
             color: "var(--arcade-h)",
           }}
         >
-          ★ {game.rating}
+          ★ {game.averageRating}
         </div>
         {/* Year badge */}
         <div
@@ -168,7 +168,7 @@ function GameCard({ game }: GameCardProps) {
 
         {/* Genres */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-          {game.genre.map((genre) => (
+          {game.genres.map((genre) => (
             <GenreBadge key={genre} genre={genre} />
           ))}
         </div>
@@ -193,7 +193,7 @@ function GameCard({ game }: GameCardProps) {
               letterSpacing: "0.03em",
             }}
           >
-            {game.platform.join(' · ')}
+            {game.platforms.join(' · ')}
           </span>
         </div>
       </div>

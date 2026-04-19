@@ -1,16 +1,32 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllGames } from '../../services/gameService';
+import { useGameService } from '../../services/gameService';
 import GameCard from '../../components/game/GameCard';
 import { ROUTES } from '../../routes/routes';
+import type { Game } from '../../types';
 
 function FeaturedGamesSection() {
+  const { getAll } = useGameService();
+  const [featured, setFeatured] = useState<Game[]>([]);
+
+  useEffect(() => {
+    getAll()
+      .then((games) =>
+        setFeatured(
+          [...games]
+            .sort((a, b) => b.averageRating - a.averageRating)
+            .slice(0, 4),
+        ),
+      )
+      .catch(() => {});
+  }, [getAll]);
+
   return (
     <section style={{ padding: "60px 24px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
 
         {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          {/* pixel bracket decoration */}
           <div
             style={{
               fontFamily: "'Press Start 2P', monospace",
@@ -67,12 +83,9 @@ function FeaturedGamesSection() {
             marginBottom: "36px",
           }}
         >
-          {[...getAllGames()]
-            .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-            .slice(0, 4)
-            .map((game) => (
-              <GameCard key={game.id} game={game} />
-            ))}
+          {featured.map((game) => (
+            <GameCard key={game.id} game={game} />
+          ))}
         </div>
 
         {/* View All Button */}

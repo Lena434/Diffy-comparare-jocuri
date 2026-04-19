@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getGameById, updateGame, deleteGame } from '../../services/gameService';
+import { useGameService } from '../../services/gameService';
+import type { GenreMeta, PlatformMeta, GameModeMeta } from '../../services/gameService';
 import GenreBadge from '../../components/game/GenreBadge';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import PixelLoader from '../../components/ui/PixelLoader';
 import { ROUTES } from '../../routes/routes';
 import type { Game } from '../../types';
 
@@ -39,15 +41,76 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
+function namesFromIds(ids: number[], list: { id: number; name: string }[]): string[] {
+  return ids.map((id) => list.find((x) => x.id === id)?.name ?? String(id));
+}
+
+function idsFromNames(names: string[], list: { id: number; name: string }[]): number[] {
+  return names
+    .map((name) => list.find((x) => x.name.toLowerCase() === name.toLowerCase())?.id)
+    .filter((id): id is number => id !== undefined);
+}
+
 function AdminGameDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [game, setGame] = useState<Game | null>(() => getGameById(Number(id)) ?? null);
+  const { getById, getGenres, getPlatforms, getGameModes, update, remove } = useGameService();
+
+  const [game, setGame] = useState<Game | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState<Game | null>(game);
+  const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  if (!game) {
+  const [genres, setGenres] = useState<GenreMeta[]>([]);
+  const [platforms, setPlatforms] = useState<PlatformMeta[]>([]);
+  const [gameModes, setGameModes] = useState<GameModeMeta[]>([]);
+
+  // Edit form mirrors Game but stores genres/platforms/gameModes as comma-separated strings
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    developer: '',
+    publisher: '',
+    releaseYear: 0,
+    price: 0,
+    imageUrl: '',
+    genresStr: '',
+    platformsStr: '',
+    gameModesStr: '',
+  });
+
+  useEffect(() => {
+    const numId = Number(id);
+    if (!numId) { setNotFound(true); setLoading(false); return; }
+
+    Promise.all([getById(numId), getGenres(), getPlatforms(), getGameModes()])
+      .then(([g, gList, pList, gmList]) => {
+        setGame(g);
+        setGenres(gList);
+        setPlatforms(pList);
+        setGameModes(gmList);
+        setForm({
+          title: g.title,
+          description: g.description,
+          developer: g.developer ?? '',
+          publisher: g.publisher ?? '',
+          releaseYear: g.releaseYear,
+          price: g.price ?? 0,
+          imageUrl: g.imageUrl ?? '',
+          genresStr: g.genres.join(', '),
+          platformsStr: g.platforms.join(', '),
+          gameModesStr: g.gameModes.join(', '),
+        });
+        setLoading(false);
+      })
+      .catch(() => { setNotFound(true); setLoading(false); });
+  }, [id, getById, getGenres, getPlatforms, getGameModes]);
+
+  if (loading) return <PixelLoader message="LOADING GAME..." />;
+
+  if (notFound || !game) {
     return (
       <div style={{ minHeight: '100vh', padding: '80px 24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', maxWidth: '500px' }}>
@@ -66,63 +129,66 @@ function AdminGameDetail() {
     );
   }
 
-  const handleSave = () => {
-    if (!form) return;
-    updateGame(form);
-    setGame(form);
-    setEditing(false);
-  };
+  async function handleSave() {
+    setSaving(true);
+    const genreNames = form.genresStr.split(',').map(s => s.trim()).filter(Boolean);
+    const platformNames = form.platformsStr.split(',').map(s => s.trim()).filter(Boolean);
+    const gameModeNames = form.gameModesStr.split(',').map(s => s.trim()).filter(Boolean);
 
-  const handleDelete = () => {
-    deleteGame(game.id);
+    const payload = {
+      title: form.title,
+      description: form.description,
+      developer: form.developer,
+      publisher: form.publisher,
+      releaseYear: form.releaseYear,
+      price: form.price,
+      imageUrl: form.imageUrl || undefined,
+      genreIds: idsFromNames(genreNames, genres),
+      platformIds: idsFromNames(platformNames, platforms),
+      gameModeIds: idsFromNames(gameModeNames, gameModes),
+    };
+
+    try {
+      await update(game.id, payload);
+      setGame({
+        ...game,
+        ...form,
+        imageUrl: form.imageUrl || null,
+        genres: genreNames,
+        platforms: platformNames,
+        gameModes: gameModeNames,
+      });
+      setEditing(false);
+    } catch {
+      // stay in edit mode on error
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    await remove(game.id);
     navigate(ROUTES.ADMIN_GAMES);
-  };
-
-  const setField = <K extends keyof Game>(key: K, value: Game[K]) =>
-    setForm(prev => prev ? { ...prev, [key]: value } : prev);
-
-  const setArrayField = (key: 'genre' | 'platform' | 'gameMode', value: string) =>
-    setField(key, value.split(',').map(s => s.trim()).filter(Boolean) as Game[typeof key]);
+  }
 
   return (
     <div style={{ minHeight: '100vh', padding: '40px 24px' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
 
-        {/* Back Button */}
         <button
           onClick={() => navigate(ROUTES.ADMIN_GAMES)}
-          style={{
-            fontFamily: FONT,
-            fontSize: '0.45rem',
-            cursor: 'pointer',
-            marginBottom: '30px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '9px 18px',
-            letterSpacing: '0.06em',
-            background: 'transparent',
-            border: '2px solid var(--arcade-shadow)',
-            color: 'var(--arcade-muted)',
-          }}
+          style={{ fontFamily: FONT, fontSize: '0.45rem', cursor: 'pointer', marginBottom: '30px', display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '9px 18px', letterSpacing: '0.06em', background: 'transparent', border: '2px solid var(--arcade-shadow)', color: 'var(--arcade-muted)' }}
         >
-          <span>◄</span>
-          <span>BACK</span>
+          <span>◄</span><span>BACK</span>
         </button>
 
-        {/* Hero Section */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '30px', marginBottom: '50px' }}>
-
           {/* Image */}
           <div style={{ position: 'relative', border: '3px solid var(--arcade-border)', boxShadow: '6px 6px 0px var(--arcade-shadow)', overflow: 'hidden', aspectRatio: '1', maxWidth: '500px', margin: '0 auto', width: '100%' }}>
-            <img
-              src={game.image}
-              alt={game.title}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9) saturate(0.85)' }}
-            />
+            <img src={game.imageUrl ?? ''} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9) saturate(0.85)' }} />
             <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--arcade-input-bg)', border: '2px solid var(--arcade-h)', boxShadow: '3px 3px 0px var(--arcade-h-shadow)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: FONT, fontSize: '0.5rem', color: 'var(--arcade-h)' }}>
-              ★ {game.rating}
+              ★ {game.averageRating.toFixed(1)}
             </div>
           </div>
 
@@ -131,26 +197,23 @@ function AdminGameDetail() {
             <h1 style={{ fontFamily: FONT, fontSize: 'clamp(0.8rem, 3vw, 1.4rem)', color: 'var(--arcade-h)', textShadow: '3px 3px 0px var(--arcade-h-shadow)', letterSpacing: '0.08em', margin: 0, lineHeight: 1.6 }}>
               {game.title}
             </h1>
-
             <p style={{ fontFamily: FONT, fontSize: '0.55rem', color: 'var(--arcade-text)', letterSpacing: '0.04em', lineHeight: 2.1, margin: 0 }}>
               {game.description}
             </p>
-
-            {/* Details Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', background: 'var(--arcade-panel)', border: '3px solid var(--arcade-border)', padding: '20px', boxShadow: '4px 4px 0px var(--arcade-shadow)' }}>
               <div style={{ gridColumn: '1 / -1' }}>
                 <p style={{ fontFamily: FONT, fontSize: '0.42rem', color: 'var(--arcade-muted)', marginBottom: '10px' }}>GENRE</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {game.genre.map(genre => <GenreBadge key={genre} genre={genre} size="md" />)}
+                  {game.genres.map(genre => <GenreBadge key={genre} genre={genre} size="md" />)}
                 </div>
               </div>
               <div>
                 <p style={{ fontFamily: FONT, fontSize: '0.42rem', color: 'var(--arcade-muted)', marginBottom: '8px' }}>PLATFORM</p>
-                <p style={{ fontFamily: FONT, fontSize: '0.45rem', color: 'var(--arcade-text)', margin: 0 }}>{game.platform.join(', ')}</p>
+                <p style={{ fontFamily: FONT, fontSize: '0.45rem', color: 'var(--arcade-text)', margin: 0 }}>{game.platforms.join(', ')}</p>
               </div>
               <div>
                 <p style={{ fontFamily: FONT, fontSize: '0.42rem', color: 'var(--arcade-muted)', marginBottom: '8px' }}>MODE</p>
-                <p style={{ fontFamily: FONT, fontSize: '0.45rem', color: 'var(--arcade-text)', margin: 0 }}>{game.gameMode.join(', ')}</p>
+                <p style={{ fontFamily: FONT, fontSize: '0.45rem', color: 'var(--arcade-text)', margin: 0 }}>{game.gameModes.join(', ')}</p>
               </div>
               <div>
                 <p style={{ fontFamily: FONT, fontSize: '0.42rem', color: 'var(--arcade-muted)', marginBottom: '8px' }}>YEAR</p>
@@ -176,107 +239,68 @@ function AdminGameDetail() {
               )}
             </div>
 
-            {/* Action Buttons */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
               <button
-                onClick={() => { setForm(game); setEditing(true); }}
-                style={{
-                  flex: '1 1 200px',
-                  background: 'var(--arcade-cta)',
-                  borderWidth: '3px',
-                  borderStyle: 'solid',
-                  borderColor: 'var(--arcade-text)',
-                  boxShadow: '4px 4px 0px var(--arcade-shadow)',
-                  color: '#fff',
-                  fontFamily: FONT,
-                  fontSize: '0.45rem',
-                  padding: '14px 20px',
-                  cursor: 'pointer',
-                  letterSpacing: '0.06em',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                }}
+                onClick={() => setEditing(true)}
+                style={{ flex: '1 1 200px', background: 'var(--arcade-cta)', borderWidth: '3px', borderStyle: 'solid', borderColor: 'var(--arcade-text)', boxShadow: '4px 4px 0px var(--arcade-shadow)', color: '#fff', fontFamily: FONT, fontSize: '0.45rem', padding: '14px 20px', cursor: 'pointer', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
-                <span>✏️</span>
-                <span>EDIT</span>
+                <span>✏️</span><span>EDIT</span>
               </button>
               <button
                 onClick={() => setConfirmDelete(true)}
-                style={{
-                  flex: '1 1 200px',
-                  background: 'rgba(239,68,68,0.8)',
-                  borderWidth: '3px',
-                  borderStyle: 'solid',
-                  borderColor: '#ef4444',
-                  boxShadow: '4px 4px 0px var(--arcade-shadow)',
-                  color: '#fff',
-                  fontFamily: FONT,
-                  fontSize: '0.45rem',
-                  padding: '14px 20px',
-                  cursor: 'pointer',
-                  letterSpacing: '0.06em',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                }}
+                style={{ flex: '1 1 200px', background: 'rgba(239,68,68,0.8)', borderWidth: '3px', borderStyle: 'solid', borderColor: '#ef4444', boxShadow: '4px 4px 0px var(--arcade-shadow)', color: '#fff', fontFamily: FONT, fontSize: '0.45rem', padding: '14px 20px', cursor: 'pointer', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
-                <span>🗑️</span>
-                <span>DELETE</span>
+                <span>🗑️</span><span>DELETE</span>
               </button>
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Edit Modal */}
-      {editing && form && (
+      {editing && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div style={{ background: 'var(--arcade-panel-dark)', border: '4px solid var(--arcade-border)', boxShadow: '8px 8px 0 #000', padding: '28px', width: '100%', maxWidth: '560px', maxHeight: '85vh', overflowY: 'auto' }}>
             <h2 style={{ fontFamily: FONT, fontSize: '0.7rem', color: 'var(--arcade-h)', textShadow: '2px 2px 0 var(--arcade-h-shadow)', letterSpacing: '0.08em', marginBottom: '24px' }}>
               EDIT GAME
             </h2>
             <FieldRow label="TITLE">
-              <input style={inputStyle} value={form.title} onChange={e => setField('title', e.target.value)} />
+              <input style={inputStyle} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
             </FieldRow>
             <FieldRow label="DESCRIPTION">
-              <textarea style={{ ...inputStyle, resize: 'vertical', minHeight: '64px' }} value={form.description} onChange={e => setField('description', e.target.value)} />
+              <textarea style={{ ...inputStyle, resize: 'vertical', minHeight: '64px' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </FieldRow>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <FieldRow label="RATING (0-5)">
-                <input style={inputStyle} type="number" min={0} max={5} step={0.1} value={form.rating} onChange={e => setField('rating', parseFloat(e.target.value) || 0)} />
-              </FieldRow>
               <FieldRow label="YEAR">
-                <input style={inputStyle} type="number" value={form.releaseYear} onChange={e => setField('releaseYear', parseInt(e.target.value) || 0)} />
+                <input style={inputStyle} type="number" value={form.releaseYear} onChange={e => setForm(f => ({ ...f, releaseYear: parseInt(e.target.value) || 0 }))} />
               </FieldRow>
               <FieldRow label="PRICE ($)">
-                <input style={inputStyle} type="number" min={0} step={0.01} value={form.price ?? ''} onChange={e => setField('price', e.target.value === '' ? undefined : parseFloat(e.target.value))} />
+                <input style={inputStyle} type="number" min={0} step={0.01} value={form.price} onChange={e => setForm(f => ({ ...f, price: parseFloat(e.target.value) || 0 }))} />
               </FieldRow>
               <FieldRow label="DEVELOPER">
-                <input style={inputStyle} value={form.developer ?? ''} onChange={e => setField('developer', e.target.value || undefined)} />
+                <input style={inputStyle} value={form.developer} onChange={e => setForm(f => ({ ...f, developer: e.target.value }))} />
               </FieldRow>
               <FieldRow label="PUBLISHER">
-                <input style={inputStyle} value={form.publisher ?? ''} onChange={e => setField('publisher', e.target.value || undefined)} />
+                <input style={inputStyle} value={form.publisher} onChange={e => setForm(f => ({ ...f, publisher: e.target.value }))} />
               </FieldRow>
             </div>
             <FieldRow label="GENRE (comma separated)">
-              <input style={inputStyle} value={form.genre.join(', ')} onChange={e => setArrayField('genre', e.target.value)} />
+              <input style={inputStyle} value={form.genresStr} onChange={e => setForm(f => ({ ...f, genresStr: e.target.value }))} />
             </FieldRow>
             <FieldRow label="PLATFORM (comma separated)">
-              <input style={inputStyle} value={form.platform.join(', ')} onChange={e => setArrayField('platform', e.target.value)} />
+              <input style={inputStyle} value={form.platformsStr} onChange={e => setForm(f => ({ ...f, platformsStr: e.target.value }))} />
             </FieldRow>
             <FieldRow label="GAME MODE (comma separated)">
-              <input style={inputStyle} value={form.gameMode.join(', ')} onChange={e => setArrayField('gameMode', e.target.value)} />
+              <input style={inputStyle} value={form.gameModesStr} onChange={e => setForm(f => ({ ...f, gameModesStr: e.target.value }))} />
             </FieldRow>
             <FieldRow label="IMAGE URL">
-              <input style={inputStyle} value={form.image} onChange={e => setField('image', e.target.value)} />
+              <input style={inputStyle} value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
             </FieldRow>
             <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
               <button onClick={() => setEditing(false)} style={{ fontFamily: FONT, fontSize: '0.45rem', padding: '10px 20px', border: '3px solid var(--arcade-muted)', background: 'transparent', color: 'var(--arcade-muted)', cursor: 'pointer', boxShadow: '3px 3px 0 var(--arcade-shadow)', letterSpacing: '0.05em' }}>CANCEL</button>
-              <button onClick={handleSave} style={{ fontFamily: FONT, fontSize: '0.45rem', padding: '10px 20px', border: '3px solid #22c55e', background: 'transparent', color: '#22c55e', cursor: 'pointer', boxShadow: '3px 3px 0 #14532d', letterSpacing: '0.05em' }}>SAVE</button>
+              <button onClick={handleSave} disabled={saving} style={{ fontFamily: FONT, fontSize: '0.45rem', padding: '10px 20px', border: '3px solid #22c55e', background: 'transparent', color: '#22c55e', cursor: saving ? 'wait' : 'pointer', boxShadow: '3px 3px 0 #14532d', letterSpacing: '0.05em' }}>
+                {saving ? 'SAVING...' : 'SAVE'}
+              </button>
             </div>
           </div>
         </div>

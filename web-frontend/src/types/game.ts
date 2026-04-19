@@ -1,12 +1,12 @@
 export interface Game {
   id: number;
   title: string;
-  genre: string[];
-  platform: string[];
-  rating: number;
+  genres: string[];
+  platforms: string[];
+  averageRating: number;
   releaseYear: number;
-  gameMode: string[];
-  image: string;
+  gameModes: string[];
+  imageUrl: string | null;
   description: string;
   developer?: string;
   publisher?: string;

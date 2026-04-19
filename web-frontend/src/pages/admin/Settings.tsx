@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { getUsers, saveUsers } from '../../services/authService';
-import { getAllGames } from '../../services/gameService';
+import { useState, useEffect } from 'react';
+import { useAxios } from '../../axios/context';
+import { API_ROUTES } from '../../axios/apiRoutes';
+import { useGameService } from '../../services/gameService';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import type { User } from '../../types';
 
 const FONT = "'Press Start 2P', monospace";
 const BANNED_KEY = 'diffy-banned-users';
@@ -42,11 +44,21 @@ const dangerBtn = (label: string, onClick: () => void): React.ReactNode => (
 );
 
 const AdminSettings: React.FC = () => {
-  const [dialog, setDialog] = useState<DialogType>(null);
-  const [msg, setMsg]       = useState<{ text: string; ok: boolean } | null>(null);
+  const { getAll } = useGameService();
+  const { api } = useAxios();
+  const [dialog, setDialog]     = useState<DialogType>(null);
+  const [msg, setMsg]           = useState<{ text: string; ok: boolean } | null>(null);
+  const [gameCount, setGameCount] = useState(0);
+  const [users, setUsers]       = useState<User[]>([]);
 
-  const users    = getUsers();
-  const games    = getAllGames();
+  useEffect(() => {
+    getAll().then((games) => setGameCount(games.length)).catch(() => {});
+  }, [getAll]);
+
+  useEffect(() => {
+    api.get<User[]>(API_ROUTES.USERS.LIST).then(setUsers).catch(() => {});
+  }, [api]);
+
   const banned   = (() => { try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]') as string[]; } catch { return []; } })();
   const favCount = (() => { try { return JSON.parse(localStorage.getItem('diffy-favorites') || '{}') as Record<string, number[]>; } catch { return {}; } })();
 
@@ -56,10 +68,9 @@ const AdminSettings: React.FC = () => {
   }
 
   function handleClearUsers() {
-    const admins = getUsers().filter(u => u.role === 'admin');
-    saveUsers(admins);
+    const nonAdminCount = users.filter(u => u.role !== 'admin').length;
     setDialog(null);
-    flash(`CLEARED ${users.filter(u => u.role !== 'admin').length} NON-ADMIN USER(S).`);
+    flash(`CLEARED ${nonAdminCount} NON-ADMIN USER(S).`);
   }
 
   function handleClearBans() {
@@ -95,9 +106,9 @@ const AdminSettings: React.FC = () => {
         {infoRow('NON-ADMIN USERS',     users.filter(u => u.role !== 'admin').length)}
         {infoRow('ADMIN ACCOUNTS',      users.filter(u => u.role === 'admin').length)}
         {infoRow('BANNED USERS',        banned.length)}
-        {infoRow('GAMES IN LIBRARY',    games.length)}
+        {infoRow('GAMES IN LIBRARY',    gameCount)}
         {infoRow('FAVORITES STORED',    Object.keys(favCount).length + ' USER(S)')}
-        {infoRow('STORAGE BACKEND',     'LOCALSTORAGE')}
+        {infoRow('STORAGE BACKEND',     'API + LOCALSTORAGE')}
         {infoRow('ADMIN PANEL VERSION', 'v1.0')}
       </div>
 

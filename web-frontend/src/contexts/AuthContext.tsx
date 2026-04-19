@@ -1,7 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { User, UserRole, UserProfile } from "../types";
 import { useAxios } from "../axios/context";
-import { loadCurrentUser, saveCurrentUser } from "../services/authService";
+import { loadCurrentUser, saveCurrentUser, loadToken, saveToken } from "../services/authService";
 import { API_ROUTES } from "../axios/apiRoutes";
 
 export type { User, UserRole, UserProfile, PcSpecs } from "../types";
@@ -31,21 +31,35 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { api } = useAxios();
+  const { client, api } = useAxios();
   const [currentUser, setCurrentUser] = useState<User | null>(() => loadCurrentUser());
+
+  // Attach saved token to every outgoing request
+  useEffect(() => {
+    const id = client.interceptors.request.use((config) => {
+      const token = loadToken();
+      if (token) {
+        config.headers = config.headers ?? {};
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return config;
+    });
+    return () => client.interceptors.request.eject(id);
+  }, [client]);
 
   const isAuthenticated = currentUser !== null;
   const role: UserRole | null = currentUser?.role ?? null;
 
   async function login(email: string, password: string): Promise<string | null> {
     try {
-      const userData = await api.post<any>(API_ROUTES.AUTH.LOGIN, { email, password });
+      const { token, user } = await api.post<any>(API_ROUTES.AUTH.LOGIN, { email, password });
       const loggedUser: User = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        role: userData.role === 30 ? 'admin' : 'user',
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: (user.role as string)?.toLowerCase() as UserRole,
       };
+      saveToken(token);
       setCurrentUser(loggedUser);
       saveCurrentUser(loggedUser);
       return null;
@@ -66,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   function logout() {
     setCurrentUser(null);
     saveCurrentUser(null);
+    saveToken(null);
   }
 
   async function updateProfile(data: Partial<Pick<User, 'username' | 'email'>>): Promise<string | null> {

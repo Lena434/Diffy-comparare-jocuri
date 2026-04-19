@@ -3,19 +3,19 @@ import type { Game } from '../../types';
 export const comparisonCriteria = [
   {
     label: 'Rating',
-    renderValue: (game: Game) => `⭐ ${game.rating}`,
+    renderValue: (game: Game) => `⭐ ${game.averageRating}`,
   },
   {
     label: 'Genre',
-    renderValue: (game: Game) => game.genre.join(', '),
+    renderValue: (game: Game) => game.genres.join(', '),
   },
   {
     label: 'Platform',
-    renderValue: (game: Game) => game.platform.join(', '),
+    renderValue: (game: Game) => game.platforms.join(', '),
   },
   {
     label: 'Game Mode',
-    renderValue: (game: Game) => game.gameMode.join(', '),
+    renderValue: (game: Game) => game.gameModes.join(', '),
   },
   {
     label: 'Release Year',

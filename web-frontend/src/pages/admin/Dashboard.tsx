@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getUsers } from '../../services/authService';
-import { getAllGames } from '../../services/gameService';
+import { useGameService } from '../../services/gameService';
+import { useAxios } from '../../axios/context';
+import { API_ROUTES } from '../../axios/apiRoutes';
 import { ROUTES } from '../../routes/routes';
 
 const FONT = "'Press Start 2P', monospace";
@@ -10,43 +12,49 @@ function getBannedEmails(): string[] {
   try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]'); } catch { return []; }
 }
 
-const RECENT_USERS = ['ShadowNinja42', 'PixelHunter99', 'NeonRacer', 'VoxelWizard', 'RetroKing'];
-const RECENT_TIMES = ['2m ago', '5m ago', '11m ago', '18m ago', '31m ago'];
-// Pairs as [indexA, indexB] into getAllGames()
-const RECENT_PAIRS: [number, number][] = [
-  [0,  2],  // Cyberpunk 2077     vs Counter-Strike 2
-  [6,  11], // Elden Ring         vs Dark Souls III
-  [5,  13], // Minecraft          vs Terraria
-  [4,  3],  // The Witcher 3      vs Hollow Knight
-  [2,  9],  // Counter-Strike 2   vs Valorant
+// Static recent comparison log (mock display — no real comparison history in DB yet)
+const RECENT = [
+  { user: 'ShadowNinja42', game1: 'Cyberpunk 2077',      game2: 'Counter-Strike 2',   winner: 'Cyberpunk 2077',      time: '2m ago' },
+  { user: 'PixelHunter99', game1: 'Elden Ring',           game2: 'Dark Souls III',      winner: 'Elden Ring',           time: '5m ago' },
+  { user: 'NeonRacer',     game1: 'Minecraft',             game2: 'Terraria',            winner: 'Minecraft',            time: '11m ago' },
+  { user: 'VoxelWizard',   game1: 'The Witcher 3',         game2: 'Hollow Knight',       winner: 'The Witcher 3',        time: '18m ago' },
+  { user: 'RetroKing',     game1: 'Counter-Strike 2',      game2: 'Valorant',            winner: 'Counter-Strike 2',    time: '31m ago' },
 ];
-
-function buildRecent() {
-  const games = getAllGames();
-  return RECENT_PAIRS.map(([a, b], i) => {
-    const ga = games[a]; const gb = games[b];
-    if (!ga || !gb) return null;
-    const winner = ga.rating >= gb.rating ? ga.title : gb.title;
-    return { user: RECENT_USERS[i], game1: ga.title, game2: gb.title, winner, time: RECENT_TIMES[i] };
-  }).filter((r): r is NonNullable<typeof r> => r !== null);
-}
-
-const RECENT = buildRecent();
 
 const cell: React.CSSProperties = { padding: '13px 14px', fontSize: '0.42rem', borderBottom: '2px solid var(--arcade-shadow)', letterSpacing: '0.02em' };
 
 const Dashboard: React.FC = () => {
-  const users  = getUsers();
-  const games  = getAllGames();
+  const { getAll } = useGameService();
+  const { api } = useAxios();
+  const [gameCount, setGameCount] = useState(0);
+  const [avgRating, setAvgRating] = useState('0.0');
+  const [userCount, setUserCount] = useState(0);
+  const [adminCount, setAdminCount] = useState(0);
+
+  useEffect(() => {
+    getAll().then((games) => {
+      setGameCount(games.length);
+      const avg = games.length > 0
+        ? (games.reduce((s, g) => s + g.averageRating, 0) / games.length).toFixed(1)
+        : '0.0';
+      setAvgRating(avg);
+    }).catch(() => {});
+  }, [getAll]);
+
+  useEffect(() => {
+    api.get<{ role: string }[]>(API_ROUTES.USERS.LIST).then((users) => {
+      setUserCount(users.length);
+      setAdminCount(users.filter(u => u.role === 'Admin').length);
+    }).catch(() => {});
+  }, [api]);
+
   const banned = getBannedEmails();
-  const admins = users.filter(u => u.role === 'admin').length;
-  const avgRating = (games.reduce((s, g) => s + g.rating, 0) / (games.length || 1)).toFixed(1);
 
   const STATS = [
-    { label: 'TOTAL USERS',  value: String(users.length),  trend: `${admins} ADMIN(S)`,   trendColor: 'var(--arcade-accent)' },
-    { label: 'TOTAL GAMES',  value: String(games.length),  trend: 'IN LIBRARY',           trendColor: '#22c55e' },
+    { label: 'TOTAL USERS',  value: String(userCount),  trend: `${adminCount} ADMIN(S)`,   trendColor: 'var(--arcade-accent)' },
+    { label: 'TOTAL GAMES',  value: String(gameCount),     trend: 'IN LIBRARY',            trendColor: '#22c55e' },
     { label: 'BANNED USERS', value: String(banned.length), trend: banned.length > 0 ? '⚠ ACTIVE BANS' : '✓ CLEAN', trendColor: banned.length > 0 ? '#ef4444' : '#22c55e' },
-    { label: 'AVG RATING',   value: avgRating,             trend: 'OUT OF 10',            trendColor: 'var(--arcade-muted)' },
+    { label: 'AVG RATING',   value: avgRating,             trend: 'OUT OF 10',             trendColor: 'var(--arcade-muted)' },
   ];
 
   return (

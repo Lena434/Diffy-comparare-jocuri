@@ -1,64 +1,166 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Models.Game;
-using Diffy.Domain.Models.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Diffy.Api.Controllers;
 
 [ApiController]
-[Route("api/games")]
+[Route("api/game")]
 public class GameController : ControllerBase
 {
-    private readonly IGameLogic _gameLogic;
-
-    public GameController()
+    private static GameInfoDto ToDto(GameEntity g) => new()
     {
-        var bl = new BusinessLogic();
-        _gameLogic = bl.GetGameLogic();
-    }
+        Id = g.Id,
+        Title = g.Title,
+        Description = g.Description,
+        Developer = g.Developer,
+        Publisher = g.Publisher,
+        ReleaseYear = g.ReleaseYear,
+        Price = g.Price,
+        ImageUrl = g.ImageUrl,
+        Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
+        Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
+        GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
+        AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
+    };
 
-    [HttpGet("list")]
-    public IActionResult GetGameList()
+    private static GameEntity ToEntity(GameCreateDto dto) => new()
     {
-        var result =  _gameLogic.GetGameList();
-        return Ok(result.Data);
+        Title = dto.Title,
+        Description = dto.Description,
+        Developer = dto.Developer,
+        Publisher = dto.Publisher,
+        ReleaseYear = dto.ReleaseYear,
+        Price = dto.Price,
+        ImageUrl = dto.ImageUrl,
+    };
+
+    private static GameEntity ToEntity(GameUpdateDto dto) => new()
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        Developer = dto.Developer,
+        Publisher = dto.Publisher,
+        ReleaseYear = dto.ReleaseYear,
+        Price = dto.Price,
+        ImageUrl = dto.ImageUrl,
+    };
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var games = await service.GetAllAsync();
+            return Ok(games.Select(ToDto).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving games.");
+        }
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetGameById([FromRoute] int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var result = _gameLogic.GetGameById(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        
-        return Ok(result.Data);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var game = await service.GetByIdAsync(id);
+            if (game == null)
+                return NotFound();
+            return Ok(ToDto(game));
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the game.");
+        }
     }
 
-    [HttpPost("create")]
-    public IActionResult CreateGame([FromBody] GameCreateDto gameCreateDto)
+    [HttpGet("compare")]
+    public async Task<IActionResult> Compare([FromQuery] string ids)
     {
-        var result = _gameLogic.CreateGame(gameCreateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        var idList = new List<int>();
+        foreach (var part in ids.Split(','))
+        {
+            if (!int.TryParse(part.Trim(), out var parsed) || parsed <= 0)
+                return BadRequest($"Invalid game id: '{part}'");
+            idList.Add(parsed);
+        }
+
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var games = await service.GetByIdsAsync(idList);
+            return Ok(games.Select(ToDto).ToList());
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while comparing games.");
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Add([FromBody] GameCreateDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            await service.AddAsync(ToEntity(dto), dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return StatusCode(201);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while adding the game.");
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateGame([FromRoute] int id, [FromBody] GameUpdateDto gameUpdateDto)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] GameUpdateDto dto)
     {
-        var result = _gameLogic.UpdateGame(id, gameUpdateDto);
-        if (!result.IsSuccess)
-            return BadRequest(result.Message);
-        return Ok(result.Message);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            var entity = ToEntity(dto);
+            entity.Id = id;
+            await service.UpdateAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the game.");
+        }
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteGame([FromRoute] int id)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = _gameLogic.DeleteGame(id);
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-        return Ok(result.Message);
+        try
+        {
+            IGame service = new BusinessLogic().GetGame();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while deleting the game.");
+        }
     }
 }
