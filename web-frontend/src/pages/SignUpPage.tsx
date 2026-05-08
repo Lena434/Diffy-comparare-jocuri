@@ -21,6 +21,14 @@ function SignUpPage() {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (form.username.trim().length < 3) {
+      setError("USERNAME MUST BE AT LEAST 3 CHARACTERS!");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("PASSWORD MUST BE AT LEAST 6 CHARACTERS!");
+      return;
+    }
     if (form.password !== form.confirm) {
       setError("PASSWORDS DO NOT MATCH!");
       return;
