@@ -16,5 +16,6 @@ public class PlatformActions : IPlatform
     public Task<List<PlatformEntity>> GetAllAsync() => _repo.GetAllAsync();
     public Task<PlatformEntity?> GetByIdAsync(int id) => _repo.GetByIdAsync(id);
     public Task AddAsync(PlatformEntity platform) => _repo.AddAsync(platform);
+    public Task UpdateAsync(int id, string name) => _repo.UpdateAsync(id, name);
     public Task DeleteAsync(int id) => _repo.DeleteAsync(id);
 }

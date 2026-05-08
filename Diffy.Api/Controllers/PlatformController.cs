@@ -46,6 +46,29 @@ public class PlatformController : ControllerBase
         }
     }
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] PlatformDto dto)
+    {
+        if (id <= 0)
+            return BadRequest("Platform id must be a positive integer.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IPlatform service = new BusinessLogic().GetPlatform();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.UpdateAsync(id, dto.Name);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the platform.");
+        }
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
