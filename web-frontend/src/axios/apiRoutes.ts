@@ -4,11 +4,11 @@ export const API_ROUTES = {
     REGISTER: "/api/auth/register",
   },
   USERS: {
-    LIST: "/api/users/list",
     GET_ALL: "/api/users/list",
     GET_BY_ID: (id: number) => `/api/users/${id}`,
-    DELETE: (id: number) => `/api/users/${id}`,
+    CREATE: "/api/users/create",
     UPDATE: (id: number) => `/api/users/${id}`,
+    DELETE: (id: number) => `/api/users/${id}`,
     CHANGE_PASSWORD: "/api/users/changePassword",
     UPDATE_PROFILE: "/api/users/updateProfile",
   },
