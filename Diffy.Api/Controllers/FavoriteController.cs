@@ -45,6 +45,8 @@ public class FavoriteController : ControllerBase
     [HttpPost("{gameId}")]
     public async Task<IActionResult> Add(int gameId)
     {
+        if (gameId <= 0)
+            return BadRequest("Game id must be a positive integer.");
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
@@ -63,6 +65,8 @@ public class FavoriteController : ControllerBase
     [HttpDelete("{gameId}")]
     public async Task<IActionResult> Delete(int gameId)
     {
+        if (gameId <= 0)
+            return BadRequest("Game id must be a positive integer.");
         var userId = GetUserId();
         if (userId == null) return Unauthorized();
 
