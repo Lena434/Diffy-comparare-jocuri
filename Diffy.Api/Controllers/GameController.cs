@@ -25,7 +25,7 @@ public class GameController : ControllerBase
         Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
         Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
         GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
-        AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
+        AverageRating = g.Ratings.Any() ? Math.Round((decimal)g.Ratings.Average(r => r.Score), 2) : 0m,
         RatingCount = g.Ratings.Count,
     };
 
