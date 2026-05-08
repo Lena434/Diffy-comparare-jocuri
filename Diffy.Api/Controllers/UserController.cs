@@ -72,6 +72,8 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserUpdateDto userUpdateDto)
     {
+        if (id <= 0)
+            return BadRequest("User id must be a positive integer.");
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
