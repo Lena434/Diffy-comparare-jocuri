@@ -27,6 +27,25 @@ public class GenreController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest("Genre id must be a positive integer.");
+        try
+        {
+            IGenre service = new BusinessLogic().GetGenre();
+            var genre = await service.GetByIdAsync(id);
+            if (genre == null)
+                return NotFound();
+            return Ok(new GenreDto { Id = genre.Id, Name = genre.Name });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the genre.");
+        }
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] GenreDto dto)
