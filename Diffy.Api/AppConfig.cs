@@ -8,8 +8,8 @@ public static class AppConfig
 
     public static void Initialize(IConfiguration config)
     {
-        JwtKey = config["Jwt:Key"]!;
-        JwtIssuer = config["Jwt:Issuer"]!;
-        JwtAudience = config["Jwt:Audience"]!;
+        JwtKey = config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is missing from configuration.");
+        JwtIssuer = config["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is missing from configuration.");
+        JwtAudience = config["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience is missing from configuration.");
     }
 }
