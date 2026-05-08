@@ -14,6 +14,8 @@ public class RatingController : ControllerBase
     [HttpGet("game/{gameId}")]
     public async Task<IActionResult> GetByGame(int gameId)
     {
+        if (gameId <= 0)
+            return BadRequest("Game id must be a positive integer.");
         try
         {
             IGameRating service = new BusinessLogic().GetGameRating();
