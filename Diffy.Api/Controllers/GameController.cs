@@ -25,6 +25,7 @@ public class GameController : ControllerBase
         Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
         GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
         AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
+        RatingCount = g.Ratings.Count,
     };
 
     private static GameEntity ToEntity(GameCreateDto dto) => new()

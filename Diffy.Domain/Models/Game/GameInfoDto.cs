@@ -14,4 +14,5 @@ public class GameInfoDto
     public List<string> Platforms { get; set; } = new();
     public List<string> GameModes { get; set; } = new();
     public decimal AverageRating { get; set; }
+    public int RatingCount { get; set; }
 }
