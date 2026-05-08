@@ -27,6 +27,25 @@ public class PlatformController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest("Platform id must be a positive integer.");
+        try
+        {
+            IPlatform service = new BusinessLogic().GetPlatform();
+            var platform = await service.GetByIdAsync(id);
+            if (platform == null)
+                return NotFound();
+            return Ok(new PlatformDto { Id = platform.Id, Name = platform.Name });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the platform.");
+        }
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] PlatformDto dto)
