@@ -10,6 +10,7 @@ namespace Diffy.Api.Controllers;
 [ApiController]
 [Route("api/users")]
 [Authorize]
+[Produces("application/json")]
 public class UserController : ControllerBase
 {
     [HttpGet("list")]

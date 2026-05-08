@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/game")]
+[Produces("application/json")]
 public class GameController : ControllerBase
 {
     private static GameInfoDto ToDto(GameEntity g) => new()
