@@ -12,4 +12,5 @@ public interface IUserLogic
     ServiceResponse DeleteUser(int id);
     ServiceResponse ChangePassword(string authenticatedEmail, ChangePasswordDto changePasswordDto);
     ServiceResponse UpdateProfile(string authenticatedEmail, UserProfileUpdateDto userProfileUpdateDto);
+    bool EmailExists(string email);
 }

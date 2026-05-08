@@ -104,6 +104,11 @@ public class UserActions
         }
     }
 
+    internal bool EmailExistsAction(string email)
+    {
+        return _dbContext.Users.Any(u => u.Email == email);
+    }
+
     internal bool ChangePasswordAction(string authenticatedEmail, ChangePasswordDto dto)
     {
         var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
