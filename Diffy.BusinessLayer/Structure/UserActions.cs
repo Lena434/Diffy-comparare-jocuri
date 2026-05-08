@@ -127,6 +127,12 @@ public class UserActions
         var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
         if (user == null) return false;
 
+        if (dto.NewEmail != authenticatedEmail)
+        {
+            var emailTaken = _dbContext.Users.Any(u => u.Email == dto.NewEmail && u.Id != user.Id);
+            if (emailTaken) return false;
+        }
+
         user.Username = dto.Username;
         user.Email = dto.NewEmail;
         try
