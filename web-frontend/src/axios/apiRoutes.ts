@@ -22,17 +22,23 @@ export const API_ROUTES = {
   },
   GENRES: {
     GET_ALL: '/api/genre',
+    GET_BY_ID: (id: number) => `/api/genre/${id}`,
     CREATE: '/api/genre',
+    UPDATE: (id: number) => `/api/genre/${id}`,
     DELETE: (id: number) => `/api/genre/${id}`,
   },
   PLATFORMS: {
     GET_ALL: '/api/platform',
+    GET_BY_ID: (id: number) => `/api/platform/${id}`,
     CREATE: '/api/platform',
+    UPDATE: (id: number) => `/api/platform/${id}`,
     DELETE: (id: number) => `/api/platform/${id}`,
   },
   GAME_MODES: {
     GET_ALL: '/api/gamemode',
+    GET_BY_ID: (id: number) => `/api/gamemode/${id}`,
     CREATE: '/api/gamemode',
+    UPDATE: (id: number) => `/api/gamemode/${id}`,
     DELETE: (id: number) => `/api/gamemode/${id}`,
   },
   RATINGS: {
