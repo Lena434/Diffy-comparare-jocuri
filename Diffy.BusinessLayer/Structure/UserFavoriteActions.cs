@@ -23,4 +23,6 @@ public class UserFavoriteActions : IUserFavorite
     });
 
     public Task DeleteAsync(int userId, int gameId) => _repo.DeleteAsync(userId, gameId);
+
+    public Task<bool> IsFavoriteAsync(int userId, int gameId) => _repo.IsFavoriteAsync(userId, gameId);
 }

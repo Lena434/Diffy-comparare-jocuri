@@ -40,4 +40,10 @@ public class UserFavoriteRepository
         _dbContext.UserFavorites.Remove(favorite);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<bool> IsFavoriteAsync(int userId, int gameId)
+    {
+        return await _dbContext.UserFavorites
+            .AnyAsync(uf => uf.UserId == userId && uf.GameId == gameId);
+    }
 }
