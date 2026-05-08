@@ -46,6 +46,29 @@ public class GenreController : ControllerBase
         }
     }
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] GenreDto dto)
+    {
+        if (id <= 0)
+            return BadRequest("Genre id must be a positive integer.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGenre service = new BusinessLogic().GetGenre();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.UpdateAsync(id, dto.Name);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the genre.");
+        }
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
