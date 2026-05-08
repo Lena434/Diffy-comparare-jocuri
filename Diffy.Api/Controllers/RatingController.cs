@@ -35,6 +35,31 @@ public class RatingController : ControllerBase
         }
     }
 
+    [HttpGet("my/{gameId}")]
+    [Authorize]
+    public async Task<IActionResult> GetMyRating(int gameId)
+    {
+        if (gameId <= 0)
+            return BadRequest("Game id must be a positive integer.");
+
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(value, out var userId))
+            return Unauthorized();
+
+        try
+        {
+            IGameRating service = new BusinessLogic().GetGameRating();
+            var rating = await service.GetByUserAndGameAsync(userId, gameId);
+            if (rating == null)
+                return NotFound();
+            return Ok(new GameRatingDto { UserId = rating.UserId, GameId = rating.GameId, Score = rating.Score, CreatedAt = rating.CreatedAt });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the rating.");
+        }
+    }
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Add([FromBody] GameRatingCreateDto dto)
