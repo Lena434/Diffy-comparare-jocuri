@@ -27,6 +27,25 @@ public class GameModeController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest("GameMode id must be a positive integer.");
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var gameMode = await service.GetByIdAsync(id);
+            if (gameMode == null)
+                return NotFound();
+            return Ok(new GameModeDto { Id = gameMode.Id, Name = gameMode.Name });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the game mode.");
+        }
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add([FromBody] GameModeDto dto)
