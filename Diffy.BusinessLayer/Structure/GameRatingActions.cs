@@ -15,6 +15,8 @@ public class GameRatingActions : IGameRating
 
     public Task<List<GameRatingEntity>> GetByGameIdAsync(int gameId) => _repo.GetByGameIdAsync(gameId);
 
+    public Task<GameRatingEntity?> GetByUserAndGameAsync(int userId, int gameId) => _repo.GetByUserAndGameAsync(userId, gameId);
+
     public Task AddAsync(int userId, int gameId, decimal score) => _repo.AddAsync(new GameRatingEntity
     {
         UserId = userId,
