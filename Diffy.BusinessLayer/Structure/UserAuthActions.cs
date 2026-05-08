@@ -38,6 +38,9 @@ public class UserAuthActions
         if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
             return new ServiceResponse { IsSuccess = false, Message = "Invalid credentials." };
 
+        if (user.IsBanned)
+            return new ServiceResponse { IsSuccess = false, Message = "Account is banned." };
+
         return new ServiceResponse
         {
             IsSuccess = true,
