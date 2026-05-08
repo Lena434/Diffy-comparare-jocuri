@@ -32,15 +32,19 @@ export const API_ROUTES = {
   },
   GAME_MODES: {
     GET_ALL: '/api/gamemode',
+    CREATE: '/api/gamemode',
+    DELETE: (id: number) => `/api/gamemode/${id}`,
   },
   RATINGS: {
     GET_BY_GAME: (gameId: number) => `/api/rating/game/${gameId}`,
+    GET_MY_RATING: (gameId: number) => `/api/rating/my/${gameId}`,
     CREATE: '/api/rating',
   },
   FAVORITES: {
     GET_ALL: '/api/favorite',
     ADD: (gameId: number) => `/api/favorite/${gameId}`,
     REMOVE: (gameId: number) => `/api/favorite/${gameId}`,
+    EXISTS: (gameId: number) => `/api/favorite/${gameId}/exists`,
   },
   PROFILE: {
     GET: '/api/profile',
