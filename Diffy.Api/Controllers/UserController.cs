@@ -32,6 +32,8 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult GetUserById([FromRoute] int id)
     {
+        if (id <= 0)
+            return BadRequest("User id must be a positive integer.");
         try
         {
             IUserLogic service = new BusinessLogic().GetUserLogic();
