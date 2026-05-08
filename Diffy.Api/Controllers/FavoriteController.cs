@@ -10,6 +10,7 @@ namespace Diffy.Api.Controllers;
 [ApiController]
 [Route("api/favorite")]
 [Authorize]
+[Produces("application/json")]
 public class FavoriteController : ControllerBase
 {
     private int? GetUserId()

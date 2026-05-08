@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/rating")]
+[Produces("application/json")]
 public class RatingController : ControllerBase
 {
     [HttpGet("game/{gameId}")]

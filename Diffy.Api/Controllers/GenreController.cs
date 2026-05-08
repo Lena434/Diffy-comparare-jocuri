@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/genre")]
+[Produces("application/json")]
 public class GenreController : ControllerBase
 {
     [HttpGet]

@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/gamemode")]
+[Produces("application/json")]
 public class GameModeController : ControllerBase
 {
     [HttpGet]
