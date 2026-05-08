@@ -43,6 +43,26 @@ public class FavoriteController : ControllerBase
         }
     }
 
+    [HttpGet("{gameId}/exists")]
+    public async Task<IActionResult> IsFavorite(int gameId)
+    {
+        if (gameId <= 0)
+            return BadRequest("Game id must be a positive integer.");
+        var userId = GetUserId();
+        if (userId == null) return Unauthorized();
+
+        try
+        {
+            IUserFavorite service = new BusinessLogic().GetUserFavorite();
+            var isFav = await service.IsFavoriteAsync(userId.Value, gameId);
+            return Ok(new { isFavorite = isFav });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while checking the favorite.");
+        }
+    }
+
     [HttpPost("{gameId}")]
     public async Task<IActionResult> Add(int gameId)
     {
