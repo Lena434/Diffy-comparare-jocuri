@@ -68,6 +68,8 @@ public class GameController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        if (id <= 0)
+            return BadRequest("Game id must be a positive integer.");
         try
         {
             IGame service = new BusinessLogic().GetGame();
