@@ -4,6 +4,7 @@ export const API_ROUTES = {
     REGISTER: "/api/auth/register",
   },
   USERS: {
+    ME: "/api/users/me",
     GET_ALL: "/api/users/list",
     GET_BY_ID: (id: number) => `/api/users/${id}`,
     CREATE: "/api/users/create",
