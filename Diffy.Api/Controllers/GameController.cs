@@ -119,8 +119,9 @@ public class GameController : ControllerBase
         try
         {
             IGame service = new BusinessLogic().GetGame();
-            await service.AddAsync(ToEntity(dto), dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
-            return StatusCode(201);
+            var entity = ToEntity(dto);
+            await service.AddAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return StatusCode(201, new { id = entity.Id });
         }
         catch
         {
