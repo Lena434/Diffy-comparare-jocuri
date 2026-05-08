@@ -23,6 +23,10 @@ public class UserFavoriteRepository
 
     public async Task AddAsync(UserFavoriteEntity favorite)
     {
+        var exists = await _dbContext.UserFavorites
+            .AnyAsync(uf => uf.UserId == favorite.UserId && uf.GameId == favorite.GameId);
+        if (exists) return;
+
         await _dbContext.UserFavorites.AddAsync(favorite);
         await _dbContext.SaveChangesAsync();
     }
