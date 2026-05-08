@@ -92,6 +92,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       id: Date.now().toString(),
       gameIds: games.map((g) => g.id),
       gameTitles: games.map((g) => g.title),
+      savedAt: new Date().toISOString(),
     };
     setSavedComparisons((prev) => {
       const next = [...prev, newComparison];
