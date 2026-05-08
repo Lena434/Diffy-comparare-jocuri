@@ -87,6 +87,9 @@ public class GameController : ControllerBase
     [HttpGet("compare")]
     public async Task<IActionResult> Compare([FromQuery] string ids)
     {
+        if (string.IsNullOrWhiteSpace(ids))
+            return BadRequest("At least one game id is required.");
+
         var idList = new List<int>();
         foreach (var part in ids.Split(','))
         {
