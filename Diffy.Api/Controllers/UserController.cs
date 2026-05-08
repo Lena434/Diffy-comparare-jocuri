@@ -13,6 +13,27 @@ namespace Diffy.Api.Controllers;
 [Produces("application/json")]
 public class UserController : ControllerBase
 {
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(value, out var userId))
+            return Unauthorized();
+
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.GetUserById(userId);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return Ok(result.Data);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the current user.");
+        }
+    }
+
     [HttpGet("list")]
     [Authorize(Roles = "Admin")]
     public IActionResult GetUserList()
