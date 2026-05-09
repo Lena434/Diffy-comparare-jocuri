@@ -104,6 +104,11 @@ public class UserActions
         }
     }
 
+    internal bool EmailExistsAction(string email)
+    {
+        return _dbContext.Users.Any(u => u.Email == email);
+    }
+
     internal bool ChangePasswordAction(string authenticatedEmail, ChangePasswordDto dto)
     {
         var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
@@ -126,6 +131,12 @@ public class UserActions
     {
         var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
         if (user == null) return false;
+
+        if (dto.NewEmail != authenticatedEmail)
+        {
+            var emailTaken = _dbContext.Users.Any(u => u.Email == dto.NewEmail && u.Id != user.Id);
+            if (emailTaken) return false;
+        }
 
         user.Username = dto.Username;
         user.Email = dto.NewEmail;

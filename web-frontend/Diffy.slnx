@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Diffy.Api/Diffy.Api.csproj" />
+  <Project Path="Diffy.BusinessLayer/Diffy.BusinessLayer.csproj" />
+  <Project Path="Diffy.DataAccessLayer/Diffy.DataAccessLayer.csproj" />
+  <Project Path="Diffy.Domain/Diffy.Domain.csproj" />
+</Solution>

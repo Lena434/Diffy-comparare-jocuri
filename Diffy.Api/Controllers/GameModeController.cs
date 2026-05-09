@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/gamemode")]
+[Produces("application/json")]
 public class GameModeController : ControllerBase
 {
     [HttpGet]
@@ -23,6 +24,25 @@ public class GameModeController : ControllerBase
         catch
         {
             return StatusCode(500, "An error occurred while retrieving game modes.");
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest("GameMode id must be a positive integer.");
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var gameMode = await service.GetByIdAsync(id);
+            if (gameMode == null)
+                return NotFound();
+            return Ok(new GameModeDto { Id = gameMode.Id, Name = gameMode.Name });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the game mode.");
         }
     }
 
@@ -42,6 +62,29 @@ public class GameModeController : ControllerBase
         catch
         {
             return StatusCode(500, "An error occurred while adding the game mode.");
+        }
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] GameModeDto dto)
+    {
+        if (id <= 0)
+            return BadRequest("GameMode id must be a positive integer.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGameMode service = new BusinessLogic().GetGameMode();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.UpdateAsync(id, dto.Name);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the game mode.");
         }
     }
 

@@ -30,8 +30,8 @@ const FavoritesContext = createContext<FavoritesContextValue>({
   removeComparison: () => {},
 });
 
-function comparisonsKey(email: string) {
-  return `diffy-comparisons-${email.toLowerCase()}`;
+function comparisonsKey(userId: number) {
+  return `diffy-comparisons-${userId}`;
 }
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
@@ -48,7 +48,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         .catch(() => setFavoriteGameIds([]));
 
       try {
-        const raw = localStorage.getItem(comparisonsKey(currentUser.email));
+        const raw = localStorage.getItem(comparisonsKey(currentUser.id));
         setSavedComparisons(raw ? JSON.parse(raw) : []);
       } catch {
         setSavedComparisons([]);
@@ -62,7 +62,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   function persistComparisons(comparisons: SavedComparison[]) {
     if (currentUser) {
       localStorage.setItem(
-        comparisonsKey(currentUser.email),
+        comparisonsKey(currentUser.id),
         JSON.stringify(comparisons),
       );
     }
@@ -92,6 +92,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       id: Date.now().toString(),
       gameIds: games.map((g) => g.id),
       gameTitles: games.map((g) => g.title),
+      savedAt: new Date().toISOString(),
     };
     setSavedComparisons((prev) => {
       const next = [...prev, newComparison];

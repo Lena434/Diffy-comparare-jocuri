@@ -49,7 +49,7 @@ function GameDetailsPage() {
             THE GAME YOU'RE LOOKING FOR DOESN'T EXIST
           </p>
           <button
-            onClick={() => navigate('/games')}
+            onClick={() => navigate(ROUTES.GAMES)}
             style={{ background: "var(--arcade-cta)", border: "3px solid var(--arcade-text)", boxShadow: "4px 4px 0px var(--arcade-shadow)", color: "#fff", fontFamily: "'Press Start 2P', monospace", fontSize: "0.45rem", padding: "12px 24px", cursor: "pointer", letterSpacing: "0.06em" }}
           >
             ← BACK TO GAMES

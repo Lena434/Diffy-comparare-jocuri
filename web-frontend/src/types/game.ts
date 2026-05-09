@@ -4,6 +4,7 @@ export interface Game {
   genres: string[];
   platforms: string[];
   averageRating: number;
+  ratingCount: number;
   releaseYear: number;
   gameModes: string[];
   imageUrl: string | null;

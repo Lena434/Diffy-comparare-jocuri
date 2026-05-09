@@ -10,8 +10,30 @@ namespace Diffy.Api.Controllers;
 [ApiController]
 [Route("api/users")]
 [Authorize]
+[Produces("application/json")]
 public class UserController : ControllerBase
 {
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(value, out var userId))
+            return Unauthorized();
+
+        try
+        {
+            IUserLogic service = new BusinessLogic().GetUserLogic();
+            var result = service.GetUserById(userId);
+            if (!result.IsSuccess)
+                return NotFound(result.Message);
+            return Ok(result.Data);
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the current user.");
+        }
+    }
+
     [HttpGet("list")]
     [Authorize(Roles = "Admin")]
     public IActionResult GetUserList()
@@ -32,6 +54,8 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult GetUserById([FromRoute] int id)
     {
+        if (id <= 0)
+            return BadRequest("User id must be a positive integer.");
         try
         {
             IUserLogic service = new BusinessLogic().GetUserLogic();
@@ -70,6 +94,8 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserUpdateDto userUpdateDto)
     {
+        if (id <= 0)
+            return BadRequest("User id must be a positive integer.");
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
@@ -90,6 +116,8 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult DeleteUser([FromRoute] int id)
     {
+        if (id <= 0)
+            return BadRequest("User id must be a positive integer.");
         try
         {
             IUserLogic service = new BusinessLogic().GetUserLogic();

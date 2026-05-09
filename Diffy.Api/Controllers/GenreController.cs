@@ -9,6 +9,7 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/genre")]
+[Produces("application/json")]
 public class GenreController : ControllerBase
 {
     [HttpGet]
@@ -23,6 +24,25 @@ public class GenreController : ControllerBase
         catch
         {
             return StatusCode(500, "An error occurred while retrieving genres.");
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest("Genre id must be a positive integer.");
+        try
+        {
+            IGenre service = new BusinessLogic().GetGenre();
+            var genre = await service.GetByIdAsync(id);
+            if (genre == null)
+                return NotFound();
+            return Ok(new GenreDto { Id = genre.Id, Name = genre.Name });
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while retrieving the genre.");
         }
     }
 
@@ -42,6 +62,29 @@ public class GenreController : ControllerBase
         catch
         {
             return StatusCode(500, "An error occurred while adding the genre.");
+        }
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] GenreDto dto)
+    {
+        if (id <= 0)
+            return BadRequest("Genre id must be a positive integer.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            IGenre service = new BusinessLogic().GetGenre();
+            var existing = await service.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound();
+            await service.UpdateAsync(id, dto.Name);
+            return NoContent();
+        }
+        catch
+        {
+            return StatusCode(500, "An error occurred while updating the genre.");
         }
     }
 
