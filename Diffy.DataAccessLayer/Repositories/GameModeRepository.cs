@@ -29,15 +29,6 @@ public class GameModeRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int id, string name)
-    {
-        var gameMode = await _dbContext.GameModes.FirstOrDefaultAsync(gm => gm.Id == id);
-        if (gameMode == null) return;
-
-        gameMode.Name = name;
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(int id)
     {
         var gameMode = await _dbContext.GameModes.FirstOrDefaultAsync(gm => gm.Id == id);

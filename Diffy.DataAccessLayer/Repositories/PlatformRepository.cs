@@ -29,15 +29,6 @@ public class PlatformRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int id, string name)
-    {
-        var platform = await _dbContext.Platforms.FirstOrDefaultAsync(p => p.Id == id);
-        if (platform == null) return;
-
-        platform.Name = name;
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(int id)
     {
         var platform = await _dbContext.Platforms.FirstOrDefaultAsync(p => p.Id == id);

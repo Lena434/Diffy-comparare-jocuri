@@ -20,27 +20,9 @@ public class GameRatingRepository
             .ToListAsync();
     }
 
-    public async Task<GameRatingEntity?> GetByUserAndGameAsync(int userId, int gameId)
-    {
-        return await _dbContext.GameRatings
-            .FirstOrDefaultAsync(gr => gr.UserId == userId && gr.GameId == gameId);
-    }
-
     public async Task AddAsync(GameRatingEntity rating)
     {
-        var existing = await _dbContext.GameRatings
-            .FirstOrDefaultAsync(gr => gr.UserId == rating.UserId && gr.GameId == rating.GameId);
-
-        if (existing != null)
-        {
-            existing.Score = rating.Score;
-            existing.CreatedAt = rating.CreatedAt;
-        }
-        else
-        {
-            await _dbContext.GameRatings.AddAsync(rating);
-        }
-
+        await _dbContext.GameRatings.AddAsync(rating);
         await _dbContext.SaveChangesAsync();
     }
 }

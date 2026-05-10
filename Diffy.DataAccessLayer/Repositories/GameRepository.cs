@@ -39,7 +39,6 @@ public class GameRepository
             .Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
             .Include(g => g.GamePlatforms).ThenInclude(gp => gp.Platform)
             .Include(g => g.GameModes).ThenInclude(gm => gm.GameMode)
-            .Include(g => g.Ratings)
             .Where(g => ids.Contains(g.Id))
             .ToListAsync();
     }

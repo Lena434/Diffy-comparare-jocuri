@@ -10,5 +10,5 @@ public class UserProfileEntity
     public int? RamGb { get; set; }
     public int? StorageGb { get; set; }
     public string? OperatingSystem { get; set; }
-    public UserEntity User { get; set; } = null!;
+    public UserEntity User { get; set; }
 }

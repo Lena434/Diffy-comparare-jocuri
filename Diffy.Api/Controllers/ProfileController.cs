@@ -11,7 +11,6 @@ namespace Diffy.Api.Controllers;
 [ApiController]
 [Route("api/profile")]
 [Authorize]
-[Produces("application/json")]
 public class ProfileController : ControllerBase
 {
     private int? GetUserId()

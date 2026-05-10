@@ -9,14 +9,11 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/rating")]
-[Produces("application/json")]
 public class RatingController : ControllerBase
 {
     [HttpGet("game/{gameId}")]
     public async Task<IActionResult> GetByGame(int gameId)
     {
-        if (gameId <= 0)
-            return BadRequest("Game id must be a positive integer.");
         try
         {
             IGameRating service = new BusinessLogic().GetGameRating();
@@ -32,31 +29,6 @@ public class RatingController : ControllerBase
         catch
         {
             return StatusCode(500, "An error occurred while retrieving ratings.");
-        }
-    }
-
-    [HttpGet("my/{gameId}")]
-    [Authorize]
-    public async Task<IActionResult> GetMyRating(int gameId)
-    {
-        if (gameId <= 0)
-            return BadRequest("Game id must be a positive integer.");
-
-        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(value, out var userId))
-            return Unauthorized();
-
-        try
-        {
-            IGameRating service = new BusinessLogic().GetGameRating();
-            var rating = await service.GetByUserAndGameAsync(userId, gameId);
-            if (rating == null)
-                return NotFound();
-            return Ok(new GameRatingDto { UserId = rating.UserId, GameId = rating.GameId, Score = rating.Score, CreatedAt = rating.CreatedAt });
-        }
-        catch
-        {
-            return StatusCode(500, "An error occurred while retrieving the rating.");
         }
     }
 

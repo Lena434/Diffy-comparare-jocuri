@@ -9,7 +9,6 @@ namespace Diffy.Api.Controllers;
 
 [ApiController]
 [Route("api/game")]
-[Produces("application/json")]
 public class GameController : ControllerBase
 {
     private static GameInfoDto ToDto(GameEntity g) => new()
@@ -25,8 +24,7 @@ public class GameController : ControllerBase
         Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
         Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
         GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
-        AverageRating = g.Ratings.Any() ? Math.Round((decimal)g.Ratings.Average(r => r.Score), 2) : 0m,
-        RatingCount = g.Ratings.Count,
+        AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
     };
 
     private static GameEntity ToEntity(GameCreateDto dto) => new()
@@ -69,8 +67,6 @@ public class GameController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        if (id <= 0)
-            return BadRequest("Game id must be a positive integer.");
         try
         {
             IGame service = new BusinessLogic().GetGame();
@@ -88,9 +84,6 @@ public class GameController : ControllerBase
     [HttpGet("compare")]
     public async Task<IActionResult> Compare([FromQuery] string ids)
     {
-        if (string.IsNullOrWhiteSpace(ids))
-            return BadRequest("At least one game id is required.");
-
         var idList = new List<int>();
         foreach (var part in ids.Split(','))
         {
@@ -120,9 +113,8 @@ public class GameController : ControllerBase
         try
         {
             IGame service = new BusinessLogic().GetGame();
-            var entity = ToEntity(dto);
-            await service.AddAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
-            return StatusCode(201, new { id = entity.Id });
+            await service.AddAsync(ToEntity(dto), dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            return StatusCode(201);
         }
         catch
         {

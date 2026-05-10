@@ -29,15 +29,6 @@ public class GenreRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int id, string name)
-    {
-        var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Id == id);
-        if (genre == null) return;
-
-        genre.Name = name;
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(int id)
     {
         var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Id == id);

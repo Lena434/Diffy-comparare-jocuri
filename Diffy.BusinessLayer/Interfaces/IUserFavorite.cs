@@ -7,5 +7,4 @@ public interface IUserFavorite
     Task<List<UserFavoriteEntity>> GetByUserIdAsync(int userId);
     Task AddAsync(int userId, int gameId);
     Task DeleteAsync(int userId, int gameId);
-    Task<bool> IsFavoriteAsync(int userId, int gameId);
 }

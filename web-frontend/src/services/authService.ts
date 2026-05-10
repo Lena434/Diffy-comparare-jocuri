@@ -5,7 +5,7 @@ const TOKEN_KEY = 'diffy-token';
 
 export function loadCurrentUser(): User | null {
   try {
-    const stored = localStorage.getItem(CURRENT_USER_KEY);
+    const stored = sessionStorage.getItem(CURRENT_USER_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
@@ -14,36 +14,23 @@ export function loadCurrentUser(): User | null {
 
 export function saveCurrentUser(user: User | null): void {
   if (user) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(CURRENT_USER_KEY);
+    sessionStorage.removeItem(CURRENT_USER_KEY);
   }
 }
 
 export function saveToken(token: string | null): void {
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
   } else {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
   }
 }
 
 export function loadToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return sessionStorage.getItem(TOKEN_KEY);
 }
 
-export function isTokenExpired(token: string): boolean {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-}
 
-export function loadValidToken(): string | null {
-  const token = loadToken();
-  if (!token || isTokenExpired(token)) return null;
-  return token;
-}
 

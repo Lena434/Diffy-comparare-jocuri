@@ -17,10 +17,10 @@ public class GameUpdateDto
     [StringLength(100)]
     public string Publisher { get; set; } = string.Empty;
 
-    [Range(1970, 2100, ErrorMessage = "ReleaseYear must be between 1970 and 2100.")]
+    [Range(1970, 2100)]
     public int ReleaseYear { get; set; }
 
-    [Range(0, 10000, ErrorMessage = "Price must be between 0 and 10000.")]
+    [Range(0, 10000)]
     public decimal Price { get; set; }
 
     [Url]

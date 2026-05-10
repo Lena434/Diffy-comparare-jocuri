@@ -20,10 +20,6 @@ function LoginPage() {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!credentials.email.trim() || !credentials.password) {
-      setError("PLEASE FILL IN ALL FIELDS!");
-      return;
-    }
     setError("");
     const err = await login(credentials.email, credentials.password);
     if (err) {

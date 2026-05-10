@@ -5,6 +5,5 @@ namespace Diffy.BusinessLayer.Interfaces;
 public interface IGameRating
 {
     Task<List<GameRatingEntity>> GetByGameIdAsync(int gameId);
-    Task<GameRatingEntity?> GetByUserAndGameAsync(int userId, int gameId);
     Task AddAsync(int userId, int gameId, decimal score);
 }

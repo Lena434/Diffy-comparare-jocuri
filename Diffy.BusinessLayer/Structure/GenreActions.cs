@@ -16,6 +16,5 @@ public class GenreActions : IGenre
     public Task<List<GenreEntity>> GetAllAsync() => _repo.GetAllAsync();
     public Task<GenreEntity?> GetByIdAsync(int id) => _repo.GetByIdAsync(id);
     public Task AddAsync(GenreEntity genre) => _repo.AddAsync(genre);
-    public Task UpdateAsync(int id, string name) => _repo.UpdateAsync(id, name);
     public Task DeleteAsync(int id) => _repo.DeleteAsync(id);
 }

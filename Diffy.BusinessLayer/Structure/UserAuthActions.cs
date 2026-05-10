@@ -9,65 +9,48 @@ public class UserAuthActions
 {
     internal ServiceResponse RegisterAction(UserCreateDto userCreateDto)
     {
-        try
+        using var db = new DiffyDbContext();
+        var exists = db.Users.Any(u => u.Email == userCreateDto.Email);
+        if (exists)
+            return new ServiceResponse { IsSuccess = false, Message = "User already exists." };
+
+        var user = new UserEntity
         {
-            using var db = new DiffyDbContext();
-            var exists = db.Users.Any(u => u.Email == userCreateDto.Email);
-            if (exists)
-                return new ServiceResponse { IsSuccess = false, Message = "User already exists." };
+            Username = userCreateDto.Username,
+            Email = userCreateDto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(userCreateDto.Password),
+            Role = UserRole.User,
+            IsBanned = false,
+            RegisteredOn = DateTime.UtcNow
+        };
 
-            var user = new UserEntity
-            {
-                Username = userCreateDto.Username,
-                Email = userCreateDto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userCreateDto.Password),
-                Role = UserRole.User,
-                IsBanned = false,
-                RegisteredOn = DateTime.UtcNow
-            };
+        db.Users.Add(user);
+        db.SaveChanges();
 
-            db.Users.Add(user);
-            db.SaveChanges();
-
-            return new ServiceResponse { IsSuccess = true, Message = "Registration successful." };
-        }
-        catch
-        {
-            return new ServiceResponse { IsSuccess = false, Message = "An error occurred during registration." };
-        }
+        return new ServiceResponse { IsSuccess = true, Message = "Registration successful." };
     }
 
     internal ServiceResponse LoginAction(UserLoginDto userLoginDto)
     {
-        try
+        using var db = new DiffyDbContext();
+
+        var user = db.Users.FirstOrDefault(u => u.Email == userLoginDto.Email);
+        if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
+            return new ServiceResponse { IsSuccess = false, Message = "Invalid credentials." };
+
+        return new ServiceResponse
         {
-            using var db = new DiffyDbContext();
-
-            var user = db.Users.FirstOrDefault(u => u.Email == userLoginDto.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
-                return new ServiceResponse { IsSuccess = false, Message = "Invalid credentials." };
-
-            if (user.IsBanned)
-                return new ServiceResponse { IsSuccess = false, Message = "Account is banned." };
-
-            return new ServiceResponse
+            IsSuccess = true,
+            Message = "Login successful.",
+            Data = new UserInfoDto
             {
-                IsSuccess = true,
-                Message = "Login successful.",
-                Data = new UserInfoDto
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Role = user.Role,
-                    IsBanned = user.IsBanned,
-                    RegisteredOn = user.RegisteredOn
-                }
-            };
-        }
-        catch
-        {
-            return new ServiceResponse { IsSuccess = false, Message = "An error occurred during login." };
-        }
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role,
+                IsBanned = user.IsBanned,
+                RegisteredOn = user.RegisteredOn
+            }
+        };
     }
 }

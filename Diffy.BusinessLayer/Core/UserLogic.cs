@@ -61,6 +61,4 @@
           return new ServiceResponse { IsSuccess = true, Message = "Profile updated successfully." };
       }
 
-      public bool EmailExists(string email) => EmailExistsAction(email);
-
   }

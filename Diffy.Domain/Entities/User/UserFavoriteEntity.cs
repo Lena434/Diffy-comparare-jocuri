@@ -5,8 +5,8 @@ namespace Diffy.Domain.Entities.User;
 public class UserFavoriteEntity
 {
     public int UserId { get; set; }
-    public UserEntity User { get; set; } = null!;
+    public UserEntity User { get; set; }
     public int GameId { get; set; }
-    public GameEntity Game { get; set; } = null!;
+    public GameEntity Game { get; set; }
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 }
