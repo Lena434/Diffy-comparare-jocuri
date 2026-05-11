@@ -9,7 +9,7 @@ public class GameInfoDto
     public string Publisher { get; set; } = string.Empty;
     public int ReleaseYear { get; set; }
     public decimal Price { get; set; }
-    public string? ImageUrl { get; set; }
+    public List<GameImgDto> Imgs { get; set; } = new();
     public List<string> Genres { get; set; } = new();
     public List<string> Platforms { get; set; } = new();
     public List<string> GameModes { get; set; } = new();

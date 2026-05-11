@@ -8,11 +8,11 @@ public static class SeedGames
     public static void Seed(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GameEntity>().HasData(
-            new GameEntity { Id = 1, Title = "The Witcher 3: Wild Hunt", Description = "An open-world RPG set in a dark fantasy universe.", Developer = "CD Projekt Red", Publisher = "CD Projekt", ReleaseYear = 2015, Price = 29.99m, ImageUrl = null },
-            new GameEntity { Id = 2, Title = "Elden Ring", Description = "An action RPG set in a vast open world created by Hidetaka Miyazaki and George R. R. Martin.", Developer = "FromSoftware", Publisher = "Bandai Namco", ReleaseYear = 2022, Price = 59.99m, ImageUrl = null },
-            new GameEntity { Id = 3, Title = "Cyberpunk 2077", Description = "An open-world action RPG set in the megalopolis of Night City.", Developer = "CD Projekt Red", Publisher = "CD Projekt", ReleaseYear = 2020, Price = 39.99m, ImageUrl = null },
-            new GameEntity { Id = 4, Title = "Hades", Description = "A rogue-like dungeon crawler where you play as the son of the god of the dead.", Developer = "Supergiant Games", Publisher = "Supergiant Games", ReleaseYear = 2020, Price = 24.99m, ImageUrl = null },
-            new GameEntity { Id = 5, Title = "Stardew Valley", Description = "A farming simulation RPG where you build and manage your own farm.", Developer = "ConcernedApe", Publisher = "ConcernedApe", ReleaseYear = 2016, Price = 14.99m, ImageUrl = null }
+            new GameEntity { Id = 1, Title = "The Witcher 3: Wild Hunt", Description = "An open-world RPG set in a dark fantasy universe.", Developer = "CD Projekt Red", Publisher = "CD Projekt", ReleaseYear = 2015, Price = 29.99m },
+            new GameEntity { Id = 2, Title = "Elden Ring", Description = "An action RPG set in a vast open world created by Hidetaka Miyazaki and George R. R. Martin.", Developer = "FromSoftware", Publisher = "Bandai Namco", ReleaseYear = 2022, Price = 59.99m },
+            new GameEntity { Id = 3, Title = "Cyberpunk 2077", Description = "An open-world action RPG set in the megalopolis of Night City.", Developer = "CD Projekt Red", Publisher = "CD Projekt", ReleaseYear = 2020, Price = 39.99m },
+            new GameEntity { Id = 4, Title = "Hades", Description = "A rogue-like dungeon crawler where you play as the son of the god of the dead.", Developer = "Supergiant Games", Publisher = "Supergiant Games", ReleaseYear = 2020, Price = 24.99m },
+            new GameEntity { Id = 5, Title = "Stardew Valley", Description = "A farming simulation RPG where you build and manage your own farm.", Developer = "ConcernedApe", Publisher = "ConcernedApe", ReleaseYear = 2016, Price = 14.99m }
         );
 
         // Genres: 1=Action, 2=RPG, 3=Adventure, 4=Strategy, 5=Simulation

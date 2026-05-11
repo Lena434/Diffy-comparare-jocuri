@@ -30,6 +30,7 @@ public class DiffyDbContext : DbContext
     public DbSet<UserProfileEntity> UserProfiles { get; set; }
     public DbSet<UserFavoriteEntity> UserFavorites { get; set; }
     public DbSet<GameRatingEntity> GameRatings { get; set; }
+    public DbSet<GameImgEntity> GameImgs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,6 +75,9 @@ public class DiffyDbContext : DbContext
             .HasOne(gr => gr.User).WithMany().HasForeignKey(gr => gr.UserId);
         modelBuilder.Entity<GameRatingEntity>()
             .HasOne(gr => gr.Game).WithMany(g => g.Ratings).HasForeignKey(gr => gr.GameId);
+
+        modelBuilder.Entity<GameImgEntity>()
+            .HasOne(i => i.Game).WithMany(g => g.Imgs).HasForeignKey(i => i.GameId).OnDelete(DeleteBehavior.Cascade);
 
         SeedGenres.Seed(modelBuilder);
         SeedPlatforms.Seed(modelBuilder);

@@ -20,6 +20,7 @@ public class GameRepository
             .Include(g => g.GamePlatforms).ThenInclude(gp => gp.Platform)
             .Include(g => g.GameModes).ThenInclude(gm => gm.GameMode)
             .Include(g => g.Ratings)
+            .Include(g => g.Imgs)
             .ToListAsync();
     }
 
@@ -30,6 +31,7 @@ public class GameRepository
             .Include(g => g.GamePlatforms).ThenInclude(gp => gp.Platform)
             .Include(g => g.GameModes).ThenInclude(gm => gm.GameMode)
             .Include(g => g.Ratings)
+            .Include(g => g.Imgs)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 
@@ -39,6 +41,7 @@ public class GameRepository
             .Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
             .Include(g => g.GamePlatforms).ThenInclude(gp => gp.Platform)
             .Include(g => g.GameModes).ThenInclude(gm => gm.GameMode)
+            .Include(g => g.Imgs)
             .Where(g => ids.Contains(g.Id))
             .ToListAsync();
     }
@@ -66,6 +69,7 @@ public class GameRepository
             .Include(g => g.GameGenres)
             .Include(g => g.GamePlatforms)
             .Include(g => g.GameModes)
+            .Include(g => g.Imgs)
             .FirstOrDefaultAsync(g => g.Id == game.Id);
 
         if (existing == null) return;
@@ -76,11 +80,11 @@ public class GameRepository
         existing.Publisher = game.Publisher;
         existing.ReleaseYear = game.ReleaseYear;
         existing.Price = game.Price;
-        existing.ImageUrl = game.ImageUrl;
 
         _dbContext.GameGenres.RemoveRange(existing.GameGenres);
         _dbContext.GamePlatforms.RemoveRange(existing.GamePlatforms);
         _dbContext.GameGameModes.RemoveRange(existing.GameModes);
+        _dbContext.GameImgs.RemoveRange(existing.Imgs);
 
         foreach (var genreId in genreIds)
             existing.GameGenres.Add(new GameGenreEntity { GameId = existing.Id, GenreId = genreId });
@@ -90,6 +94,9 @@ public class GameRepository
 
         foreach (var gameModeId in gameModeIds)
             existing.GameModes.Add(new GameGameModeEntity { GameId = existing.Id, GameModeId = gameModeId });
+
+        foreach (var img in game.Imgs)
+            existing.Imgs.Add(new GameImgEntity { ImgUrl = img.ImgUrl, GameId = existing.Id });
 
         await _dbContext.SaveChangesAsync();
     }

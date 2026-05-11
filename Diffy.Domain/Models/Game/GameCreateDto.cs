@@ -23,8 +23,7 @@ public class GameCreateDto
     [Range(0, 10000)]
     public decimal Price { get; set; }
 
-    [Url]
-    public string? ImageUrl { get; set; }
+    public List<GameImgInputDto> Imgs { get; set; } = new();
 
     public List<int> GenreIds { get; set; } = new();
     public List<int> PlatformIds { get; set; } = new();

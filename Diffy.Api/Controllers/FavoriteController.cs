@@ -32,7 +32,7 @@ public class FavoriteController : ControllerBase
             {
                 GameId = uf.GameId,
                 Title = uf.Game.Title,
-                ImageUrl = uf.Game.ImageUrl,
+                ImageUrl = uf.Game.Imgs.FirstOrDefault()?.ImgUrl,
                 AddedAt = uf.AddedAt,
             }).ToList());
         }
