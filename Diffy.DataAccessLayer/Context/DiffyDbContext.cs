@@ -3,6 +3,7 @@ using Diffy.Domain.Entities;
 using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Entities.User;
 using Diffy.DataAccessLayer;
+using Diffy.DataAccessLayer.Seed;
 
 
 
@@ -11,7 +12,6 @@ namespace Diffy.DataAccessLayer.Context;
 public class DiffyDbContext : DbContext
 {
     public DiffyDbContext() { }
-    public DiffyDbContext(DbContextOptions<DiffyDbContext> options) : base(options) { }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -74,5 +74,10 @@ public class DiffyDbContext : DbContext
             .HasOne(gr => gr.User).WithMany().HasForeignKey(gr => gr.UserId);
         modelBuilder.Entity<GameRatingEntity>()
             .HasOne(gr => gr.Game).WithMany(g => g.Ratings).HasForeignKey(gr => gr.GameId);
+
+        SeedGenres.Seed(modelBuilder);
+        SeedPlatforms.Seed(modelBuilder);
+        SeedGameModes.Seed(modelBuilder);
+        SeedGames.Seed(modelBuilder);
     }
 }

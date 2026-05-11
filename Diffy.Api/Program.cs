@@ -56,8 +56,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddDbContext<DiffyDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
