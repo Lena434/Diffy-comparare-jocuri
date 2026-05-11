@@ -1,5 +1,6 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.Favorite;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,14 @@ public class FavoriteController : ControllerBase
         {
             IUserFavorite service = new BusinessLogic().GetUserFavorite();
             await service.AddAsync(userId.Value, gameId);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteAdded, $"GameId:{gameId}");
+            }
+            catch { /* ignore */ }
+
             return StatusCode(201);
         }
         catch
@@ -70,6 +79,14 @@ public class FavoriteController : ControllerBase
         {
             IUserFavorite service = new BusinessLogic().GetUserFavorite();
             await service.DeleteAsync(userId.Value, gameId);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteRemoved, $"GameId:{gameId}");
+            }
+            catch { /* ignore */ }
+
             return NoContent();
         }
         catch

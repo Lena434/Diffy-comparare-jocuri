@@ -1,5 +1,6 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.Comparison;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,14 @@ public class ComparisonController : ControllerBase
         {
             ISavedComparison service = new BusinessLogic().GetSavedComparison();
             var result = await service.AddAsync(userId.Value, dto.GameIds, dto.GameTitles);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                await logService.LogAsync(userId.Value, ActivityType.ComparisonSaved, string.Join(" vs ", dto.GameTitles));
+            }
+            catch { /* ignore */ }
+
             return StatusCode(201, new SavedComparisonDto
             {
                 Id = result.Id,
@@ -76,6 +85,14 @@ public class ComparisonController : ControllerBase
         {
             ISavedComparison service = new BusinessLogic().GetSavedComparison();
             await service.DeleteAsync(id, userId.Value);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                await logService.LogAsync(userId.Value, ActivityType.ComparisonRemoved);
+            }
+            catch { /* ignore */ }
+
             return NoContent();
         }
         catch

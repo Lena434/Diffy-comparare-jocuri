@@ -18,4 +18,5 @@ public class BusinessLogic
     public ISavedComparison GetSavedComparison() => new SavedComparisonLogic(new SavedComparisonRepository(new DiffyDbContext()));
     public IGameRating GetGameRating() => new GameRatingLogic(new GameRatingRepository(new DiffyDbContext()));
     public IUserProfile GetUserProfile() => new UserProfileLogic(new UserProfileRepository(new DiffyDbContext()));
+    public IActivityLog GetActivityLog() => new ActivityLogLogic(new ActivityLogRepository(new DiffyDbContext()));
 }
