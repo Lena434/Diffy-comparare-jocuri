@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.patch(API_ROUTES.USERS.UPDATE_PROFILE, {
         email: currentUser.email,
-        username: data.username,
-        newEmail: data.email,
+        username: data.username ?? currentUser.username,
+        newEmail: data.email ?? currentUser.email,
       });
       const updated: User = { ...currentUser, ...data };
       setCurrentUser(updated);
