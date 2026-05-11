@@ -45,17 +45,17 @@
           return new ServiceResponse { IsSuccess = true, Message = "User deleted successfully" };
       } 
       
-      public ServiceResponse ChangePassword(string authenticatedEmail, ChangePasswordDto dto)
+      public ServiceResponse ChangePassword(int userId, ChangePasswordDto dto)
       {
-          var result = ChangePasswordAction(authenticatedEmail, dto);
+          var result = ChangePasswordAction(userId, dto);
           if (!result)
               return new ServiceResponse { IsSuccess = false, Message = "Incorrect old password." };
           return new ServiceResponse { IsSuccess = true, Message = "Password changed successfully." };
       }
 
-      public ServiceResponse UpdateProfile(string authenticatedEmail, UserProfileUpdateDto userProfileUpdateDto)
+      public ServiceResponse UpdateProfile(int userId, UserProfileUpdateDto userProfileUpdateDto)
       {
-          var result = UpdateProfileAction(authenticatedEmail, userProfileUpdateDto);
+          var result = UpdateProfileAction(userId, userProfileUpdateDto);
           if (!result)
               return new ServiceResponse { IsSuccess = false, Message = "User not found." };
           return new ServiceResponse { IsSuccess = true, Message = "Profile updated successfully." };

@@ -22,7 +22,7 @@ export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.
       (response) => response,
       (error) => {
         if (!error.response) {
-          console.error("Network error: server unavailable");
+          navigate(ROUTES.ERROR_500);
           return Promise.reject(error);
         }
         const { status } = error.response;

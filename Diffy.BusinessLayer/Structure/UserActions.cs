@@ -104,9 +104,9 @@ public class UserActions
         }
     }
 
-    internal bool ChangePasswordAction(string authenticatedEmail, ChangePasswordDto dto)
+    internal bool ChangePasswordAction(int userId, ChangePasswordDto dto)
     {
-        var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null) return false;
         if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash)) return false;
 
@@ -122,12 +122,12 @@ public class UserActions
         }
     }
 
-    internal bool UpdateProfileAction(string authenticatedEmail, UserProfileUpdateDto dto)
+    internal bool UpdateProfileAction(int userId, UserProfileUpdateDto dto)
     {
-        var user = _dbContext.Users.FirstOrDefault(u => u.Email == authenticatedEmail);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null) return false;
 
-        if (!string.Equals(dto.NewEmail, authenticatedEmail, StringComparison.OrdinalIgnoreCase)
+        if (!string.Equals(dto.NewEmail, user.Email, StringComparison.OrdinalIgnoreCase)
             && _dbContext.Users.Any(u => u.Email == dto.NewEmail))
             return false;
 
