@@ -29,14 +29,30 @@ function GameCard({ game }: GameCardProps) {
     >
       {/* Image */}
       <div style={{ position: "relative", height: "160px", overflow: "hidden" }}>
+        {/* Blurred background */}
+        <img
+          src={game.imgs?.[0]?.url ?? ''}
+          alt=""
+          aria-hidden
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            filter: "blur(16px) brightness(0.4) saturate(0.5)",
+            transform: "scale(1.12)",
+            pointerEvents: "none",
+          }}
+        />
+        {/* Main image */}
         <img
           src={game.imgs?.[0]?.url ?? ''}
           alt={game.title}
           className="transition-transform duration-200 group-hover:scale-[1.06]"
           style={{
+            position: "relative",
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             filter: "brightness(0.85) saturate(0.8)",
           }}
         />

@@ -94,11 +94,11 @@ function GameDetailsPage() {
         {/* Hero Section */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: "30px", marginBottom: "50px" }}>
           {/* Image */}
-          <div style={{ position: "relative", border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", aspectRatio: "1", maxWidth: "500px", margin: "0 auto", width: "100%" }}>
+          <div style={{ position: "relative", border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", maxWidth: "500px", margin: "0 auto", width: "100%", alignSelf: "start" }}>
             <img
               src={game.imgs?.[0]?.url ?? ''}
               alt={game.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.9) saturate(0.85)" }}
+              style={{ width: "100%", height: "auto", display: "block", filter: "brightness(0.9) saturate(0.85)" }}
             />
             <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)`, pointerEvents: "none" }} />
             <div style={{ position: "absolute", top: "12px", right: "12px", background: "var(--arcade-input-bg)", border: "2px solid var(--arcade-h)", boxShadow: "3px 3px 0px var(--arcade-h-shadow)", padding: "8px 12px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "'Press Start 2P', monospace", fontSize: "0.5rem", color: "var(--arcade-h)" }}>
