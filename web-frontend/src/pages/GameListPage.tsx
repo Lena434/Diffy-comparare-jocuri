@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useGameService } from '../services/gameService';
 import FilterBar from '../components/filters/FilterBar';
 import GamesHeader from '../sections/games/GamesHeader';
@@ -21,6 +21,18 @@ function GameListPage() {
       })
       .catch(() => setLoading(false));
   }, [getAll]);
+
+  const allGenres = useMemo(() => {
+    const set = new Set<string>();
+    allGames.forEach(g => g.genres.forEach(genre => set.add(genre)));
+    return Array.from(set).sort();
+  }, [allGames]);
+
+  const allPlatforms = useMemo(() => {
+    const set = new Set<string>();
+    allGames.forEach(g => g.platforms.forEach(p => set.add(p)));
+    return Array.from(set).sort();
+  }, [allGames]);
 
   const {
     searchQuery,
@@ -54,6 +66,8 @@ function GameListPage() {
           genreValue={genreFilter}
           platformValue={platformFilter}
           sortValue={sortBy}
+          genres={allGenres}
+          platforms={allPlatforms}
           onSearch={setSearchQuery}
           onGenreFilter={setGenreFilter}
           onPlatformFilter={setPlatformFilter}

@@ -28,7 +28,7 @@ function GameCard({ game }: GameCardProps) {
       }}
     >
       {/* Image */}
-      <div style={{ position: "relative", height: "160px", overflow: "hidden" }}>
+      <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
         {/* Blurred background */}
         <img
           src={game.imgs?.[0]?.url ?? ''}

@@ -212,12 +212,12 @@ const AdminGames: React.FC = () => {
           style={{ ...inputBase, flex: 1, minWidth: '200px', padding: '10px 14px', fontSize: '0.38rem' }}
         />
         <select value={filterGenre} onChange={e => setFilterGenre(e.target.value)}
-          style={{ ...inputBase, padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer' }}>
+          style={{ ...inputBase, padding: '10px 14px', fontSize: '0.38rem', lineHeight: '2', cursor: 'pointer' }}>
           <option value="all">ALL GENRES</option>
           {allGenres.map(g => <option key={g} value={g}>{g.toUpperCase()}</option>)}
         </select>
         <select value={filterPlatform} onChange={e => setFilterPlatform(e.target.value)}
-          style={{ ...inputBase, padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer' }}>
+          style={{ ...inputBase, padding: '10px 14px', fontSize: '0.38rem', lineHeight: '2', cursor: 'pointer' }}>
           <option value="all">ALL PLATFORMS</option>
           {allPlatforms.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
         </select>

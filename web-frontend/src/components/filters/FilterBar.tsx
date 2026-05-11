@@ -6,6 +6,8 @@ interface FilterBarProps {
   genreValue?: string;
   platformValue?: string;
   sortValue?: string;
+  genres?: string[];
+  platforms?: string[];
   onSearch: (query: string) => void;
   onGenreFilter: (genre: string) => void;
   onPlatformFilter: (platform: string) => void;
@@ -18,14 +20,16 @@ function FilterBar({
   genreValue = 'All',
   platformValue = 'All',
   sortValue = 'title',
+  genres: genresProp,
+  platforms: platformsProp,
   onSearch,
   onGenreFilter,
   onPlatformFilter,
   onSort,
   onClearFilters,
 }: FilterBarProps) {
-  const genres = ['All', 'RPG', 'Action', 'FPS', 'Simulation', 'Metroidvania', 'Platformer', 'Competitive'];
-  const platforms = ['All', 'PC', 'PlayStation', 'Xbox', 'Switch', 'Mobile'];
+  const genres = ['All', ...(genresProp ?? [])];
+  const platforms = ['All', ...(platformsProp ?? [])];
   const sortOptions = [
     { value: 'title', label: 'NAME (A-Z)' },
     { value: 'rating', label: 'RATING HIGH-LOW' },

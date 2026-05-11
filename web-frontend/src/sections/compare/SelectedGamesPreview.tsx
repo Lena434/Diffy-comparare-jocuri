@@ -24,9 +24,9 @@ function SelectedGamesPreview({ game1, game2 }: SelectedGamesPreviewProps) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(auto-fit, minmax(min(260px, 100%), 1fr))`,
-          gap: "20px",
-          maxWidth: "860px",
+          gridTemplateColumns: `repeat(auto-fit, minmax(min(200px, 100%), 1fr))`,
+          gap: "16px",
+          maxWidth: "580px",
           margin: "0 auto",
         }}
       >
