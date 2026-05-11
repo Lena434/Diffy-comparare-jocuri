@@ -52,5 +52,15 @@ public static class SeedGames
             new GameGameModeEntity { GameId = 5, GameModeId = 1 }, // Stardew -> Single Player
             new GameGameModeEntity { GameId = 5, GameModeId = 3 }  // Stardew -> Co-op
         );
+        
+        //GameImgEntity - Image URLs
+        modelBuilder.Entity<GameImgEntity>().HasData(                                                                                                                                    
+            new GameImgEntity { Id = 1, GameId = 1, ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg" },                                                                                                            
+            new GameImgEntity { Id = 2, GameId = 2, ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg" },                                                                                                         
+            new GameImgEntity { Id = 3, GameId = 3, ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg" },                                                                                                          
+            new GameImgEntity { Id = 4, GameId = 4, ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1145360/header.jpg" },                                                                                                            
+            new GameImgEntity { Id = 5, GameId = 5, ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg" }
+        );
+
     }
 }
