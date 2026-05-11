@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAxios } from '../../axios/context';
+import { useAuth } from '../../contexts/AuthContext';
 import { API_ROUTES } from '../../axios/apiRoutes';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import type { User } from '../../types';
 
 const FONT = "'Press Start 2P', monospace";
-const BANNED_KEY = 'diffy-banned-users';
-
-function getBannedEmails(): string[] {
-  try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]'); } catch { return []; }
-}
-function saveBannedEmails(emails: string[]) {
-  localStorage.setItem(BANNED_KEY, JSON.stringify(emails));
-}
 
 function generateTempPassword(): string {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -29,7 +22,6 @@ type DialogState  = { type: 'ban' | 'unban' | 'delete' | 'role'; user: User } | 
 interface EditForm {
   username: string;
   email: string;
-  role: User['role'];
   isBanned: boolean;
   newPassword: string | null;
 }
@@ -92,12 +84,17 @@ const fieldLabel: React.CSSProperties = {
 
 const UsersAdmin: React.FC = () => {
   const { api } = useAxios();
+  const { currentUser } = useAuth();
   const [users, setUsers]               = useState<User[]>([]);
-  const [banned, setBanned]             = useState<string[]>(() => getBannedEmails());
 
-  useEffect(() => {
-    api.get<User[]>(API_ROUTES.USERS.LIST).then(setUsers).catch(() => {});
-  }, [api]);
+  async function fetchUsers() {
+    try {
+      const data = await api.get<User[]>(API_ROUTES.USERS.LIST);
+      setUsers(data.map(u => ({ ...u, role: (u.role as string).toLowerCase() as User['role'] })));
+    } catch {}
+  }
+
+  useEffect(() => { fetchUsers(); }, [api]);
   const [search, setSearch]             = useState('');
   const [filterRole, setFilterRole]     = useState<FilterRole>('all');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
@@ -106,7 +103,7 @@ const UsersAdmin: React.FC = () => {
   const [editForm, setEditForm]         = useState<EditForm | null>(null);
   const [editError, setEditError]       = useState<string | null>(null);
 
-  const isBanned = (u: User) => banned.includes(u.email.toLowerCase());
+  const isBanned = (u: User) => u.isBanned === true;
 
   const filtered = users.filter(u => {
     const q = search.toLowerCase();
@@ -121,7 +118,6 @@ const UsersAdmin: React.FC = () => {
     setEditForm({
       username: user.username,
       email: user.email,
-      role: user.role ?? 'user',
       isBanned: isBanned(user),
       newPassword: null,
     });
@@ -139,7 +135,7 @@ const UsersAdmin: React.FC = () => {
     setEditForm({ ...editForm, newPassword: generateTempPassword() });
   }
 
-  function handleSaveEdit() {
+  async function handleSaveEdit() {
     if (!editTarget || !editForm) return;
 
     const trimUsername = editForm.username.trim();
@@ -154,56 +150,57 @@ const UsersAdmin: React.FC = () => {
     );
     if (emailTaken) { setEditError('EMAIL ALREADY IN USE.'); return; }
 
-    const updatedUsers = users.map(u => {
-      if (u.email.toLowerCase() !== editTarget.email.toLowerCase()) return u;
-      return {
-        ...u,
+    try {
+      await api.put(API_ROUTES.USERS.UPDATE(editTarget.id), {
         username: trimUsername,
         email: trimEmail,
-        role: editForm.role,
-        ...(editForm.newPassword ? { password: editForm.newPassword } : {}),
-      };
-    });
-    setUsers(updatedUsers);
-
-    const oldEmail  = editTarget.email.toLowerCase();
-    let nextBanned  = banned.filter(e => e !== oldEmail);
-    if (editForm.isBanned) nextBanned = [...nextBanned, trimEmail];
-    saveBannedEmails(nextBanned);
-    setBanned(nextBanned);
-
-    closeEdit();
+        role: editTarget.role,
+        isBanned: editForm.isBanned,
+      });
+      await fetchUsers();
+      closeEdit();
+    } catch {
+      setEditError('FAILED TO SAVE CHANGES.');
+    }
   }
 
-  function confirmBanToggle() {
+  async function confirmBanToggle() {
     if (!dialog) return;
-    const email = dialog.user.email.toLowerCase();
-    const next = dialog.type === 'ban'
-      ? [...banned, email]
-      : banned.filter(e => e !== email);
-    saveBannedEmails(next);
-    setBanned(next);
+    const user = dialog.user;
+    try {
+      await api.put(API_ROUTES.USERS.UPDATE(user.id), {
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        isBanned: dialog.type === 'ban',
+      });
+      await fetchUsers();
+    } catch {}
     setDialog(null);
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (!dialog) return;
-    const next = users.filter(u => u.email !== dialog.user.email);
-    setUsers(next);
-    const nextBanned = banned.filter(e => e !== dialog.user.email.toLowerCase());
-    saveBannedEmails(nextBanned);
-    setBanned(nextBanned);
+    try {
+      await api.delete(API_ROUTES.USERS.DELETE(dialog.user.id));
+      await fetchUsers();
+    } catch {}
     setDialog(null);
   }
 
-  function confirmRoleToggle() {
+  async function confirmRoleToggle() {
     if (!dialog) return;
-    const next = users.map(u =>
-      u.email === dialog.user.email
-        ? { ...u, role: (u.role === 'admin' ? 'user' : 'admin') as User['role'] }
-        : u
-    );
-    setUsers(next);
+    const user = dialog.user;
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
+    try {
+      await api.put(API_ROUTES.USERS.UPDATE(user.id), {
+        username: user.username,
+        email: user.email,
+        role: newRole,
+        isBanned: user.isBanned ?? false,
+      });
+      await fetchUsers();
+    } catch {}
     setDialog(null);
   }
 
@@ -288,24 +285,28 @@ const UsersAdmin: React.FC = () => {
                         >
                           EDIT
                         </button>
-                        <button
-                          onClick={() => setDialog({ type: banned_ ? 'unban' : 'ban', user })}
-                          style={banned_ ? actionBtn('#22c55e', '#14532d') : actionBtn('#ef4444', '#7f1d1d')}
-                        >
-                          {banned_ ? 'UNBAN' : 'BAN'}
-                        </button>
-                        <button
-                          onClick={() => setDialog({ type: 'role', user })}
-                          style={actionBtn('var(--arcade-accent)', 'var(--arcade-accent-dark)')}
-                        >
-                          {(user.role ?? 'user') === 'admin' ? 'DEMOTE' : 'PROMOTE'}
-                        </button>
-                        <button
-                          onClick={() => setDialog({ type: 'delete', user })}
-                          style={actionBtn('#ef4444', '#7f1d1d')}
-                        >
-                          DELETE
-                        </button>
+                        {user.id !== currentUser?.id && (
+                          <>
+                            <button
+                              onClick={() => setDialog({ type: banned_ ? 'unban' : 'ban', user })}
+                              style={banned_ ? actionBtn('#22c55e', '#14532d') : actionBtn('#ef4444', '#7f1d1d')}
+                            >
+                              {banned_ ? 'UNBAN' : 'BAN'}
+                            </button>
+                            <button
+                              onClick={() => setDialog({ type: 'role', user })}
+                              style={actionBtn('var(--arcade-accent)', 'var(--arcade-accent-dark)')}
+                            >
+                              {(user.role ?? 'user') === 'admin' ? 'DEMOTE' : 'PROMOTE'}
+                            </button>
+                            <button
+                              onClick={() => setDialog({ type: 'delete', user })}
+                              style={actionBtn('#ef4444', '#7f1d1d')}
+                            >
+                              DELETE
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -352,19 +353,6 @@ const UsersAdmin: React.FC = () => {
                   onChange={e => setEditForm({ ...editForm, email: e.target.value })}
                   style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }}
                 />
-              </div>
-
-              {/* Role */}
-              <div>
-                <div style={fieldLabel}>ROLE</div>
-                <select
-                  value={editForm.role}
-                  onChange={e => setEditForm({ ...editForm, role: e.target.value as User['role'] })}
-                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer', boxSizing: 'border-box' }}
-                >
-                  <option value="user">USER</option>
-                  <option value="admin">ADMIN</option>
-                </select>
               </div>
 
               {/* Status */}

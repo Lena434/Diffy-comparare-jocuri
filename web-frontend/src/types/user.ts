@@ -19,5 +19,6 @@ export interface User {
   username: string;
   email: string;
   role: UserRole;
+  isBanned?: boolean;
   profile?: UserProfile;
 }
