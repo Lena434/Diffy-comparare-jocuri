@@ -76,6 +76,10 @@ public class DiffyDbContext : DbContext
         modelBuilder.Entity<GameRatingEntity>()
             .HasOne(gr => gr.Game).WithMany(g => g.Ratings).HasForeignKey(gr => gr.GameId);
 
+        modelBuilder.Entity<UserEntity>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         modelBuilder.Entity<GameImgEntity>()
             .HasOne(i => i.Game).WithMany(g => g.Imgs).HasForeignKey(i => i.GameId).OnDelete(DeleteBehavior.Cascade);
 
