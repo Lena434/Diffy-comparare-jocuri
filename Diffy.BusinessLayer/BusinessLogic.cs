@@ -15,6 +15,7 @@ public class BusinessLogic
     public IPlatform GetPlatform() => new PlatformLogic(new PlatformRepository(new DiffyDbContext()));
     public IGameMode GetGameMode() => new GameModeLogic(new GameModeRepository(new DiffyDbContext()));
     public IUserFavorite GetUserFavorite() => new UserFavoriteLogic(new UserFavoriteRepository(new DiffyDbContext()));
+    public ISavedComparison GetSavedComparison() => new SavedComparisonLogic(new SavedComparisonRepository(new DiffyDbContext()));
     public IGameRating GetGameRating() => new GameRatingLogic(new GameRatingRepository(new DiffyDbContext()));
     public IUserProfile GetUserProfile() => new UserProfileLogic(new UserProfileRepository(new DiffyDbContext()));
 }

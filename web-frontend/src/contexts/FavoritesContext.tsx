@@ -17,8 +17,8 @@ interface FavoritesContextValue {
   savedComparisons: SavedComparison[];
   toggleFavoriteGame: (id: number) => void;
   isFavoriteGame: (id: number) => boolean;
-  saveComparison: (games: Game[]) => void;
-  removeComparison: (id: string) => void;
+  saveComparison: (games: Game[]) => Promise<void>;
+  removeComparison: (id: number) => void;
 }
 
 const FavoritesContext = createContext<FavoritesContextValue>({
@@ -26,13 +26,9 @@ const FavoritesContext = createContext<FavoritesContextValue>({
   savedComparisons: [],
   toggleFavoriteGame: () => {},
   isFavoriteGame: () => false,
-  saveComparison: () => {},
+  saveComparison: async () => {},
   removeComparison: () => {},
 });
-
-function comparisonsKey(email: string) {
-  return `diffy-comparisons-${email.toLowerCase()}`;
-}
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuth();
@@ -47,26 +43,15 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         .then((items) => setFavoriteGameIds(items.map((f) => f.gameId)))
         .catch(() => setFavoriteGameIds([]));
 
-      try {
-        const raw = localStorage.getItem(comparisonsKey(currentUser.email));
-        setSavedComparisons(raw ? JSON.parse(raw) : []);
-      } catch {
-        setSavedComparisons([]);
-      }
+      api
+        .get<SavedComparison[]>(API_ROUTES.COMPARISONS.GET_ALL)
+        .then(setSavedComparisons)
+        .catch(() => setSavedComparisons([]));
     } else {
       setFavoriteGameIds([]);
       setSavedComparisons([]);
     }
   }, [currentUser, api]);
-
-  function persistComparisons(comparisons: SavedComparison[]) {
-    if (currentUser) {
-      localStorage.setItem(
-        comparisonsKey(currentUser.email),
-        JSON.stringify(comparisons),
-      );
-    }
-  }
 
   function toggleFavoriteGame(id: number) {
     const isFav = favoriteGameIds.includes(id);
@@ -87,24 +72,22 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     return favoriteGameIds.includes(id);
   }
 
-  function saveComparison(games: Game[]) {
-    const newComparison: SavedComparison = {
-      id: Date.now().toString(),
+  async function saveComparison(games: Game[]) {
+    const dto = {
       gameIds: games.map((g) => g.id),
       gameTitles: games.map((g) => g.title),
     };
-    setSavedComparisons((prev) => {
-      const next = [...prev, newComparison];
-      persistComparisons(next);
-      return next;
-    });
+    const created = await api.post<SavedComparison>(API_ROUTES.COMPARISONS.CREATE, dto);
+    setSavedComparisons((prev) => [created, ...prev]);
   }
 
-  function removeComparison(id: string) {
-    setSavedComparisons((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      persistComparisons(next);
-      return next;
+  function removeComparison(id: number) {
+    setSavedComparisons((prev) => prev.filter((c) => c.id !== id));
+    api.delete(API_ROUTES.COMPARISONS.DELETE(id)).catch(() => {
+      api
+        .get<SavedComparison[]>(API_ROUTES.COMPARISONS.GET_ALL)
+        .then(setSavedComparisons)
+        .catch(() => {});
     });
   }
 

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { AxiosContext } from "./context";
 import { createApi } from "./create-api";
+import { loadToken } from "../services/authService";
 import type { ApiClient } from "./types";
 
 interface AxiosProviderProps {
@@ -15,7 +16,18 @@ interface AxiosProviderProps {
 export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.ReactElement {
   const navigate = useNavigate();
 
-  const client: AxiosInstance = useMemo(() => axios.create({ baseURL }), [baseURL]);
+  const client: AxiosInstance = useMemo(() => {
+    const instance = axios.create({ baseURL });
+    instance.interceptors.request.use((config) => {
+      const token = loadToken();
+      if (token) {
+        config.headers = config.headers ?? {};
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      return config;
+    });
+    return instance;
+  }, [baseURL]);
 
   useEffect(() => {
     const interceptorId = client.interceptors.response.use(
@@ -27,7 +39,8 @@ export function AxiosProvider({ children, baseURL }: AxiosProviderProps): React.
         }
         const { status } = error.response;
         if (status === 401) {
-          localStorage.removeItem("diffy-current-user");
+          sessionStorage.removeItem("diffy-current-user");
+          sessionStorage.removeItem("diffy-token");
           navigate(ROUTES.LOGIN);
         } else if (status === 403) {
           navigate(ROUTES.ERROR_403);

@@ -1,7 +1,8 @@
 export interface SavedComparison {
-  id: string;
+  id: number;
   gameIds: number[];
   gameTitles: string[];
+  savedAt?: string;
 }
 
 export interface StoredFavorites {

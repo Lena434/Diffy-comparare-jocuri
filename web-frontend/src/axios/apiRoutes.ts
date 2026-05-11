@@ -49,4 +49,9 @@ export const API_ROUTES = {
     GET: '/api/profile',
     UPDATE: '/api/profile',
   },
+  COMPARISONS: {
+    GET_ALL: '/api/comparison',
+    CREATE: '/api/comparison',
+    DELETE: (id: number) => `/api/comparison/${id}`,
+  },
 };
