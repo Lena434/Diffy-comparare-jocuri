@@ -37,23 +37,23 @@ public class DiffyDbContext : DbContext
         modelBuilder.Entity<GameGenreEntity>()
             .HasKey(gg => new { gg.GameId, gg.GenreId });
         modelBuilder.Entity<GameGenreEntity>()
-            .HasOne(gg => gg.Game).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GameId);
+            .HasOne(gg => gg.Game).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameGenreEntity>()
-            .HasOne(gg => gg.Genre).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GenreId);
+            .HasOne(gg => gg.Genre).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GenreId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GamePlatformEntity>()
             .HasKey(gp => new { gp.GameId, gp.PlatformId });
         modelBuilder.Entity<GamePlatformEntity>()
-            .HasOne(gp => gp.Game).WithMany(g => g.GamePlatforms).HasForeignKey(gp => gp.GameId);
+            .HasOne(gp => gp.Game).WithMany(g => g.GamePlatforms).HasForeignKey(gp => gp.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GamePlatformEntity>()
-            .HasOne(gp => gp.Platform).WithMany(p => p.GamePlatforms).HasForeignKey(gp => gp.PlatformId);
+            .HasOne(gp => gp.Platform).WithMany(p => p.GamePlatforms).HasForeignKey(gp => gp.PlatformId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GameGameModeEntity>()
             .HasKey(gm => new { gm.GameId, gm.GameModeId });
         modelBuilder.Entity<GameGameModeEntity>()
-            .HasOne(gm => gm.Game).WithMany(g => g.GameModes).HasForeignKey(gm => gm.GameId);
+            .HasOne(gm => gm.Game).WithMany(g => g.GameModes).HasForeignKey(gm => gm.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameGameModeEntity>()
-            .HasOne(gm => gm.GameMode).WithMany().HasForeignKey(gm => gm.GameModeId);
+            .HasOne(gm => gm.GameMode).WithMany().HasForeignKey(gm => gm.GameModeId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<UserProfileEntity>()
             .HasKey(p => p.UserId);

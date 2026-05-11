@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: ROUTES.ADMIN_USERS,         label: '▸ USERS',        end: false },
   { to: ROUTES.ADMIN_GAMES,         label: '▸ GAMES',        end: false },
   { to: ROUTES.ADMIN_COMPARISONS,   label: '▸ COMPARISONS',  end: false },
+  { to: ROUTES.ADMIN_CATEGORIES,    label: '▸ CATEGORIES',   end: false },
   { to: ROUTES.ADMIN_SETTINGS,      label: '▸ SETTINGS',     end: false },
 ];
 

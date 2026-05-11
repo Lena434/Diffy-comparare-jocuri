@@ -15,6 +15,7 @@ import UsersAdmin from "./pages/admin/Users";
 import AdminGames from "./pages/admin/Games";
 import AdminGameDetail from "./pages/admin/GameDetail";
 import AdminComparisons from "./pages/admin/Comparisons";
+import AdminCategories from "./pages/admin/Categories";
 import AdminSettings from "./pages/admin/Settings";
 import AdminUserDetail from "./pages/admin/UserDetail";
 import Unauthorized from "./pages/error/401";
@@ -69,6 +70,7 @@ function App() {
           <Route path={ROUTES.ADMIN_GAMES} element={<AdminGames />} />
           <Route path={ROUTES.ADMIN_GAME_DETAIL} element={<AdminGameDetail />} />
           <Route path={ROUTES.ADMIN_COMPARISONS} element={<AdminComparisons />} />
+          <Route path={ROUTES.ADMIN_CATEGORIES} element={<AdminCategories />} />
           <Route path={ROUTES.ADMIN_SETTINGS} element={<AdminSettings />} />
         </Route>
       </Route>

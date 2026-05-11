@@ -33,6 +33,8 @@ export const API_ROUTES = {
   },
   GAME_MODES: {
     GET_ALL: '/api/gamemode',
+    CREATE: '/api/gamemode',
+    DELETE: (id: number) => `/api/gamemode/${id}`,
   },
   RATINGS: {
     GET_BY_GAME: (gameId: number) => `/api/rating/game/${gameId}`,
