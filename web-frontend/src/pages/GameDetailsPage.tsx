@@ -23,6 +23,7 @@ function GameDetailsPage() {
   const [selectedScore, setSelectedScore] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [ratingStatus, setRatingStatus] = useState<'idle' | 'success' | 'already_rated' | 'error'>('idle');
+  const [currentImg, setCurrentImg] = useState(0);
 
   useEffect(() => {
     const numId = Number(id);
@@ -93,18 +94,44 @@ function GameDetailsPage() {
 
         {/* Hero Section */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: "30px", marginBottom: "50px" }}>
-          {/* Image */}
-          <div style={{ position: "relative", border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", maxWidth: "500px", margin: "0 auto", width: "100%", alignSelf: "start" }}>
-            <img
-              src={game.imgs?.[0]?.url ?? ''}
-              alt={game.title}
-              style={{ width: "100%", height: "auto", display: "block", filter: "brightness(0.9) saturate(0.85)" }}
-            />
-            <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)`, pointerEvents: "none" }} />
-            <div style={{ position: "absolute", top: "12px", right: "12px", background: "var(--arcade-input-bg)", border: "2px solid var(--arcade-h)", boxShadow: "3px 3px 0px var(--arcade-h-shadow)", padding: "8px 12px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "'Press Start 2P', monospace", fontSize: "0.5rem", color: "var(--arcade-h)" }}>
-              ★ {game.averageRating}
-            </div>
-          </div>
+          {/* Image / Carousel */}
+          {(() => {
+            const imgs = game.imgs ?? [];
+            const total = imgs.length;
+            const prev = () => setCurrentImg(i => (i - 1 + total) % total);
+            const next = () => setCurrentImg(i => (i + 1) % total);
+            const arrowBtn: React.CSSProperties = { fontFamily: "'Press Start 2P', monospace", fontSize: "0.7rem", background: "var(--arcade-panel-dark)", border: "2px solid var(--arcade-border)", color: "var(--arcade-text)", padding: "8px 12px", cursor: "pointer", lineHeight: 1, flexShrink: 0 };
+            return (
+              <div style={{ maxWidth: "560px", margin: "0 auto", width: "100%", alignSelf: "start" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {total > 1 && <button onClick={prev} style={arrowBtn}>◄</button>}
+                  <div style={{ flex: 1, border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", position: "relative" }}>
+                    <img
+                      src={imgs[currentImg]?.url ?? ''}
+                      alt={game.title}
+                      style={{ width: "100%", height: "auto", display: "block", filter: "brightness(0.9) saturate(0.85)" }}
+                    />
+                    <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)`, pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", top: "12px", right: "12px", background: "var(--arcade-input-bg)", border: "2px solid var(--arcade-h)", boxShadow: "3px 3px 0px var(--arcade-h-shadow)", padding: "8px 12px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "'Press Start 2P', monospace", fontSize: "0.5rem", color: "var(--arcade-h)" }}>
+                      ★ {game.averageRating}
+                    </div>
+                  </div>
+                  {total > 1 && <button onClick={next} style={arrowBtn}>►</button>}
+                </div>
+                {total > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: "8px", paddingTop: "10px" }}>
+                    {imgs.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImg(i)}
+                        style={{ width: "10px", height: "10px", padding: 0, border: "2px solid var(--arcade-h)", background: i === currentImg ? "var(--arcade-h)" : "transparent", cursor: "pointer" }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Info */}
           <div style={{ display: "flex", flexDirection: "column", gap: "24px", justifyContent: "space-between" }}>

@@ -59,12 +59,12 @@ interface CreateForm {
   genres: string;
   platforms: string;
   gameModes: string;
-  imageUrl: string;
+  imageUrls: string[];
 }
 
 const emptyForm: CreateForm = {
   title: '', description: '', developer: '', publisher: '',
-  releaseYear: '', price: '', genres: '', platforms: '', gameModes: '', imageUrl: '',
+  releaseYear: '', price: '', genres: '', platforms: '', gameModes: '', imageUrls: [''],
 };
 
 function idsFromNames(input: string, meta: { id: number; name: string }[]): number[] {
@@ -151,7 +151,7 @@ const AdminGames: React.FC = () => {
         publisher: createForm.publisher.trim(),
         releaseYear: year,
         price,
-        imgs: createForm.imageUrl.trim() ? [{ url: createForm.imageUrl.trim() }] : [],
+        imgs: createForm.imageUrls.map(u => u.trim()).filter(Boolean).map(url => ({ url })),
         genreIds: idsFromNames(createForm.genres, genresMeta),
         platformIds: idsFromNames(createForm.platforms, platformsMeta),
         gameModeIds: idsFromNames(createForm.gameModes, gameModesMeta),
@@ -358,8 +358,34 @@ const AdminGames: React.FC = () => {
               </div>
 
               <div>
-                <div style={fieldLabel}>IMAGE URL</div>
-                <input type="text" value={createForm.imageUrl} onChange={e => setCreateForm({ ...createForm, imageUrl: e.target.value })} style={inputStyle} placeholder="https://..." />
+                <div style={fieldLabel}>IMAGE URLS</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {createForm.imageUrls.map((url, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="text"
+                        value={url}
+                        onChange={e => {
+                          const updated = [...createForm.imageUrls];
+                          updated[i] = e.target.value;
+                          setCreateForm({ ...createForm, imageUrls: updated });
+                        }}
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder="https://..."
+                      />
+                      {createForm.imageUrls.length > 1 && (
+                        <button
+                          onClick={() => setCreateForm({ ...createForm, imageUrls: createForm.imageUrls.filter((_, j) => j !== i) })}
+                          style={{ fontFamily: FONT, fontSize: '0.42rem', padding: '6px 10px', border: '2px solid #ef4444', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}
+                        >×</button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => setCreateForm({ ...createForm, imageUrls: [...createForm.imageUrls, ''] })}
+                    style={{ fontFamily: FONT, fontSize: '0.38rem', padding: '7px 12px', border: '2px solid #22c55e', background: 'transparent', color: '#22c55e', cursor: 'pointer', alignSelf: 'flex-start', letterSpacing: '0.04em' }}
+                  >+ ADD IMAGE</button>
+                </div>
               </div>
 
               {createError && (
