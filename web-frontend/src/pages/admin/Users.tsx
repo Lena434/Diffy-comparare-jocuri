@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAxios } from '../../axios/context';
 import { useAuth } from '../../contexts/AuthContext';
 import { API_ROUTES } from '../../axios/apiRoutes';
@@ -91,6 +91,7 @@ const fieldLabel: React.CSSProperties = {
 const UsersAdmin: React.FC = () => {
   const { api } = useAxios();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers]               = useState<User[]>([]);
 
   async function fetchUsers() {
@@ -333,6 +334,12 @@ const UsersAdmin: React.FC = () => {
                           style={actionBtn('#06b6d4', '#164e63')}
                         >
                           EDIT
+                        </button>
+                        <button
+                          onClick={() => navigate(`/admin/users/${user.id}/activity`, { state: { username: user.username } })}
+                          style={actionBtn('#a78bfa', '#4c1d95')}
+                        >
+                          ACTIVITY
                         </button>
                         {user.id !== currentUser?.id && (
                           <>

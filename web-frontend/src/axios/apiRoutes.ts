@@ -54,4 +54,8 @@ export const API_ROUTES = {
     CREATE: '/api/comparison',
     DELETE: (id: number) => `/api/comparison/${id}`,
   },
+  ACTIVITY_LOG: {
+    GET_MY: '/api/activitylog',
+    GET_BY_USER: (userId: number) => `/api/activitylog/${userId}`,
+  },
 };
