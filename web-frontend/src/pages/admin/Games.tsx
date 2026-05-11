@@ -209,7 +209,7 @@ const AdminGames: React.FC = () => {
           placeholder="SEARCH TITLE OR DEVELOPER..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ ...inputBase, flex: 1, minWidth: '200px', padding: '10px 14px', fontSize: '0.42rem' }}
+          style={{ ...inputBase, flex: 1, minWidth: '200px', padding: '10px 14px', fontSize: '0.38rem' }}
         />
         <select value={filterGenre} onChange={e => setFilterGenre(e.target.value)}
           style={{ ...inputBase, padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer' }}>
@@ -323,7 +323,7 @@ const AdminGames: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
                   <div style={fieldLabel}>RELEASE YEAR *</div>
-                  <input type="number" value={createForm.releaseYear} onChange={e => setCreateForm({ ...createForm, releaseYear: e.target.value })} style={inputStyle} placeholder="2024" />
+                  <input type="number" value={createForm.releaseYear} onChange={e => setCreateForm({ ...createForm, releaseYear: e.target.value })} style={inputStyle} placeholder="2024" min={1970} max={2100} step={1} />
                 </div>
                 <div>
                   <div style={fieldLabel}>PRICE *</div>

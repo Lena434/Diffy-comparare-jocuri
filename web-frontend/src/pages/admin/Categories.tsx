@@ -14,7 +14,7 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
   letterSpacing: '0.03em',
   padding: '10px 14px',
-  fontSize: '0.42rem',
+  fontSize: '0.38rem',
   lineHeight: '2',
   boxSizing: 'border-box' as const,
 };

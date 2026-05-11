@@ -89,7 +89,7 @@ const AdminComparisons: React.FC = () => {
           placeholder="SEARCH USER OR GAME..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ ...inputBase, flex: 1, minWidth: '200px', padding: '10px 14px', fontSize: '0.42rem' }}
+          style={{ ...inputBase, flex: 1, minWidth: '200px', padding: '10px 14px', fontSize: '0.38rem' }}
         />
         <select value={filterDate} onChange={e => setFilterDate(e.target.value)}
           style={{ ...inputBase, padding: '10px 14px', fontSize: '0.42rem', cursor: 'pointer' }}>
