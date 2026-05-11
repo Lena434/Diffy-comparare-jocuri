@@ -14,12 +14,15 @@ function GameDetailsPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
-  const { getById, getSimilar } = useGameService();
+  const { getById, getSimilar, submitRating } = useGameService();
 
   const [game, setGame] = useState<Game | null>(null);
   const [similarGames, setSimilarGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [selectedScore, setSelectedScore] = useState<number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [ratingStatus, setRatingStatus] = useState<'idle' | 'success' | 'already_rated' | 'error'>('idle');
 
   useEffect(() => {
     const numId = Number(id);
@@ -34,6 +37,21 @@ function GameDetailsPage() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [id, getById, getSimilar]);
+
+  async function handleSubmitRating() {
+    if (!selectedScore || !game) return;
+    setSubmitting(true);
+    setRatingStatus('idle');
+    try {
+      await submitRating(game.id, selectedScore);
+      setRatingStatus('success');
+      setSelectedScore(null);
+    } catch {
+      setRatingStatus('already_rated');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (loading) return <PixelLoader message="LOADING GAME..." />;
 
@@ -164,6 +182,61 @@ function GameDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Rating Section */}
+        {isAuthenticated && (
+          <div style={{ background: "var(--arcade-panel)", border: "3px solid var(--arcade-border)", boxShadow: "4px 4px 0px var(--arcade-shadow)", padding: "24px", marginBottom: "50px" }}>
+            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.42rem", color: "var(--arcade-muted)", marginBottom: "16px", letterSpacing: "0.08em" }}>
+              RATE THIS GAME
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => { setSelectedScore(n); setRatingStatus('idle'); }}
+                  style={{
+                    width: "40px", height: "40px",
+                    fontFamily: "'Press Start 2P', monospace", fontSize: "0.45rem",
+                    cursor: "pointer", border: "3px solid",
+                    borderColor: selectedScore === n ? "var(--arcade-h)" : "var(--arcade-border)",
+                    background: selectedScore === n ? "var(--arcade-h)" : "var(--arcade-input-bg)",
+                    color: selectedScore === n ? "#000" : "var(--arcade-text)",
+                    boxShadow: selectedScore === n ? "3px 3px 0px var(--arcade-h-shadow)" : "2px 2px 0px var(--arcade-shadow)",
+                    transition: "background 80ms, border-color 80ms",
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+              <button
+                onClick={handleSubmitRating}
+                disabled={!selectedScore || submitting}
+                style={{
+                  fontFamily: "'Press Start 2P', monospace", fontSize: "0.42rem",
+                  padding: "10px 20px", cursor: selectedScore && !submitting ? "pointer" : "not-allowed",
+                  border: "3px solid", borderColor: "var(--arcade-text)",
+                  background: selectedScore && !submitting ? "var(--arcade-cta)" : "var(--arcade-border)",
+                  color: "#fff", boxShadow: "3px 3px 0px var(--arcade-shadow)",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                {submitting ? "SUBMITTING..." : "SUBMIT RATING"}
+              </button>
+              {ratingStatus === 'success' && (
+                <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.38rem", color: "var(--arcade-h)", margin: 0 }}>
+                  ✓ RATING SUBMITTED!
+                </p>
+              )}
+              {ratingStatus === 'already_rated' && (
+                <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.38rem", color: "var(--arcade-muted)", margin: 0 }}>
+                  SOMETHING WENT WRONG
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Similar Games Section */}
         {similarGames.length > 0 && (

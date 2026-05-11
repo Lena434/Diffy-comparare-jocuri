@@ -86,6 +86,12 @@ export function useGameService() {
     [api],
   );
 
+  const submitRating = useCallback(
+    (gameId: number, score: number) =>
+      api.post(API_ROUTES.RATINGS.CREATE, { gameId, score }),
+    [api],
+  );
+
   return {
     getAll,
     getById,
@@ -97,5 +103,6 @@ export function useGameService() {
     create,
     update,
     remove,
+    submitRating
   };
 }
