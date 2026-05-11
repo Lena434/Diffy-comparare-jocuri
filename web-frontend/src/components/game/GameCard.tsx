@@ -30,7 +30,7 @@ function GameCard({ game }: GameCardProps) {
       {/* Image */}
       <div style={{ position: "relative", height: "160px", overflow: "hidden" }}>
         <img
-          src={game.imageUrl ?? ''}
+          src={game.imgs?.[0]?.url ?? ''}
           alt={game.title}
           className="transition-transform duration-200 group-hover:scale-[1.06]"
           style={{

@@ -14,7 +14,7 @@ export interface GameWritePayload {
   publisher: string;
   releaseYear: number;
   price: number;
-  imageUrl?: string;
+  imgs?: { url: string }[];
   genreIds: number[];
   platformIds: number[];
   gameModeIds: number[];

@@ -96,7 +96,7 @@ function GameDetailsPage() {
           {/* Image */}
           <div style={{ position: "relative", border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", aspectRatio: "1", maxWidth: "500px", margin: "0 auto", width: "100%" }}>
             <img
-              src={game.imageUrl ?? ''}
+              src={game.imgs?.[0]?.url ?? ''}
               alt={game.title}
               style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.9) saturate(0.85)" }}
             />

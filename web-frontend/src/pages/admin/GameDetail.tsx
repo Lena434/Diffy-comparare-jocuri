@@ -41,10 +41,6 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
-function namesFromIds(ids: number[], list: { id: number; name: string }[]): string[] {
-  return ids.map((id) => list.find((x) => x.id === id)?.name ?? String(id));
-}
-
 function idsFromNames(names: string[], list: { id: number; name: string }[]): number[] {
   return names
     .map((name) => list.find((x) => x.name.toLowerCase() === name.toLowerCase())?.id)
@@ -98,7 +94,7 @@ function AdminGameDetail() {
           publisher: g.publisher ?? '',
           releaseYear: g.releaseYear,
           price: g.price ?? 0,
-          imageUrl: g.imageUrl ?? '',
+          imageUrl: g.imgs?.[0]?.url ?? '',
           genresStr: g.genres.join(', '),
           platformsStr: g.platforms.join(', '),
           gameModesStr: g.gameModes.join(', '),
@@ -142,18 +138,23 @@ function AdminGameDetail() {
       publisher: form.publisher,
       releaseYear: form.releaseYear,
       price: form.price,
-      imageUrl: form.imageUrl || undefined,
+      imgs: form.imageUrl ? [{ url: form.imageUrl }] : [],
       genreIds: idsFromNames(genreNames, genres),
       platformIds: idsFromNames(platformNames, platforms),
       gameModeIds: idsFromNames(gameModeNames, gameModes),
     };
 
     try {
-      await update(game.id, payload);
+      await update(game!.id, payload);
       setGame({
-        ...game,
-        ...form,
-        imageUrl: form.imageUrl || null,
+        ...game!,
+        title: form.title,
+        description: form.description,
+        developer: form.developer,
+        publisher: form.publisher,
+        releaseYear: form.releaseYear,
+        price: form.price,
+        imgs: form.imageUrl ? [{ id: 0, url: form.imageUrl, gameId: game!.id }] : [],
         genres: genreNames,
         platforms: platformNames,
         gameModes: gameModeNames,
@@ -167,7 +168,7 @@ function AdminGameDetail() {
   }
 
   async function handleDelete() {
-    await remove(game.id);
+    await remove(game!.id);
     navigate(ROUTES.ADMIN_GAMES);
   }
 
@@ -185,7 +186,7 @@ function AdminGameDetail() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '30px', marginBottom: '50px' }}>
           {/* Image */}
           <div style={{ position: 'relative', border: '3px solid var(--arcade-border)', boxShadow: '6px 6px 0px var(--arcade-shadow)', overflow: 'hidden', aspectRatio: '1', maxWidth: '500px', margin: '0 auto', width: '100%' }}>
-            <img src={game.imageUrl ?? ''} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9) saturate(0.85)' }} />
+            <img src={game.imgs?.[0]?.url ?? ''} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9) saturate(0.85)' }} />
             <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--arcade-input-bg)', border: '2px solid var(--arcade-h)', boxShadow: '3px 3px 0px var(--arcade-h-shadow)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: FONT, fontSize: '0.5rem', color: 'var(--arcade-h)' }}>
               ★ {game.averageRating.toFixed(1)}
