@@ -26,6 +26,12 @@ interface EditForm {
   newPassword: string | null;
 }
 
+interface CreateUserForm {
+  username: string;
+  email: string;
+  password: string;
+}
+
 const inputBase: React.CSSProperties = {
   fontFamily: FONT,
   background: 'var(--arcade-input-bg, rgba(124,77,255,0.08))',
@@ -102,6 +108,10 @@ const UsersAdmin: React.FC = () => {
   const [editTarget, setEditTarget]     = useState<User | null>(null);
   const [editForm, setEditForm]         = useState<EditForm | null>(null);
   const [editError, setEditError]       = useState<string | null>(null);
+  const [showCreate, setShowCreate]     = useState(false);
+  const [createForm, setCreateForm]     = useState<CreateUserForm>({ username: '', email: '', password: '' });
+  const [createError, setCreateError]   = useState<string | null>(null);
+  const [creating, setCreating]         = useState(false);
 
   const isBanned = (u: User) => u.isBanned === true;
 
@@ -188,6 +198,39 @@ const UsersAdmin: React.FC = () => {
     setDialog(null);
   }
 
+  function openCreate() {
+    setCreateForm({ username: '', email: '', password: '' });
+    setCreateError(null);
+    setShowCreate(true);
+  }
+
+  function closeCreate() {
+    setShowCreate(false);
+    setCreateError(null);
+  }
+
+  async function handleCreate() {
+    const username = createForm.username.trim();
+    const email = createForm.email.trim().toLowerCase();
+    const password = createForm.password;
+
+    if (!username) { setCreateError('USERNAME IS REQUIRED.'); return; }
+    if (username.length < 3) { setCreateError('USERNAME MUST BE AT LEAST 3 CHARACTERS.'); return; }
+    if (!email) { setCreateError('EMAIL IS REQUIRED.'); return; }
+    if (!password || password.length < 6) { setCreateError('PASSWORD MUST BE AT LEAST 6 CHARACTERS.'); return; }
+
+    setCreating(true);
+    try {
+      await api.post(API_ROUTES.USERS.CREATE, { username, email, password });
+      await fetchUsers();
+      closeCreate();
+    } catch {
+      setCreateError('FAILED TO CREATE USER. EMAIL MAY ALREADY BE IN USE.');
+    } finally {
+      setCreating(false);
+    }
+  }
+
   async function confirmRoleToggle() {
     if (!dialog) return;
     const user = dialog.user;
@@ -235,6 +278,12 @@ const UsersAdmin: React.FC = () => {
         <span style={{ fontSize: '0.4rem', color: 'var(--arcade-muted)', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>
           {filtered.length} / {users.length} USERS
         </span>
+        <button
+          onClick={openCreate}
+          style={{ fontFamily: FONT, fontSize: '0.42rem', padding: '10px 16px', border: '2px solid #22c55e', background: 'transparent', color: '#22c55e', cursor: 'pointer', letterSpacing: '0.04em', boxShadow: '2px 2px 0 #14532d', whiteSpace: 'nowrap' }}
+        >
+          + CREATE USER
+        </button>
       </div>
 
       {/* Table */}
@@ -318,6 +367,63 @@ const UsersAdmin: React.FC = () => {
       </div>
 
       {/* Edit Modal */}
+      {/* Create User Modal */}
+      {showCreate && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '24px' }}
+          onClick={closeCreate}
+        >
+          <div
+            style={{ background: 'var(--arcade-bg)', border: '3px solid var(--arcade-border)', boxShadow: '8px 8px 0 var(--arcade-shadow), 12px 12px 0 #000', padding: '32px', width: '100%', maxWidth: '480px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 style={{ fontFamily: FONT, fontSize: 'clamp(0.55rem, 1.5vw, 0.75rem)', color: 'var(--arcade-h)', textShadow: '2px 2px 0 var(--arcade-h-shadow)', letterSpacing: '0.08em', marginBottom: '28px' }}>
+              CREATE USER
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <div>
+                <div style={fieldLabel}>USERNAME</div>
+                <input type="text" value={createForm.username} onChange={e => setCreateForm({ ...createForm, username: e.target.value })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <div style={fieldLabel}>EMAIL</div>
+                <input type="email" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <div style={fieldLabel}>PASSWORD</div>
+                <input type="password" value={createForm.password} onChange={e => setCreateForm({ ...createForm, password: e.target.value })}
+                  style={{ ...inputBase, width: '100%', padding: '10px 14px', fontSize: '0.42rem', boxSizing: 'border-box' }} />
+              </div>
+
+              {createError && (
+                <div style={{ fontFamily: FONT, fontSize: '0.38rem', color: '#ef4444', letterSpacing: '0.04em' }}>
+                  ⚠ {createError}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+                <button
+                  onClick={handleCreate}
+                  disabled={creating}
+                  style={{ ...actionBtn('#22c55e', '#14532d'), flex: 1, padding: '10px', textAlign: 'center' as const, opacity: creating ? 0.6 : 1 }}
+                >
+                  {creating ? 'CREATING...' : 'CREATE USER'}
+                </button>
+                <button
+                  onClick={closeCreate}
+                  style={{ ...actionBtn('var(--arcade-muted)', 'var(--arcade-shadow)'), flex: 1, padding: '10px', textAlign: 'center' as const }}
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {editTarget && editForm && (
         <div
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '24px' }}

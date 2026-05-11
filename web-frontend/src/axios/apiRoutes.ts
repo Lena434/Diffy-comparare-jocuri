@@ -7,6 +7,7 @@ export const API_ROUTES = {
     LIST: "/api/users/list",
     GET_ALL: "/api/users/list",
     GET_BY_ID: (id: number) => `/api/users/${id}`,
+    CREATE: "/api/users/create",
     DELETE: (id: number) => `/api/users/${id}`,
     UPDATE: (id: number) => `/api/users/${id}`,
     CHANGE_PASSWORD: "/api/users/changePassword",
