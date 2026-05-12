@@ -52,7 +52,8 @@ public class RatingController : ControllerBase
             try
             {
                 IActivityLog logService = new BusinessLogic().GetActivityLog();
-                await logService.LogAsync(userId, ActivityType.RatingGiven, $"GameId:{dto.GameId}, Score:{dto.Score}");
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(dto.GameId);
+                await logService.LogAsync(userId, ActivityType.RatingGiven, $"{game?.Title ?? $"GameId:{dto.GameId}"}, Score:{dto.Score}");
             }
             catch { /* ignore */ }
 

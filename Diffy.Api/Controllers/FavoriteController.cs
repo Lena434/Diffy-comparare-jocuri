@@ -57,7 +57,8 @@ public class FavoriteController : ControllerBase
             try
             {
                 IActivityLog logService = new BusinessLogic().GetActivityLog();
-                await logService.LogAsync(userId.Value, ActivityType.FavoriteAdded, $"GameId:{gameId}");
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteAdded, game?.Title ?? $"GameId:{gameId}");
             }
             catch { /* ignore */ }
 
@@ -83,7 +84,8 @@ public class FavoriteController : ControllerBase
             try
             {
                 IActivityLog logService = new BusinessLogic().GetActivityLog();
-                await logService.LogAsync(userId.Value, ActivityType.FavoriteRemoved, $"GameId:{gameId}");
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteRemoved, game?.Title ?? $"GameId:{gameId}");
             }
             catch { /* ignore */ }
 
