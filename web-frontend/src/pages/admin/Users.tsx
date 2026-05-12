@@ -347,7 +347,7 @@ const UsersAdmin: React.FC = () => {
                               onClick={() => setDialog({ type: banned_ ? 'unban' : 'ban', user })}
                               style={banned_ ? actionBtn('#22c55e', '#14532d') : actionBtn('#ef4444', '#7f1d1d')}
                             >
-                              {banned_ ? 'UNBAN' : 'BAN'}
+                              {banned_ ? 'RESTORE' : 'SUSPEND'}
                             </button>
                             <button
                               onClick={() => setDialog({ type: 'role', user })}
@@ -526,9 +526,9 @@ const UsersAdmin: React.FC = () => {
       {/* Confirm dialogs */}
       <ConfirmDialog
         open={dialog?.type === 'ban'}
-        title="BAN USER?"
-        message={`BAN ${dialog?.user.username.toUpperCase() ?? ''}? THEY WON'T BE ABLE TO LOG IN.`}
-        confirmLabel="YES, BAN"
+        title="SUSPEND USER?"
+        message={`SUSPEND ${dialog?.user.username.toUpperCase() ?? ''}? THEY WON'T BE ABLE TO LOG IN.`}
+        confirmLabel="YES, SUSPEND"
         cancelLabel="CANCEL"
         confirmColor="yellow"
         onConfirm={confirmBanToggle}
@@ -536,9 +536,9 @@ const UsersAdmin: React.FC = () => {
       />
       <ConfirmDialog
         open={dialog?.type === 'unban'}
-        title="UNBAN USER?"
+        title="RESTORE USER?"
         message={`RESTORE ACCESS FOR ${dialog?.user.username.toUpperCase() ?? ''}?`}
-        confirmLabel="YES, UNBAN"
+        confirmLabel="YES, RESTORE"
         cancelLabel="CANCEL"
         confirmColor="yellow"
         onConfirm={confirmBanToggle}
