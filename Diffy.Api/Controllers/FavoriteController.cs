@@ -1,5 +1,6 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.Favorite;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ public class FavoriteController : ControllerBase
             {
                 GameId = uf.GameId,
                 Title = uf.Game.Title,
-                ImageUrl = uf.Game.ImageUrl,
+                ImageUrl = uf.Game.Imgs.FirstOrDefault()?.ImgUrl,
                 AddedAt = uf.AddedAt,
             }).ToList());
         }
@@ -52,6 +53,15 @@ public class FavoriteController : ControllerBase
         {
             IUserFavorite service = new BusinessLogic().GetUserFavorite();
             await service.AddAsync(userId.Value, gameId);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteAdded, game?.Title ?? $"GameId:{gameId}");
+            }
+            catch { /* ignore */ }
+
             return StatusCode(201);
         }
         catch
@@ -70,6 +80,15 @@ public class FavoriteController : ControllerBase
         {
             IUserFavorite service = new BusinessLogic().GetUserFavorite();
             await service.DeleteAsync(userId.Value, gameId);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                await logService.LogAsync(userId.Value, ActivityType.FavoriteRemoved, game?.Title ?? $"GameId:{gameId}");
+            }
+            catch { /* ignore */ }
+
             return NoContent();
         }
         catch

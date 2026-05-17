@@ -41,10 +41,6 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
-function namesFromIds(ids: number[], list: { id: number; name: string }[]): string[] {
-  return ids.map((id) => list.find((x) => x.id === id)?.name ?? String(id));
-}
-
 function idsFromNames(names: string[], list: { id: number; name: string }[]): number[] {
   return names
     .map((name) => list.find((x) => x.name.toLowerCase() === name.toLowerCase())?.id)
@@ -61,6 +57,7 @@ function AdminGameDetail() {
   const [notFound, setNotFound] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [currentImg, setCurrentImg] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [genres, setGenres] = useState<GenreMeta[]>([]);
@@ -75,7 +72,7 @@ function AdminGameDetail() {
     publisher: '',
     releaseYear: 0,
     price: 0,
-    imageUrl: '',
+    imageUrls: [''] as string[],
     genresStr: '',
     platformsStr: '',
     gameModesStr: '',
@@ -98,7 +95,7 @@ function AdminGameDetail() {
           publisher: g.publisher ?? '',
           releaseYear: g.releaseYear,
           price: g.price ?? 0,
-          imageUrl: g.imageUrl ?? '',
+          imageUrls: g.imgs && g.imgs.length > 0 ? g.imgs.map(i => i.url) : [''],
           genresStr: g.genres.join(', '),
           platformsStr: g.platforms.join(', '),
           gameModesStr: g.gameModes.join(', '),
@@ -142,18 +139,23 @@ function AdminGameDetail() {
       publisher: form.publisher,
       releaseYear: form.releaseYear,
       price: form.price,
-      imageUrl: form.imageUrl || undefined,
+      imgs: form.imageUrls.map(u => u.trim()).filter(Boolean).map(url => ({ url })),
       genreIds: idsFromNames(genreNames, genres),
       platformIds: idsFromNames(platformNames, platforms),
       gameModeIds: idsFromNames(gameModeNames, gameModes),
     };
 
     try {
-      await update(game.id, payload);
+      await update(game!.id, payload);
       setGame({
-        ...game,
-        ...form,
-        imageUrl: form.imageUrl || null,
+        ...game!,
+        title: form.title,
+        description: form.description,
+        developer: form.developer,
+        publisher: form.publisher,
+        releaseYear: form.releaseYear,
+        price: form.price,
+        imgs: form.imageUrls.map(u => u.trim()).filter(Boolean).map(url => ({ id: 0, url, gameId: game!.id })),
         genres: genreNames,
         platforms: platformNames,
         gameModes: gameModeNames,
@@ -167,7 +169,7 @@ function AdminGameDetail() {
   }
 
   async function handleDelete() {
-    await remove(game.id);
+    await remove(game!.id);
     navigate(ROUTES.ADMIN_GAMES);
   }
 
@@ -183,14 +185,42 @@ function AdminGameDetail() {
         </button>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '30px', marginBottom: '50px' }}>
-          {/* Image */}
-          <div style={{ position: 'relative', border: '3px solid var(--arcade-border)', boxShadow: '6px 6px 0px var(--arcade-shadow)', overflow: 'hidden', aspectRatio: '1', maxWidth: '500px', margin: '0 auto', width: '100%' }}>
-            <img src={game.imageUrl ?? ''} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.9) saturate(0.85)' }} />
-            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--arcade-input-bg)', border: '2px solid var(--arcade-h)', boxShadow: '3px 3px 0px var(--arcade-h-shadow)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: FONT, fontSize: '0.5rem', color: 'var(--arcade-h)' }}>
-              ★ {game.averageRating.toFixed(1)}
-            </div>
-          </div>
+          {/* Image / Carousel */}
+          {(() => {
+            const imgs = game.imgs ?? [];
+            const total = imgs.length;
+            const prev = () => setCurrentImg(i => (i - 1 + total) % total);
+            const next = () => setCurrentImg(i => (i + 1) % total);
+            const arrowBtn: React.CSSProperties = { fontFamily: FONT, fontSize: '0.7rem', background: 'var(--arcade-panel-dark)', border: '2px solid var(--arcade-border)', color: 'var(--arcade-text)', padding: '8px 12px', cursor: 'pointer', lineHeight: 1, flexShrink: 0 };
+            return (
+              <div style={{ maxWidth: '560px', margin: '0 auto', width: '100%', alignSelf: 'start' }}>
+                {/* Arrow row + image */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {total > 1 && <button onClick={prev} style={arrowBtn}>◄</button>}
+                  <div style={{ flex: 1, border: '3px solid var(--arcade-border)', boxShadow: '6px 6px 0px var(--arcade-shadow)', overflow: 'hidden', position: 'relative' }}>
+                    <img src={imgs[currentImg]?.url ?? ''} alt={game.title} style={{ width: '100%', height: 'auto', display: 'block', filter: 'brightness(0.9) saturate(0.85)' }} />
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--arcade-input-bg)', border: '2px solid var(--arcade-h)', boxShadow: '3px 3px 0px var(--arcade-h-shadow)', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: FONT, fontSize: '0.5rem', color: 'var(--arcade-h)' }}>
+                      ★ {game.averageRating.toFixed(1)}
+                    </div>
+                  </div>
+                  {total > 1 && <button onClick={next} style={arrowBtn}>►</button>}
+                </div>
+                {/* Dots below border */}
+                {total > 1 && (
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', paddingTop: '10px' }}>
+                    {imgs.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImg(i)}
+                        style={{ width: '10px', height: '10px', padding: 0, border: '2px solid var(--arcade-h)', background: i === currentImg ? 'var(--arcade-h)' : 'transparent', cursor: 'pointer' }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Info */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', justifyContent: 'space-between' }}>
@@ -293,8 +323,33 @@ function AdminGameDetail() {
             <FieldRow label="GAME MODE (comma separated)">
               <input style={inputStyle} value={form.gameModesStr} onChange={e => setForm(f => ({ ...f, gameModesStr: e.target.value }))} />
             </FieldRow>
-            <FieldRow label="IMAGE URL">
-              <input style={inputStyle} value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
+            <FieldRow label="IMAGE URLS">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {form.imageUrls.map((url, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      style={{ ...inputStyle, flex: 1 }}
+                      value={url}
+                      placeholder="https://..."
+                      onChange={e => {
+                        const updated = [...form.imageUrls];
+                        updated[i] = e.target.value;
+                        setForm(f => ({ ...f, imageUrls: updated }));
+                      }}
+                    />
+                    {form.imageUrls.length > 1 && (
+                      <button
+                        onClick={() => setForm(f => ({ ...f, imageUrls: f.imageUrls.filter((_, j) => j !== i) }))}
+                        style={{ fontFamily: FONT, fontSize: '0.42rem', padding: '6px 10px', border: '2px solid #ef4444', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}
+                      >×</button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  onClick={() => setForm(f => ({ ...f, imageUrls: [...f.imageUrls, ''] }))}
+                  style={{ fontFamily: FONT, fontSize: '0.38rem', padding: '7px 12px', border: '2px solid #22c55e', background: 'transparent', color: '#22c55e', cursor: 'pointer', alignSelf: 'flex-start', letterSpacing: '0.04em' }}
+                >+ ADD IMAGE</button>
+              </div>
             </FieldRow>
             <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
               <button onClick={() => setEditing(false)} style={{ fontFamily: FONT, fontSize: '0.45rem', padding: '10px 20px', border: '3px solid var(--arcade-muted)', background: 'transparent', color: 'var(--arcade-muted)', cursor: 'pointer', boxShadow: '3px 3px 0 var(--arcade-shadow)', letterSpacing: '0.05em' }}>CANCEL</button>

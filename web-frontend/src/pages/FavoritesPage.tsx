@@ -14,7 +14,7 @@ function FavoritesPage() {
   const { getByIds } = useGameService();
   const [favoriteGames, setFavoriteGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
-  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [confirmRemoveId, setConfirmRemoveId] = useState<number | null>(null);
 
   useEffect(() => {
     getByIds(favoriteGameIds)

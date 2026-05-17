@@ -110,14 +110,14 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var authenticatedEmail = User.FindFirstValue(ClaimTypes.Email);
-        if (authenticatedEmail == null)
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdStr, out var userId))
             return Unauthorized();
 
         try
         {
             IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.ChangePassword(authenticatedEmail, dto);
+            var result = service.ChangePassword(userId, dto);
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
             return NoContent();
@@ -134,14 +134,14 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var authenticatedEmail = User.FindFirstValue(ClaimTypes.Email);
-        if (authenticatedEmail == null)
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdStr, out var userId))
             return Unauthorized();
 
         try
         {
             IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.UpdateProfile(authenticatedEmail, userProfileUpdateDto);
+            var result = service.UpdateProfile(userId, userProfileUpdateDto);
             if (!result.IsSuccess)
                 return NotFound(result.Message);
             return NoContent();

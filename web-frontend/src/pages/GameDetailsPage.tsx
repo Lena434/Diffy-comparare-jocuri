@@ -14,12 +14,16 @@ function GameDetailsPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { isFavoriteGame, toggleFavoriteGame } = useFavorites();
-  const { getById, getSimilar } = useGameService();
+  const { getById, getSimilar, submitRating } = useGameService();
 
   const [game, setGame] = useState<Game | null>(null);
   const [similarGames, setSimilarGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [selectedScore, setSelectedScore] = useState<number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [ratingStatus, setRatingStatus] = useState<'idle' | 'success' | 'already_rated' | 'error'>('idle');
+  const [currentImg, setCurrentImg] = useState(0);
 
   useEffect(() => {
     const numId = Number(id);
@@ -34,6 +38,21 @@ function GameDetailsPage() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [id, getById, getSimilar]);
+
+  async function handleSubmitRating() {
+    if (!selectedScore || !game) return;
+    setSubmitting(true);
+    setRatingStatus('idle');
+    try {
+      await submitRating(game.id, selectedScore);
+      setRatingStatus('success');
+      setSelectedScore(null);
+    } catch {
+      setRatingStatus('already_rated');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (loading) return <PixelLoader message="LOADING GAME..." />;
 
@@ -75,18 +94,44 @@ function GameDetailsPage() {
 
         {/* Hero Section */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: "30px", marginBottom: "50px" }}>
-          {/* Image */}
-          <div style={{ position: "relative", border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", aspectRatio: "1", maxWidth: "500px", margin: "0 auto", width: "100%" }}>
-            <img
-              src={game.imageUrl ?? ''}
-              alt={game.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.9) saturate(0.85)" }}
-            />
-            <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)`, pointerEvents: "none" }} />
-            <div style={{ position: "absolute", top: "12px", right: "12px", background: "var(--arcade-input-bg)", border: "2px solid var(--arcade-h)", boxShadow: "3px 3px 0px var(--arcade-h-shadow)", padding: "8px 12px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "'Press Start 2P', monospace", fontSize: "0.5rem", color: "var(--arcade-h)" }}>
-              ★ {game.averageRating}
-            </div>
-          </div>
+          {/* Image / Carousel */}
+          {(() => {
+            const imgs = game.imgs ?? [];
+            const total = imgs.length;
+            const prev = () => setCurrentImg(i => (i - 1 + total) % total);
+            const next = () => setCurrentImg(i => (i + 1) % total);
+            const arrowBtn: React.CSSProperties = { fontFamily: "'Press Start 2P', monospace", fontSize: "0.7rem", background: "var(--arcade-panel-dark)", border: "2px solid var(--arcade-border)", color: "var(--arcade-text)", padding: "8px 12px", cursor: "pointer", lineHeight: 1, flexShrink: 0 };
+            return (
+              <div style={{ maxWidth: "560px", margin: "0 auto", width: "100%", alignSelf: "start" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {total > 1 && <button onClick={prev} style={arrowBtn}>◄</button>}
+                  <div style={{ flex: 1, border: "3px solid var(--arcade-border)", boxShadow: "6px 6px 0px var(--arcade-shadow)", overflow: "hidden", position: "relative" }}>
+                    <img
+                      src={imgs[currentImg]?.url ?? ''}
+                      alt={game.title}
+                      style={{ width: "100%", height: "auto", display: "block", filter: "brightness(0.9) saturate(0.85)" }}
+                    />
+                    <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)`, pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", top: "12px", right: "12px", background: "var(--arcade-input-bg)", border: "2px solid var(--arcade-h)", boxShadow: "3px 3px 0px var(--arcade-h-shadow)", padding: "8px 12px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "'Press Start 2P', monospace", fontSize: "0.5rem", color: "var(--arcade-h)" }}>
+                      ★ {game.averageRating}
+                    </div>
+                  </div>
+                  {total > 1 && <button onClick={next} style={arrowBtn}>►</button>}
+                </div>
+                {total > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", gap: "8px", paddingTop: "10px" }}>
+                    {imgs.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImg(i)}
+                        style={{ width: "10px", height: "10px", padding: 0, border: "2px solid var(--arcade-h)", background: i === currentImg ? "var(--arcade-h)" : "transparent", cursor: "pointer" }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Info */}
           <div style={{ display: "flex", flexDirection: "column", gap: "24px", justifyContent: "space-between" }}>
@@ -164,6 +209,61 @@ function GameDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Rating Section */}
+        {isAuthenticated && (
+          <div style={{ background: "var(--arcade-panel)", border: "3px solid var(--arcade-border)", boxShadow: "4px 4px 0px var(--arcade-shadow)", padding: "24px", marginBottom: "50px" }}>
+            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.42rem", color: "var(--arcade-muted)", marginBottom: "16px", letterSpacing: "0.08em" }}>
+              RATE THIS GAME
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => { setSelectedScore(n); setRatingStatus('idle'); }}
+                  style={{
+                    width: "40px", height: "40px",
+                    fontFamily: "'Press Start 2P', monospace", fontSize: "0.45rem",
+                    cursor: "pointer", border: "3px solid",
+                    borderColor: selectedScore === n ? "var(--arcade-h)" : "var(--arcade-border)",
+                    background: selectedScore === n ? "var(--arcade-h)" : "var(--arcade-input-bg)",
+                    color: selectedScore === n ? "#000" : "var(--arcade-text)",
+                    boxShadow: selectedScore === n ? "3px 3px 0px var(--arcade-h-shadow)" : "2px 2px 0px var(--arcade-shadow)",
+                    transition: "background 80ms, border-color 80ms",
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+              <button
+                onClick={handleSubmitRating}
+                disabled={!selectedScore || submitting}
+                style={{
+                  fontFamily: "'Press Start 2P', monospace", fontSize: "0.42rem",
+                  padding: "10px 20px", cursor: selectedScore && !submitting ? "pointer" : "not-allowed",
+                  border: "3px solid", borderColor: "var(--arcade-text)",
+                  background: selectedScore && !submitting ? "var(--arcade-cta)" : "var(--arcade-border)",
+                  color: "#fff", boxShadow: "3px 3px 0px var(--arcade-shadow)",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                {submitting ? "SUBMITTING..." : "SUBMIT RATING"}
+              </button>
+              {ratingStatus === 'success' && (
+                <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.38rem", color: "var(--arcade-h)", margin: 0 }}>
+                  ✓ RATING SUBMITTED!
+                </p>
+              )}
+              {ratingStatus === 'already_rated' && (
+                <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "0.38rem", color: "var(--arcade-muted)", margin: 0 }}>
+                  SOMETHING WENT WRONG
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Similar Games Section */}
         {similarGames.length > 0 && (

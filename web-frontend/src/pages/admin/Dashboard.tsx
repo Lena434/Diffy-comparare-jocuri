@@ -6,11 +6,6 @@ import { API_ROUTES } from '../../axios/apiRoutes';
 import { ROUTES } from '../../routes/routes';
 
 const FONT = "'Press Start 2P', monospace";
-const BANNED_KEY = 'diffy-banned-users';
-
-function getBannedEmails(): string[] {
-  try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]'); } catch { return []; }
-}
 
 // Static recent comparison log (mock display — no real comparison history in DB yet)
 const RECENT = [
@@ -30,6 +25,7 @@ const Dashboard: React.FC = () => {
   const [avgRating, setAvgRating] = useState('0.0');
   const [userCount, setUserCount] = useState(0);
   const [adminCount, setAdminCount] = useState(0);
+  const [bannedCount, setBannedCount] = useState(0);
 
   useEffect(() => {
     getAll().then((games) => {
@@ -42,18 +38,17 @@ const Dashboard: React.FC = () => {
   }, [getAll]);
 
   useEffect(() => {
-    api.get<{ role: string }[]>(API_ROUTES.USERS.LIST).then((users) => {
+    api.get<{ role: string; isBanned: boolean }[]>(API_ROUTES.USERS.LIST).then((users) => {
       setUserCount(users.length);
-      setAdminCount(users.filter(u => u.role === 'Admin').length);
+      setAdminCount(users.filter(u => u.role.toLowerCase() === 'admin').length);
+      setBannedCount(users.filter(u => u.isBanned).length);
     }).catch(() => {});
   }, [api]);
-
-  const banned = getBannedEmails();
 
   const STATS = [
     { label: 'TOTAL USERS',  value: String(userCount),  trend: `${adminCount} ADMIN(S)`,   trendColor: 'var(--arcade-accent)' },
     { label: 'TOTAL GAMES',  value: String(gameCount),     trend: 'IN LIBRARY',            trendColor: '#22c55e' },
-    { label: 'BANNED USERS', value: String(banned.length), trend: banned.length > 0 ? '⚠ ACTIVE BANS' : '✓ CLEAN', trendColor: banned.length > 0 ? '#ef4444' : '#22c55e' },
+    { label: 'BANNED USERS', value: String(bannedCount), trend: bannedCount > 0 ? '⚠ ACTIVE BANS' : '✓ CLEAN', trendColor: bannedCount > 0 ? '#ef4444' : '#22c55e' },
     { label: 'AVG RATING',   value: avgRating,             trend: 'OUT OF 10',             trendColor: 'var(--arcade-muted)' },
   ];
 

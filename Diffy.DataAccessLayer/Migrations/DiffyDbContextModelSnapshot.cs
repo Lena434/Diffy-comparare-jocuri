@@ -38,9 +38,6 @@ namespace Diffy.DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
@@ -58,6 +55,208 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "An open-world RPG set in a dark fantasy universe.",
+                            Developer = "CD Projekt Red",
+                            Price = 29.99m,
+                            Publisher = "CD Projekt",
+                            ReleaseYear = 2015,
+                            Title = "The Witcher 3: Wild Hunt"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "An action RPG set in a vast open world created by Hidetaka Miyazaki and George R. R. Martin.",
+                            Developer = "FromSoftware",
+                            Price = 59.99m,
+                            Publisher = "Bandai Namco",
+                            ReleaseYear = 2022,
+                            Title = "Elden Ring"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "An open-world action RPG set in the megalopolis of Night City.",
+                            Developer = "CD Projekt Red",
+                            Price = 39.99m,
+                            Publisher = "CD Projekt",
+                            ReleaseYear = 2020,
+                            Title = "Cyberpunk 2077"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "A rogue-like dungeon crawler where you play as the son of the god of the dead.",
+                            Developer = "Supergiant Games",
+                            Price = 24.99m,
+                            Publisher = "Supergiant Games",
+                            ReleaseYear = 2020,
+                            Title = "Hades"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "A farming simulation RPG where you build and manage your own farm.",
+                            Developer = "ConcernedApe",
+                            Price = 14.99m,
+                            Publisher = "ConcernedApe",
+                            ReleaseYear = 2016,
+                            Title = "Stardew Valley"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "A free-to-play battle royale game where 100 players fight to be the last one standing.",
+                            Developer = "Epic Games",
+                            Price = 0m,
+                            Publisher = "Epic Games",
+                            ReleaseYear = 2017,
+                            Title = "Fortnite"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "A fast-paced, competitive online game that blends the speed and intensity of an RTS with RPG elements.",
+                            Developer = "Riot Games",
+                            Price = 0m,
+                            Publisher = "Riot Games",
+                            ReleaseYear = 2009,
+                            Title = "League of Legends"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "A multiplayer online battle arena game where two teams of five players compete to destroy the enemy's base.",
+                            Developer = "Valve",
+                            Price = 0m,
+                            Publisher = "Valve",
+                            ReleaseYear = 2013,
+                            Title = "Dota 2"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "A free-to-play battle royale hero shooter set in the Titanfall universe.",
+                            Developer = "Respawn Entertainment",
+                            Price = 0m,
+                            Publisher = "Electronic Arts",
+                            ReleaseYear = 2019,
+                            Title = "Apex Legends"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "A sandbox game where players build and explore procedurally generated worlds made of blocks.",
+                            Developer = "Mojang Studios",
+                            Price = 29.99m,
+                            Publisher = "Microsoft",
+                            ReleaseYear = 2011,
+                            Title = "Minecraft"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "A multiplayer social deduction game set in a space-themed setting where crewmates must identify impostors.",
+                            Developer = "InnerSloth",
+                            Price = 4.99m,
+                            Publisher = "InnerSloth",
+                            ReleaseYear = 2018,
+                            Title = "Among Us"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Description = "A side-scrolling action-adventure sandbox game with exploration, crafting, building, and combat.",
+                            Developer = "Re-Logic",
+                            Price = 9.99m,
+                            Publisher = "Re-Logic",
+                            ReleaseYear = 2011,
+                            Title = "Terraria"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "A challenging action-adventure game set in a vast, ruined kingdom of insects and heroes.",
+                            Developer = "Team Cherry",
+                            Price = 14.99m,
+                            Publisher = "Team Cherry",
+                            ReleaseYear = 2017,
+                            Title = "Hollow Knight"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Description = "A first-person puzzle game where players use a portal gun to solve increasingly complex challenges.",
+                            Developer = "Valve",
+                            Price = 9.99m,
+                            Publisher = "Valve",
+                            ReleaseYear = 2011,
+                            Title = "Portal 2"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "A turn-based strategy game where you build an empire to stand the test of time.",
+                            Developer = "Firaxis Games",
+                            Price = 59.99m,
+                            Publisher = "2K Games",
+                            ReleaseYear = 2016,
+                            Title = "Civilization VI"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Description = "An action-adventure game following Kratos and his son Atreus through Norse mythology.",
+                            Developer = "Santa Monica Studio",
+                            Price = 49.99m,
+                            Publisher = "Sony Interactive Entertainment",
+                            ReleaseYear = 2018,
+                            Title = "God of War"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Description = "An epic tale of life in America at the dawn of the modern age, set in the American frontier.",
+                            Developer = "Rockstar Games",
+                            Price = 59.99m,
+                            Publisher = "Rockstar Games",
+                            ReleaseYear = 2018,
+                            Title = "Red Dead Redemption 2"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Description = "An action RPG set in a dark fantasy world where you face relentless enemies and epic bosses.",
+                            Developer = "FromSoftware",
+                            Price = 39.99m,
+                            Publisher = "Bandai Namco",
+                            ReleaseYear = 2016,
+                            Title = "Dark Souls III"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Description = "A groundbreaking open-world RPG where you play as a detective with a unique skill system.",
+                            Developer = "ZA/UM",
+                            Price = 39.99m,
+                            Publisher = "ZA/UM",
+                            ReleaseYear = 2019,
+                            Title = "Disco Elysium"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Description = "An open-world action-adventure game set in the kingdom of Hyrule.",
+                            Developer = "Nintendo",
+                            Price = 59.99m,
+                            Publisher = "Nintendo",
+                            ReleaseYear = 2017,
+                            Title = "The Legend of Zelda: Breath of the Wild"
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.Game.GameGameModeEntity", b =>
@@ -73,6 +272,153 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasIndex("GameModeId");
 
                     b.ToTable("GameGameModes");
+
+                    b.HasData(
+                        new
+                        {
+                            GameId = 1,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 3,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 4,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 5,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 5,
+                            GameModeId = 3
+                        },
+                        new
+                        {
+                            GameId = 6,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 7,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 8,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            GameModeId = 3
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            GameModeId = 3
+                        },
+                        new
+                        {
+                            GameId = 11,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            GameModeId = 3
+                        },
+                        new
+                        {
+                            GameId = 13,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 14,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 14,
+                            GameModeId = 3
+                        },
+                        new
+                        {
+                            GameId = 15,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 15,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 16,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            GameModeId = 2
+                        },
+                        new
+                        {
+                            GameId = 19,
+                            GameModeId = 1
+                        },
+                        new
+                        {
+                            GameId = 20,
+                            GameModeId = 1
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.Game.GameGenreEntity", b =>
@@ -88,6 +434,322 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("GameGenres");
+
+                    b.HasData(
+                        new
+                        {
+                            GameId = 1,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 1,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 3,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 3,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 4,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 5,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            GameId = 6,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 7,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 7,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 8,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 8,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 11,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            GameId = 13,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 13,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 14,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 15,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            GameId = 16,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 16,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 19,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            GameId = 19,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            GameId = 20,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            GameId = 20,
+                            GenreId = 3
+                        });
+                });
+
+            modelBuilder.Entity("Diffy.Domain.Entities.Game.GameImgEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameImgs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            GameId = 1,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            GameId = 2,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            GameId = 3,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            GameId = 4,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1145360/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            GameId = 5,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            GameId = 6,
+                            ImgUrl = "https://cdn2.unrealengine.com/fortnite-og-1900x600-2e436ee544e1.jpg?resize=1&w=1920"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            GameId = 7,
+                            ImgUrl = "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            GameId = 8,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/570/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            GameId = 9,
+                            ImgUrl = "https://images6.alphacoders.com/992/thumb-1920-992033.jpg"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            GameId = 10,
+                            ImgUrl = "https://cdn.mobygames.com/covers/9056432-minecraft-nintendo-switch-front-cover.jpg"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            GameId = 11,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/945360/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            GameId = 12,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/105600/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            GameId = 13,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/367520/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            GameId = 14,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/620/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            GameId = 15,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            GameId = 16,
+                            ImgUrl = "https://wallpapers.com/images/hd/god-of-war-kratos-and-atreus-at-river-nahx1u4rudbu55hy.webp"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            GameId = 17,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            GameId = 18,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/374320/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            GameId = 19,
+                            ImgUrl = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/632470/header.jpg"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            GameId = 20,
+                            ImgUrl = "https://wallpaperaccess.com/full/1338654.jpg"
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.Game.GamePlatformEntity", b =>
@@ -103,6 +765,213 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasIndex("PlatformId");
 
                     b.ToTable("GamePlatforms");
+
+                    b.HasData(
+                        new
+                        {
+                            GameId = 1,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 1,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 2,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 3,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 3,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 4,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 4,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 5,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 5,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 6,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 6,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 6,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 7,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 8,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 9,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 10,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 11,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 11,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 12,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 13,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 13,
+                            PlatformId = 4
+                        },
+                        new
+                        {
+                            GameId = 14,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 15,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 16,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 16,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 17,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            PlatformId = 2
+                        },
+                        new
+                        {
+                            GameId = 18,
+                            PlatformId = 3
+                        },
+                        new
+                        {
+                            GameId = 19,
+                            PlatformId = 1
+                        },
+                        new
+                        {
+                            GameId = 20,
+                            PlatformId = 4
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.Game.GameRatingEntity", b =>
@@ -141,6 +1010,23 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GameModes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Single Player"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Multiplayer"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Co-op"
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.GenreEntity", b =>
@@ -158,6 +1044,33 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Action"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "RPG"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Adventure"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Strategy"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Simulation"
+                        });
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.PlatformEntity", b =>
@@ -175,6 +1088,83 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Platforms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "PC"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "PlayStation 5"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Xbox Series X"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Nintendo Switch"
+                        });
+                });
+
+            modelBuilder.Entity("Diffy.Domain.Entities.User.ActivityLogEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityLogs");
+                });
+
+            modelBuilder.Entity("Diffy.Domain.Entities.User.SavedComparisonEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("GameIds")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GameTitles")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SavedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavedComparisons");
                 });
 
             modelBuilder.Entity("Diffy.Domain.Entities.User.UserEntity", b =>
@@ -207,6 +1197,9 @@ namespace Diffy.DataAccessLayer.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -298,6 +1291,17 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("Diffy.Domain.Entities.Game.GameImgEntity", b =>
+                {
+                    b.HasOne("Diffy.Domain.Entities.Game.GameEntity", "Game")
+                        .WithMany("Imgs")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
             modelBuilder.Entity("Diffy.Domain.Entities.Game.GamePlatformEntity", b =>
                 {
                     b.HasOne("Diffy.Domain.Entities.Game.GameEntity", "Game")
@@ -332,6 +1336,28 @@ namespace Diffy.DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Game");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Diffy.Domain.Entities.User.ActivityLogEntity", b =>
+                {
+                    b.HasOne("Diffy.Domain.Entities.User.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Diffy.Domain.Entities.User.SavedComparisonEntity", b =>
+                {
+                    b.HasOne("Diffy.Domain.Entities.User.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -373,6 +1399,8 @@ namespace Diffy.DataAccessLayer.Migrations
                     b.Navigation("GameModes");
 
                     b.Navigation("GamePlatforms");
+
+                    b.Navigation("Imgs");
 
                     b.Navigation("Ratings");
                 });

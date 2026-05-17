@@ -25,11 +25,14 @@ function PixelHeaderBtn({
       }
       style={{
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: "0.45rem",
-        padding: "8px 14px",
+        fontSize: "0.4rem",
+        padding: "9px 10px",
         cursor: "pointer",
-        letterSpacing: "0.06em",
+        letterSpacing: "0.05em",
         whiteSpace: "nowrap",
+        lineHeight: "1",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       {children}
@@ -72,7 +75,7 @@ function ThemeChip({
         gap: "5px",
       }}
     >
-      <span style={{ fontSize: "0.75rem" }}>{icon}</span>
+      <span style={{ fontSize: "0.75rem", lineHeight: "1" }}>{icon}</span>
       <span>{label}</span>
     </button>
   );
@@ -218,14 +221,23 @@ function Header() {
                   </PixelHeaderBtn>
                 </>
               ) : (
-                <>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "4px",
+                    background: "var(--arcade-panel)",
+                    border: "2px solid var(--arcade-shadow)",
+                    padding: "3px",
+                    flexShrink: 0,
+                  }}
+                >
                   <PixelHeaderBtn onClick={() => navigate(ROUTES.LOGIN)}>
                     ▶ LOGIN
                   </PixelHeaderBtn>
                   <PixelHeaderBtn onClick={() => navigate(ROUTES.SIGNUP)} primary>
                     + SIGN UP
                   </PixelHeaderBtn>
-                </>
+                </div>
               )}
             </div>
           )}

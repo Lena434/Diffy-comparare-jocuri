@@ -1,8 +1,8 @@
 import { ProfilePanel } from "../../components/arcade/ProfilePanel";
 
 interface Props {
-  savedComparisons: { id: string; gameIds: number[]; gameTitles?: string[] }[];
-  onRemove: (id: string) => void;
+  savedComparisons: { id: number; gameIds: number[]; gameTitles?: string[] }[];
+  onRemove: (id: number) => void;
 }
 
 function ComparisonCard({

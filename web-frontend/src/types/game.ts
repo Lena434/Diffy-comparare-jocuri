@@ -6,7 +6,7 @@ export interface Game {
   averageRating: number;
   releaseYear: number;
   gameModes: string[];
-  imageUrl: string | null;
+  imgs: { id: number; url: string; gameId: number }[];
   description: string;
   developer?: string;
   publisher?: string;

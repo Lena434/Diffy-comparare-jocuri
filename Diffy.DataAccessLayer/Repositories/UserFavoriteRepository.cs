@@ -17,7 +17,7 @@ public class UserFavoriteRepository
     {
         return await _dbContext.UserFavorites
             .Where(uf => uf.UserId == userId)
-            .Include(uf => uf.Game)
+            .Include(uf => uf.Game).ThenInclude(g => g.Imgs)
             .ToListAsync();
     }
 

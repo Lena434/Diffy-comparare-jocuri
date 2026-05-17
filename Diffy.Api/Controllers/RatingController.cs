@@ -1,5 +1,6 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.Rating;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,15 @@ public class RatingController : ControllerBase
         {
             IGameRating service = new BusinessLogic().GetGameRating();
             await service.AddAsync(userId, dto.GameId, dto.Score);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                var game = await new BusinessLogic().GetGame().GetByIdAsync(dto.GameId);
+                await logService.LogAsync(userId, ActivityType.RatingGiven, $"{game?.Title ?? $"GameId:{dto.GameId}"}, Score:{dto.Score}");
+            }
+            catch { /* ignore */ }
+
             return StatusCode(201);
         }
         catch

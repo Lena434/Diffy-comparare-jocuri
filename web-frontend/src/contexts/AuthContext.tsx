@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import type { User, UserRole, UserProfile } from "../types";
 import { useAxios } from "../axios/context";
-import { loadCurrentUser, saveCurrentUser, loadToken, saveToken } from "../services/authService";
+import { loadCurrentUser, saveCurrentUser, saveToken } from "../services/authService";
 import { API_ROUTES } from "../axios/apiRoutes";
 
 export type { User, UserRole, UserProfile, PcSpecs } from "../types";
@@ -31,21 +31,8 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { client, api } = useAxios();
+  const { api } = useAxios();
   const [currentUser, setCurrentUser] = useState<User | null>(() => loadCurrentUser());
-
-  // Attach saved token to every outgoing request
-  useEffect(() => {
-    const id = client.interceptors.request.use((config) => {
-      const token = loadToken();
-      if (token) {
-        config.headers = config.headers ?? {};
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-      return config;
-    });
-    return () => client.interceptors.request.eject(id);
-  }, [client]);
 
   const isAuthenticated = currentUser !== null;
   const role: UserRole | null = currentUser?.role ?? null;
@@ -88,8 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.patch(API_ROUTES.USERS.UPDATE_PROFILE, {
         email: currentUser.email,
-        username: data.username,
-        newEmail: data.email,
+        username: data.username ?? currentUser.username,
+        newEmail: data.email ?? currentUser.email,
       });
       const updated: User = { ...currentUser, ...data };
       setCurrentUser(updated);

@@ -3,6 +3,7 @@ using Diffy.Domain.Entities;
 using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Entities.User;
 using Diffy.DataAccessLayer;
+using Diffy.DataAccessLayer.Seed;
 
 
 
@@ -11,7 +12,6 @@ namespace Diffy.DataAccessLayer.Context;
 public class DiffyDbContext : DbContext
 {
     public DiffyDbContext() { }
-    public DiffyDbContext(DbContextOptions<DiffyDbContext> options) : base(options) { }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -30,29 +30,32 @@ public class DiffyDbContext : DbContext
     public DbSet<UserProfileEntity> UserProfiles { get; set; }
     public DbSet<UserFavoriteEntity> UserFavorites { get; set; }
     public DbSet<GameRatingEntity> GameRatings { get; set; }
+    public DbSet<GameImgEntity> GameImgs { get; set; }
+    public DbSet<SavedComparisonEntity> SavedComparisons { get; set; }
+    public DbSet<ActivityLogEntity> ActivityLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GameGenreEntity>()
             .HasKey(gg => new { gg.GameId, gg.GenreId });
         modelBuilder.Entity<GameGenreEntity>()
-            .HasOne(gg => gg.Game).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GameId);
+            .HasOne(gg => gg.Game).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameGenreEntity>()
-            .HasOne(gg => gg.Genre).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GenreId);
+            .HasOne(gg => gg.Genre).WithMany(g => g.GameGenres).HasForeignKey(gg => gg.GenreId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GamePlatformEntity>()
             .HasKey(gp => new { gp.GameId, gp.PlatformId });
         modelBuilder.Entity<GamePlatformEntity>()
-            .HasOne(gp => gp.Game).WithMany(g => g.GamePlatforms).HasForeignKey(gp => gp.GameId);
+            .HasOne(gp => gp.Game).WithMany(g => g.GamePlatforms).HasForeignKey(gp => gp.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GamePlatformEntity>()
-            .HasOne(gp => gp.Platform).WithMany(p => p.GamePlatforms).HasForeignKey(gp => gp.PlatformId);
+            .HasOne(gp => gp.Platform).WithMany(p => p.GamePlatforms).HasForeignKey(gp => gp.PlatformId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GameGameModeEntity>()
             .HasKey(gm => new { gm.GameId, gm.GameModeId });
         modelBuilder.Entity<GameGameModeEntity>()
-            .HasOne(gm => gm.Game).WithMany(g => g.GameModes).HasForeignKey(gm => gm.GameId);
+            .HasOne(gm => gm.Game).WithMany(g => g.GameModes).HasForeignKey(gm => gm.GameId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameGameModeEntity>()
-            .HasOne(gm => gm.GameMode).WithMany().HasForeignKey(gm => gm.GameModeId);
+            .HasOne(gm => gm.GameMode).WithMany().HasForeignKey(gm => gm.GameModeId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<UserProfileEntity>()
             .HasKey(p => p.UserId);
@@ -74,5 +77,23 @@ public class DiffyDbContext : DbContext
             .HasOne(gr => gr.User).WithMany().HasForeignKey(gr => gr.UserId);
         modelBuilder.Entity<GameRatingEntity>()
             .HasOne(gr => gr.Game).WithMany(g => g.Ratings).HasForeignKey(gr => gr.GameId);
+
+        modelBuilder.Entity<UserEntity>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<GameImgEntity>()
+            .HasOne(i => i.Game).WithMany(g => g.Imgs).HasForeignKey(i => i.GameId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SavedComparisonEntity>()
+            .HasOne(sc => sc.User).WithMany().HasForeignKey(sc => sc.UserId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ActivityLogEntity>()
+            .HasOne(al => al.User).WithMany().HasForeignKey(al => al.UserId).OnDelete(DeleteBehavior.Cascade);
+
+        SeedGenres.Seed(modelBuilder);
+        SeedPlatforms.Seed(modelBuilder);
+        SeedGameModes.Seed(modelBuilder);
+        SeedGames.Seed(modelBuilder);
     }
 }

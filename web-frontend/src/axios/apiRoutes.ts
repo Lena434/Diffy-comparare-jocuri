@@ -7,6 +7,7 @@ export const API_ROUTES = {
     LIST: "/api/users/list",
     GET_ALL: "/api/users/list",
     GET_BY_ID: (id: number) => `/api/users/${id}`,
+    CREATE: "/api/users/create",
     DELETE: (id: number) => `/api/users/${id}`,
     UPDATE: (id: number) => `/api/users/${id}`,
     CHANGE_PASSWORD: "/api/users/changePassword",
@@ -32,6 +33,8 @@ export const API_ROUTES = {
   },
   GAME_MODES: {
     GET_ALL: '/api/gamemode',
+    CREATE: '/api/gamemode',
+    DELETE: (id: number) => `/api/gamemode/${id}`,
   },
   RATINGS: {
     GET_BY_GAME: (gameId: number) => `/api/rating/game/${gameId}`,
@@ -45,5 +48,14 @@ export const API_ROUTES = {
   PROFILE: {
     GET: '/api/profile',
     UPDATE: '/api/profile',
+  },
+  COMPARISONS: {
+    GET_ALL: '/api/comparison',
+    CREATE: '/api/comparison',
+    DELETE: (id: number) => `/api/comparison/${id}`,
+  },
+  ACTIVITY_LOG: {
+    GET_MY: '/api/activitylog',
+    GET_BY_USER: (userId: number) => `/api/activitylog/${userId}`,
   },
 };

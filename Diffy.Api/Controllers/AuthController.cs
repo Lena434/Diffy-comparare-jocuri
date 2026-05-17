@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
+using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +35,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] UserLoginDto userLoginDto)
+    public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -46,6 +47,14 @@ public class AuthController : ControllerBase
 
             var user = (UserInfoDto)result.Data!;
             var token = GenerateJwtToken(user);
+
+            try
+            {
+                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                await logService.LogAsync(user.Id, ActivityType.Login);
+            }
+            catch { /* logging failure should not affect login */ }
+
             return Ok(new { token, user });
         }
         catch
@@ -61,7 +70,6 @@ public class AuthController : ControllerBase
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };

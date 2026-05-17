@@ -20,7 +20,7 @@ public class GameController : ControllerBase
         Publisher = g.Publisher,
         ReleaseYear = g.ReleaseYear,
         Price = g.Price,
-        ImageUrl = g.ImageUrl,
+        Imgs = g.Imgs.Select(i => new GameImgDto { Id = i.Id, Url = i.ImgUrl, GameId = i.GameId }).ToList(),
         Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
         Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
         GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
@@ -35,7 +35,7 @@ public class GameController : ControllerBase
         Publisher = dto.Publisher,
         ReleaseYear = dto.ReleaseYear,
         Price = dto.Price,
-        ImageUrl = dto.ImageUrl,
+        Imgs = dto.Imgs.Where(i => !string.IsNullOrWhiteSpace(i.Url)).Select(i => new GameImgEntity { ImgUrl = i.Url }).ToList(),
     };
 
     private static GameEntity ToEntity(GameUpdateDto dto) => new()
@@ -46,7 +46,7 @@ public class GameController : ControllerBase
         Publisher = dto.Publisher,
         ReleaseYear = dto.ReleaseYear,
         Price = dto.Price,
-        ImageUrl = dto.ImageUrl,
+        Imgs = dto.Imgs.Where(i => !string.IsNullOrWhiteSpace(i.Url)).Select(i => new GameImgEntity { ImgUrl = i.Url }).ToList(),
     };
 
     [HttpGet]

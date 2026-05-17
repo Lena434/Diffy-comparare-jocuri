@@ -16,6 +16,7 @@ function ComparisonCell({ game, renderValue }: ComparisonCellProps) {
         color: "var(--arcade-h)",
         letterSpacing: "0.03em",
         background: "var(--arcade-panel-dark)",
+        borderLeft: "2px solid var(--arcade-shadow)",
         lineHeight: 1.8,
       }}
     >

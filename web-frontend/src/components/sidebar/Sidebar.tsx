@@ -168,8 +168,6 @@ function Sidebar() {
               <SectionLabel label="▸ DASHBOARD" />
               <NavItem icon="👤" label="MY PROFILE" onClick={() => handleNav(ROUTES.PROFILE)} />
               <NavItem icon="⭐" label="SAVED GAMES" onClick={() => handleNav(ROUTES.FAVORITES)} />
-              <NavItem icon="📈" label="RECENT COMPARISONS" onClick={() => handleNav(ROUTES.FAVORITES)} />
-              <NavItem icon="🔔" label="NOTIFICATIONS" />
             </>
           )}
 
@@ -206,9 +204,7 @@ function Sidebar() {
           <NavItem icon="🧍" label="SINGLE-PLAYER" onClick={() => handleNav(`${ROUTES.GAMES}?mode=single`)} />
 
           <SectionLabel label="▸ RESOURCES" />
-          <NavItem icon="📖" label="HOW TO COMPARE" onClick={() => handleNav(ROUTES.COMPARE)} />
-          <NavItem icon="📝" label="BLOG & NEWS" onClick={() => handleNav(ROUTES.ABOUT)} />
-          <NavItem icon="💬" label="COMMUNITY" onClick={() => handleNav(ROUTES.ABOUT)} />
+          <NavItem icon="📖" label="HOW TO COMPARE" onClick={() => handleNav(ROUTES.ABOUT)} />
           <NavItem icon="❓" label="HELP & FAQ" onClick={() => handleNav(ROUTES.ABOUT)} />
 
           {!isAuthenticated && (

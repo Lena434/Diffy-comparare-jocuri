@@ -22,7 +22,14 @@ public class GameRatingRepository
 
     public async Task AddAsync(GameRatingEntity rating)
     {
-        await _dbContext.GameRatings.AddAsync(rating);
+        var existing = await _dbContext.GameRatings
+            .FirstOrDefaultAsync(r => r.UserId == rating.UserId && r.GameId == rating.GameId);
+
+        if (existing != null)
+            existing.Score = rating.Score;
+        else
+            await _dbContext.GameRatings.AddAsync(rating);
+
         await _dbContext.SaveChangesAsync();
     }
 }
