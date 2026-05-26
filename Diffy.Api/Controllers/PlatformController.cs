@@ -1,6 +1,5 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
-using Diffy.Domain.Entities;
 using Diffy.Domain.Models.Platform;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +15,8 @@ public class PlatformController : ControllerBase
     {
         try
         {
-            IPlatform service = new BusinessLogic().GetPlatform();
-            var platforms = await service.GetAllAsync();
-            return Ok(platforms.Select(e => new PlatformDto { Id = e.Id, Name = e.Name }).ToList());
+            IPlatformAction service = new BusinessLogic().PlatformAction();
+            return Ok(await service.GetAllAsync());
         }
         catch
         {
@@ -28,15 +26,14 @@ public class PlatformController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Add([FromBody] PlatformDto dto)
+    public async Task<IActionResult> Add([FromBody] PlatformInputDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            IPlatform service = new BusinessLogic().GetPlatform();
-            var entity = new PlatformEntity { Name = dto.Name };
-            await service.AddAsync(entity);
+            IPlatformAction service = new BusinessLogic().PlatformAction();
+            await service.AddAsync(dto);
             return StatusCode(201);
         }
         catch
@@ -51,7 +48,7 @@ public class PlatformController : ControllerBase
     {
         try
         {
-            IPlatform service = new BusinessLogic().GetPlatform();
+            IPlatformAction service = new BusinessLogic().PlatformAction();
             var existing = await service.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();

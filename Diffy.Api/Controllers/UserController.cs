@@ -14,12 +14,12 @@ public class UserController : ControllerBase
 {
     [HttpGet("list")]
     [Authorize(Roles = "Admin")]
-    public IActionResult GetUserList()
+    public async Task<IActionResult> GetUserList()
     {
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.GetUserList();
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.GetUserList();
             return Ok(result.Data);
         }
         catch
@@ -30,12 +30,12 @@ public class UserController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult GetUserById([FromRoute] int id)
+    public async Task<IActionResult> GetUserById([FromRoute] int id)
     {
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.GetUserById(id);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.GetUserById(id);
             if (!result.IsSuccess)
                 return NotFound(result.Message);
             return Ok(result.Data);
@@ -48,14 +48,14 @@ public class UserController : ControllerBase
 
     [HttpPost("create")]
     [Authorize(Roles = "Admin")]
-    public IActionResult CreateUser([FromBody] UserCreateDto userCreateDto)
+    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto userCreateDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.CreateUser(userCreateDto);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.CreateUser(userCreateDto);
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
             return StatusCode(201, result.Message);
@@ -68,14 +68,14 @@ public class UserController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult UpdateUser([FromRoute] int id, [FromBody] UserUpdateDto userUpdateDto)
+    public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UserUpdateDto userUpdateDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.UpdateUser(id, userUpdateDto);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.UpdateUser(id, userUpdateDto);
             if (!result.IsSuccess)
                 return NotFound(result.Message);
             return NoContent();
@@ -88,12 +88,12 @@ public class UserController : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult DeleteUser([FromRoute] int id)
+    public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.DeleteUser(id);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.DeleteUser(id);
             if (!result.IsSuccess)
                 return NotFound(result.Message);
             return NoContent();
@@ -105,7 +105,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch("changePassword")]
-    public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -116,8 +116,8 @@ public class UserController : ControllerBase
 
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.ChangePassword(userId, dto);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.ChangePassword(userId, dto);
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
             return NoContent();
@@ -129,7 +129,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch("updateProfile")]
-    public IActionResult UpdateProfile([FromBody] UserProfileUpdateDto userProfileUpdateDto)
+    public async Task<IActionResult> UpdateProfile([FromBody] UserProfileUpdateDto userProfileUpdateDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -140,8 +140,8 @@ public class UserController : ControllerBase
 
         try
         {
-            IUserLogic service = new BusinessLogic().GetUserLogic();
-            var result = service.UpdateProfile(userId, userProfileUpdateDto);
+            IUserAction service = new BusinessLogic().UserAction();
+            var result = await service.UpdateProfile(userId, userProfileUpdateDto);
             if (!result.IsSuccess)
                 return NotFound(result.Message);
             return NoContent();

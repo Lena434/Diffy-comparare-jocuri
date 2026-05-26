@@ -1,5 +1,5 @@
-﻿using Diffy.BusinessLayer.Core;
-using Diffy.BusinessLayer.Interfaces;
+﻿using Diffy.BusinessLayer.Interfaces;
+using Diffy.BusinessLayer.Structure;
 using Diffy.DataAccessLayer.Context;
 using Diffy.DataAccessLayer.Repositories;
 
@@ -7,16 +7,16 @@ namespace Diffy.BusinessLayer;
 
 public class BusinessLogic
 {
-    public IUserLogic GetUserLogic() => new UserLogic();
-    public IUserAuthLogic GetUserAuthLogic() => new UserAuthLogic();
+    public IUserAction UserAction() => new UserActionExecution();
+    public IUserAuthAction UserAuthAction() => new UserAuthActionExecution();
 
-    public IGame GetGame() => new GameLogic(new GameRepository(new DiffyDbContext()));
-    public IGenre GetGenre() => new GenreLogic(new GenreRepository(new DiffyDbContext()));
-    public IPlatform GetPlatform() => new PlatformLogic(new PlatformRepository(new DiffyDbContext()));
-    public IGameMode GetGameMode() => new GameModeLogic(new GameModeRepository(new DiffyDbContext()));
-    public IUserFavorite GetUserFavorite() => new UserFavoriteLogic(new UserFavoriteRepository(new DiffyDbContext()));
-    public ISavedComparison GetSavedComparison() => new SavedComparisonLogic(new SavedComparisonRepository(new DiffyDbContext()));
-    public IGameRating GetGameRating() => new GameRatingLogic(new GameRatingRepository(new DiffyDbContext()));
-    public IUserProfile GetUserProfile() => new UserProfileLogic(new UserProfileRepository(new DiffyDbContext()));
-    public IActivityLog GetActivityLog() => new ActivityLogLogic(new ActivityLogRepository(new DiffyDbContext()));
+    public IGameAction GameAction() => new GameActionExecution(new GameRepository(new DiffyDbContext()));
+    public IGenreAction GenreAction() => new GenreActionExecution(new GenreRepository(new DiffyDbContext()));
+    public IPlatformAction PlatformAction() => new PlatformActionExecution(new PlatformRepository(new DiffyDbContext()));
+    public IGameModeAction GameModeAction() => new GameModeActionExecution(new GameModeRepository(new DiffyDbContext()));
+    public IUserFavoriteAction UserFavoriteAction() => new UserFavoriteActionExecution(new UserFavoriteRepository(new DiffyDbContext()));
+    public ISavedComparisonAction SavedComparisonAction() => new SavedComparisonActionExecution(new SavedComparisonRepository(new DiffyDbContext()));
+    public IGameRatingAction GameRatingAction() => new GameRatingActionExecution(new GameRatingRepository(new DiffyDbContext()));
+    public IUserProfileAction UserProfileAction() => new UserProfileActionExecution(new UserProfileRepository(new DiffyDbContext()));
+    public IActivityLogAction ActivityLogAction() => new ActivityLogActionExecution(new ActivityLogRepository(new DiffyDbContext()));
 }

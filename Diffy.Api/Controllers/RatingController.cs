@@ -17,15 +17,8 @@ public class RatingController : ControllerBase
     {
         try
         {
-            IGameRating service = new BusinessLogic().GetGameRating();
-            var ratings = await service.GetByGameIdAsync(gameId);
-            return Ok(ratings.Select(gr => new GameRatingDto
-            {
-                UserId = gr.UserId,
-                GameId = gr.GameId,
-                Score = gr.Score,
-                CreatedAt = gr.CreatedAt,
-            }).ToList());
+            IGameRatingAction service = new BusinessLogic().GameRatingAction();
+            return Ok(await service.GetByGameIdAsync(gameId));
         }
         catch
         {
@@ -46,13 +39,13 @@ public class RatingController : ControllerBase
 
         try
         {
-            IGameRating service = new BusinessLogic().GetGameRating();
+            IGameRatingAction service = new BusinessLogic().GameRatingAction();
             await service.AddAsync(userId, dto.GameId, dto.Score);
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
-                var game = await new BusinessLogic().GetGame().GetByIdAsync(dto.GameId);
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
+                var game = await new BusinessLogic().GameAction().GetByIdAsync(dto.GameId);
                 await logService.LogAsync(userId, ActivityType.RatingGiven, $"{game?.Title ?? $"GameId:{dto.GameId}"}, Score:{dto.Score}");
             }
             catch { /* ignore */ }
