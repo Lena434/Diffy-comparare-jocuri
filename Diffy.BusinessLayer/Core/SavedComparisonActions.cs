@@ -1,6 +1,5 @@
 using Diffy.Domain.Models.Comparison;
 using Diffy.DataAccessLayer.Repositories;
-using Diffy.Domain.Entities.User;
 
 namespace Diffy.BusinessLayer.Core;
 
@@ -19,27 +18,20 @@ public class SavedComparisonActions
         return entities.Select(sc => new SavedComparisonDto
         {
             Id = sc.Id,
-            GameIds = sc.GameIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList(),
-            GameTitles = sc.GameTitles?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? [],
+            GameIds = sc.SavedComparisonGames.Select(scg => scg.GameId).ToList(),
+            GameTitles = sc.SavedComparisonGames.Select(scg => scg.Game.Title).ToList(),
             SavedAt = sc.SavedAt,
         }).ToList();
     }
 
-    protected async Task<SavedComparisonDto> AddActionExecution(int userId, List<int> gameIds, List<string> gameTitles)
+    protected async Task<SavedComparisonDto> AddActionExecution(int userId, List<int> gameIds)
     {
-        var entity = await _repo.AddAsync(new SavedComparisonEntity
-        {
-            UserId = userId,
-            GameIds = string.Join(",", gameIds),
-            GameTitles = string.Join(",", gameTitles),
-            SavedAt = DateTime.UtcNow,
-        });
-
+        var entity = await _repo.AddAsync(userId, gameIds);
         return new SavedComparisonDto
         {
             Id = entity.Id,
-            GameIds = gameIds,
-            GameTitles = gameTitles,
+            GameIds = entity.SavedComparisonGames.Select(scg => scg.GameId).ToList(),
+            GameTitles = entity.SavedComparisonGames.Select(scg => scg.Game.Title).ToList(),
             SavedAt = entity.SavedAt,
         };
     }

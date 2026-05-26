@@ -4,8 +4,8 @@ public class SavedComparisonEntity
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public UserEntity User { get; set; }
-    public string GameIds { get; set; } = string.Empty; // ex: "1,2,3"
-    public string? GameTitles { get; set; }              // ex: "Elden Ring,Hollow Knight"
+    public UserEntity User { get; set; } = null!;
     public DateTime SavedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<SavedComparisonGameEntity> SavedComparisonGames { get; set; } = new List<SavedComparisonGameEntity>();
 }

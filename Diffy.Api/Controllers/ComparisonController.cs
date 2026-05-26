@@ -45,12 +45,12 @@ public class ComparisonController : ControllerBase
         try
         {
             ISavedComparisonAction service = new BusinessLogic().SavedComparisonAction();
-            var result = await service.AddAsync(userId.Value, dto.GameIds, dto.GameTitles);
+            var result = await service.AddAsync(userId.Value, dto.GameIds);
 
             try
             {
                 IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
-                await logService.LogAsync(userId.Value, ActivityType.ComparisonSaved, string.Join(" vs ", dto.GameTitles));
+                await logService.LogAsync(userId.Value, ActivityType.ComparisonSaved, string.Join(" vs ", result.GameTitles));
             }
             catch { /* ignore */ }
 

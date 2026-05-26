@@ -10,6 +10,6 @@ public class SavedComparisonActionExecution : SavedComparisonActions, ISavedComp
     public SavedComparisonActionExecution(SavedComparisonRepository repo) : base(repo) { }
 
     public Task<List<SavedComparisonDto>> GetByUserIdAsync(int userId) => GetByUserIdActionExecution(userId);
-    public Task<SavedComparisonDto> AddAsync(int userId, List<int> gameIds, List<string> gameTitles) => AddActionExecution(userId, gameIds, gameTitles);
+    public Task<SavedComparisonDto> AddAsync(int userId, List<int> gameIds) => AddActionExecution(userId, gameIds);
     public Task DeleteAsync(int id, int userId) => DeleteActionExecution(id, userId);
 }
