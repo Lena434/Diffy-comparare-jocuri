@@ -1,6 +1,5 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
-using Diffy.Domain.Entities.Game;
 using Diffy.Domain.Models.Game;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,52 +10,13 @@ namespace Diffy.Api.Controllers;
 [Route("api/game")]
 public class GameController : ControllerBase
 {
-    private static GameInfoDto ToDto(GameEntity g) => new()
-    {
-        Id = g.Id,
-        Title = g.Title,
-        Description = g.Description,
-        Developer = g.Developer,
-        Publisher = g.Publisher,
-        ReleaseYear = g.ReleaseYear,
-        Price = g.Price,
-        Imgs = g.Imgs.Select(i => new GameImgDto { Id = i.Id, Url = i.ImgUrl, GameId = i.GameId }).ToList(),
-        Genres = g.GameGenres.Select(gg => gg.Genre.Name).ToList(),
-        Platforms = g.GamePlatforms.Select(gp => gp.Platform.Name).ToList(),
-        GameModes = g.GameModes.Select(gm => gm.GameMode.Name).ToList(),
-        AverageRating = g.Ratings.Any() ? (decimal)g.Ratings.Average(r => r.Score) : 0m,
-    };
-
-    private static GameEntity ToEntity(GameCreateDto dto) => new()
-    {
-        Title = dto.Title,
-        Description = dto.Description,
-        Developer = dto.Developer,
-        Publisher = dto.Publisher,
-        ReleaseYear = dto.ReleaseYear,
-        Price = dto.Price,
-        Imgs = dto.Imgs.Where(i => !string.IsNullOrWhiteSpace(i.Url)).Select(i => new GameImgEntity { ImgUrl = i.Url }).ToList(),
-    };
-
-    private static GameEntity ToEntity(GameUpdateDto dto) => new()
-    {
-        Title = dto.Title,
-        Description = dto.Description,
-        Developer = dto.Developer,
-        Publisher = dto.Publisher,
-        ReleaseYear = dto.ReleaseYear,
-        Price = dto.Price,
-        Imgs = dto.Imgs.Where(i => !string.IsNullOrWhiteSpace(i.Url)).Select(i => new GameImgEntity { ImgUrl = i.Url }).ToList(),
-    };
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         try
         {
-            IGame service = new BusinessLogic().GetGame();
-            var games = await service.GetAllAsync();
-            return Ok(games.Select(ToDto).ToList());
+            IGameAction service = new BusinessLogic().GameAction();
+            return Ok(await service.GetAllAsync());
         }
         catch
         {
@@ -69,11 +29,11 @@ public class GameController : ControllerBase
     {
         try
         {
-            IGame service = new BusinessLogic().GetGame();
+            IGameAction service = new BusinessLogic().GameAction();
             var game = await service.GetByIdAsync(id);
             if (game == null)
                 return NotFound();
-            return Ok(ToDto(game));
+            return Ok(game);
         }
         catch
         {
@@ -94,9 +54,8 @@ public class GameController : ControllerBase
 
         try
         {
-            IGame service = new BusinessLogic().GetGame();
-            var games = await service.GetByIdsAsync(idList);
-            return Ok(games.Select(ToDto).ToList());
+            IGameAction service = new BusinessLogic().GameAction();
+            return Ok(await service.GetByIdsAsync(idList));
         }
         catch
         {
@@ -112,8 +71,8 @@ public class GameController : ControllerBase
             return BadRequest(ModelState);
         try
         {
-            IGame service = new BusinessLogic().GetGame();
-            await service.AddAsync(ToEntity(dto), dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            IGameAction service = new BusinessLogic().GameAction();
+            await service.AddAsync(dto);
             return StatusCode(201);
         }
         catch
@@ -130,13 +89,11 @@ public class GameController : ControllerBase
             return BadRequest(ModelState);
         try
         {
-            IGame service = new BusinessLogic().GetGame();
+            IGameAction service = new BusinessLogic().GameAction();
             var existing = await service.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();
-            var entity = ToEntity(dto);
-            entity.Id = id;
-            await service.UpdateAsync(entity, dto.GenreIds, dto.PlatformIds, dto.GameModeIds);
+            await service.UpdateAsync(id, dto);
             return NoContent();
         }
         catch
@@ -151,7 +108,7 @@ public class GameController : ControllerBase
     {
         try
         {
-            IGame service = new BusinessLogic().GetGame();
+            IGameAction service = new BusinessLogic().GameAction();
             var existing = await service.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();

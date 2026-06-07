@@ -1,11 +1,18 @@
-﻿using Diffy.Domain.Entities.User;
+﻿using System.ComponentModel.DataAnnotations;
+using Diffy.Domain.Entities.User;
 
 namespace Diffy.Domain.Models.User;
 
 public class UserUpdateDto
 {
-    public string Username { get; set; }
-    public string Email { get; set; }
+    [Required]
+    [StringLength(50, MinimumLength = 3)]
+    public string Username { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
     public UserRole Role { get; set; }
     public bool IsBanned { get; set; }
 }

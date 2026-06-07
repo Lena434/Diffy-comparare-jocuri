@@ -14,16 +14,16 @@ namespace Diffy.Api.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IUserAuthLogic _userAuthLogic = new BusinessLogic().GetUserAuthLogic();
+    private readonly IUserAuthAction _userAuth = new BusinessLogic().UserAuthAction();
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] UserCreateDto userCreateDto)
+    public async Task<IActionResult> Register([FromBody] UserCreateDto userCreateDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            var result = _userAuthLogic.Register(userCreateDto);
+            var result = await _userAuth.Register(userCreateDto);
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
             return StatusCode(201, result.Message);
@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         try
         {
-            var result = _userAuthLogic.Login(userLoginDto);
+            var result = await _userAuth.Login(userLoginDto);
             if (!result.IsSuccess)
                 return Unauthorized(result.Message);
 
@@ -50,7 +50,7 @@ public class AuthController : ControllerBase
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
                 await logService.LogAsync(user.Id, ActivityType.Login);
             }
             catch { /* logging failure should not affect login */ }

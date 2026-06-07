@@ -1,6 +1,5 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
-using Diffy.Domain.Entities.User;
 using Diffy.Domain.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +17,7 @@ public class ProfileController : ControllerBase
         var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return int.TryParse(value, out var id) ? id : null;
     }
-
-    private static UserProfileDto ToDto(UserProfileEntity p) => new()
-    {
-        Platform = p.Platform,
-        PlatformVersion = p.PlatformVersion,
-        CpuModel = p.CpuModel,
-        GpuModel = p.GpuModel,
-        RamGb = p.RamGb,
-        StorageGb = p.StorageGb,
-        OperatingSystem = p.OperatingSystem,
-    };
-
+    
     [HttpGet]
     public async Task<IActionResult> Get()
     {
@@ -38,9 +26,8 @@ public class ProfileController : ControllerBase
 
         try
         {
-            IUserProfile service = new BusinessLogic().GetUserProfile();
-            var profile = await service.GetByUserIdAsync(userId.Value);
-            return Ok(ToDto(profile ?? new UserProfileEntity()));
+            IUserProfileAction service = new BusinessLogic().UserProfileAction();
+            return Ok(await service.GetByUserIdAsync(userId.Value) ?? new UserProfileDto());
         }
         catch
         {
@@ -59,35 +46,13 @@ public class ProfileController : ControllerBase
 
         try
         {
-            IUserProfile service = new BusinessLogic().GetUserProfile();
+            IUserProfileAction service = new BusinessLogic().UserProfileAction();
             var existing = await service.GetByUserIdAsync(userId.Value);
 
             if (existing is null)
-            {
-                var profile = new UserProfileEntity
-                {
-                    UserId = userId.Value,
-                    Platform = dto.Platform,
-                    PlatformVersion = dto.PlatformVersion,
-                    CpuModel = dto.CpuModel,
-                    GpuModel = dto.GpuModel,
-                    RamGb = dto.RamGb,
-                    StorageGb = dto.StorageGb,
-                    OperatingSystem = dto.OperatingSystem,
-                };
-                await service.AddAsync(profile);
-            }
+                await service.AddAsync(userId.Value, dto);
             else
-            {
-                existing.Platform = dto.Platform;
-                existing.PlatformVersion = dto.PlatformVersion;
-                existing.CpuModel = dto.CpuModel;
-                existing.GpuModel = dto.GpuModel;
-                existing.RamGb = dto.RamGb;
-                existing.StorageGb = dto.StorageGb;
-                existing.OperatingSystem = dto.OperatingSystem;
-                await service.UpdateAsync(existing);
-            }
+                await service.UpdateAsync(userId.Value, dto);
 
             return NoContent();
         }

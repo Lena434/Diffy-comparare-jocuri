@@ -16,16 +16,30 @@ public class SavedComparisonRepository
     public async Task<List<SavedComparisonEntity>> GetByUserIdAsync(int userId)
     {
         return await _dbContext.SavedComparisons
+            .Include(sc => sc.SavedComparisonGames)
+                .ThenInclude(scg => scg.Game)
             .Where(sc => sc.UserId == userId)
             .OrderByDescending(sc => sc.SavedAt)
             .ToListAsync();
     }
 
-    public async Task<SavedComparisonEntity> AddAsync(SavedComparisonEntity comparison)
+    public async Task<SavedComparisonEntity> AddAsync(int userId, List<int> gameIds)
     {
+        var comparison = new SavedComparisonEntity
+        {
+            UserId = userId,
+            SavedAt = DateTime.UtcNow,
+            SavedComparisonGames = gameIds.Distinct()
+                .Select(id => new SavedComparisonGameEntity { GameId = id })
+                .ToList()
+        };
         await _dbContext.SavedComparisons.AddAsync(comparison);
         await _dbContext.SaveChangesAsync();
-        return comparison;
+
+        return await _dbContext.SavedComparisons
+            .Include(sc => sc.SavedComparisonGames)
+                .ThenInclude(scg => scg.Game)
+            .FirstAsync(sc => sc.Id == comparison.Id);
     }
 
     public async Task DeleteAsync(int id, int userId)

@@ -1,6 +1,5 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
-using Diffy.Domain.Entities;
 using Diffy.Domain.Models.GameMode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +15,8 @@ public class GameModeController : ControllerBase
     {
         try
         {
-            IGameMode service = new BusinessLogic().GetGameMode();
-            var gameModes = await service.GetAllAsync();
-            return Ok(gameModes.Select(e => new GameModeDto { Id = e.Id, Name = e.Name }).ToList());
+            IGameModeAction service = new BusinessLogic().GameModeAction();
+            return Ok(await service.GetAllAsync());
         }
         catch
         {
@@ -28,15 +26,14 @@ public class GameModeController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Add([FromBody] GameModeDto dto)
+    public async Task<IActionResult> Add([FromBody] GameModeInputDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            IGameMode service = new BusinessLogic().GetGameMode();
-            var entity = new GameModeEntity { Name = dto.Name };
-            await service.AddAsync(entity);
+            IGameModeAction service = new BusinessLogic().GameModeAction();
+            await service.AddAsync(dto);
             return StatusCode(201);
         }
         catch
@@ -51,7 +48,7 @@ public class GameModeController : ControllerBase
     {
         try
         {
-            IGameMode service = new BusinessLogic().GetGameMode();
+            IGameModeAction service = new BusinessLogic().GameModeAction();
             var existing = await service.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();

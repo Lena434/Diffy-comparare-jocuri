@@ -27,15 +27,8 @@ public class FavoriteController : ControllerBase
 
         try
         {
-            IUserFavorite service = new BusinessLogic().GetUserFavorite();
-            var favorites = await service.GetByUserIdAsync(userId.Value);
-            return Ok(favorites.Select(uf => new FavoriteDto
-            {
-                GameId = uf.GameId,
-                Title = uf.Game.Title,
-                ImageUrl = uf.Game.Imgs.FirstOrDefault()?.ImgUrl,
-                AddedAt = uf.AddedAt,
-            }).ToList());
+            IUserFavoriteAction service = new BusinessLogic().UserFavoriteAction();
+            return Ok(await service.GetByUserIdAsync(userId.Value));
         }
         catch
         {
@@ -51,13 +44,13 @@ public class FavoriteController : ControllerBase
 
         try
         {
-            IUserFavorite service = new BusinessLogic().GetUserFavorite();
+            IUserFavoriteAction service = new BusinessLogic().UserFavoriteAction();
             await service.AddAsync(userId.Value, gameId);
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
-                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
+                var game = await new BusinessLogic().GameAction().GetByIdAsync(gameId);
                 await logService.LogAsync(userId.Value, ActivityType.FavoriteAdded, game?.Title ?? $"GameId:{gameId}");
             }
             catch { /* ignore */ }
@@ -78,13 +71,13 @@ public class FavoriteController : ControllerBase
 
         try
         {
-            IUserFavorite service = new BusinessLogic().GetUserFavorite();
+            IUserFavoriteAction service = new BusinessLogic().UserFavoriteAction();
             await service.DeleteAsync(userId.Value, gameId);
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
-                var game = await new BusinessLogic().GetGame().GetByIdAsync(gameId);
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
+                var game = await new BusinessLogic().GameAction().GetByIdAsync(gameId);
                 await logService.LogAsync(userId.Value, ActivityType.FavoriteRemoved, game?.Title ?? $"GameId:{gameId}");
             }
             catch { /* ignore */ }

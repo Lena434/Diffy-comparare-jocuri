@@ -1,6 +1,5 @@
 using Diffy.BusinessLayer;
 using Diffy.BusinessLayer.Interfaces;
-using Diffy.Domain.Entities;
 using Diffy.Domain.Models.Genre;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +15,8 @@ public class GenreController : ControllerBase
     {
         try
         {
-            IGenre service = new BusinessLogic().GetGenre();
-            var genres = await service.GetAllAsync();
-            return Ok(genres.Select(e => new GenreDto { Id = e.Id, Name = e.Name }).ToList());
+            IGenreAction service = new BusinessLogic().GenreAction();
+            return Ok(await service.GetAllAsync());
         }
         catch
         {
@@ -28,15 +26,14 @@ public class GenreController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Add([FromBody] GenreDto dto)
+    public async Task<IActionResult> Add([FromBody] GenreInputDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         try
         {
-            IGenre service = new BusinessLogic().GetGenre();
-            var entity = new GenreEntity { Name = dto.Name };
-            await service.AddAsync(entity);
+            IGenreAction service = new BusinessLogic().GenreAction();
+            await service.AddAsync(dto);
             return StatusCode(201);
         }
         catch
@@ -51,7 +48,7 @@ public class GenreController : ControllerBase
     {
         try
         {
-            IGenre service = new BusinessLogic().GetGenre();
+            IGenreAction service = new BusinessLogic().GenreAction();
             var existing = await service.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();

@@ -32,6 +32,7 @@ public class DiffyDbContext : DbContext
     public DbSet<GameRatingEntity> GameRatings { get; set; }
     public DbSet<GameImgEntity> GameImgs { get; set; }
     public DbSet<SavedComparisonEntity> SavedComparisons { get; set; }
+    public DbSet<SavedComparisonGameEntity> SavedComparisonGames { get; set; }
     public DbSet<ActivityLogEntity> ActivityLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -87,6 +88,21 @@ public class DiffyDbContext : DbContext
 
         modelBuilder.Entity<SavedComparisonEntity>()
             .HasOne(sc => sc.User).WithMany().HasForeignKey(sc => sc.UserId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SavedComparisonGameEntity>(entity =>
+        {
+            entity.HasKey(scg => new { scg.SavedComparisonId, scg.GameId });
+
+            entity.HasOne(scg => scg.SavedComparison)
+                  .WithMany(sc => sc.SavedComparisonGames)
+                  .HasForeignKey(scg => scg.SavedComparisonId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(scg => scg.Game)
+                  .WithMany()
+                  .HasForeignKey(scg => scg.GameId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
 
         modelBuilder.Entity<ActivityLogEntity>()
             .HasOne(al => al.User).WithMany().HasForeignKey(al => al.UserId).OnDelete(DeleteBehavior.Cascade);

@@ -27,15 +27,8 @@ public class ComparisonController : ControllerBase
 
         try
         {
-            ISavedComparison service = new BusinessLogic().GetSavedComparison();
-            var comparisons = await service.GetByUserIdAsync(userId.Value);
-            return Ok(comparisons.Select(sc => new SavedComparisonDto
-            {
-                Id = sc.Id,
-                GameIds = sc.GameIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList(),
-                GameTitles = sc.GameTitles?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? [],
-                SavedAt = sc.SavedAt,
-            }).ToList());
+            ISavedComparisonAction service = new BusinessLogic().SavedComparisonAction();
+            return Ok(await service.GetByUserIdAsync(userId.Value));
         }
         catch
         {
@@ -51,23 +44,17 @@ public class ComparisonController : ControllerBase
 
         try
         {
-            ISavedComparison service = new BusinessLogic().GetSavedComparison();
-            var result = await service.AddAsync(userId.Value, dto.GameIds, dto.GameTitles);
+            ISavedComparisonAction service = new BusinessLogic().SavedComparisonAction();
+            var result = await service.AddAsync(userId.Value, dto.GameIds);
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
-                await logService.LogAsync(userId.Value, ActivityType.ComparisonSaved, string.Join(" vs ", dto.GameTitles));
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
+                await logService.LogAsync(userId.Value, ActivityType.ComparisonSaved, string.Join(" vs ", result.GameTitles));
             }
             catch { /* ignore */ }
 
-            return StatusCode(201, new SavedComparisonDto
-            {
-                Id = result.Id,
-                GameIds = dto.GameIds,
-                GameTitles = dto.GameTitles,
-                SavedAt = result.SavedAt,
-            });
+            return StatusCode(201);
         }
         catch
         {
@@ -83,12 +70,12 @@ public class ComparisonController : ControllerBase
 
         try
         {
-            ISavedComparison service = new BusinessLogic().GetSavedComparison();
+            ISavedComparisonAction service = new BusinessLogic().SavedComparisonAction();
             await service.DeleteAsync(id, userId.Value);
 
             try
             {
-                IActivityLog logService = new BusinessLogic().GetActivityLog();
+                IActivityLogAction logService = new BusinessLogic().ActivityLogAction();
                 await logService.LogAsync(userId.Value, ActivityType.ComparisonRemoved);
             }
             catch { /* ignore */ }
